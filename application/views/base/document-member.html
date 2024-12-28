@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, target-densitydpi=device-dpi">
+        <link rel="icon" href="{$BASEURL}resource/assets-frontend/dist/logo/{$site.site_icon|default:'icon.png'}" type="image/png">
+        <link rel="stylesheet" href="{$BASEURL}resource/plugins/bootstrap-5.2.1-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/node_modules/@fancyapps/ui/dist/fancybox/fancybox.css">
+        <link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/css/kenes_style.css">
+        <link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/css/style.css">
+        <link rel="stylesheet" href="{$BASEURL}resource/plugins/fontawesome-free-6.4.0-web/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+        <link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/jquery/css/alertify.min.css" />
+        <link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/jquery/css/themes/default.min.css" />
+        
+        <title>{$site.site_title|default:'Kenes Resto & Bakery'}</title>        
+    </head>
+    <body>
+        <!-- NAVBAR -->
+        <div class="row fixed-top bg-white pb-1 header">
+            <div class="side-icon">
+                <button type="button" class="hamburger animated fadeInLeft is-closed" data-toggle="offcanvas">
+                    <span class="hamb-top"></span>
+                    <span class="hamb-middle"></span>
+                    <span class="hamb-bottom"></span>
+                </button>
+            </div>
+            <div class="brand">
+                <a href="{site_url('home')}">
+                    <img src="{$BASEURL}resource/assets-frontend/dist/logo/{$site.site_logo|default:'logo.png'}">
+                </a>
+            </div>
+            <div class="menu">
+                <div class="location">
+                    <a href="{site_url()}" id="showLoc" role="button" class="pr-1 menu-icon text-nowrap dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </a>
+                    <div class="dropdown-menu p-2" style="max-width:200px;z-index: 9999;" aria-labelledby="showLoc" id="listLoc">
+                        <div class="d-flex">
+                            <span class="d-inline-block text-capitalize" id="my-location"><small>
+                                Menampilkan 3 Outlet Terdekat: 
+                            </small> <br></span>
+                        </div>
+                    </div>
+                    <a  href="{site_url()}" class="pr-1 menu-icon">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                    </a>
+                    <a href="{site_url('login')}" class="pr-1 menu-icon">
+                        <i class="fa-solid fa-user fa-md"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="wrapper">
+            <!-- Sidebar -->
+            <nav class="navbar navbar-inverse fixed-top" id="sidebar-wrapper" role="navigation">
+                <ul class="nav sidebar-nav">
+
+                    <ul class="accordion-menu">
+                        <li class="link">
+                            <div class="dropdown"> 
+                                Shop
+                                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                            </div>
+                            <ul class="submenuItems">
+                                <li><a href="{site_url('home/bakery')}">BAKERY</a></li>
+                                <li><a href="{site_url('home/resto')}">RESTO</a></li>
+                                <li><a href="{site_url('home/kopitiam')}">KOPITIAM</a></li>
+                            </ul>
+                        </li>
+                        <li class="link"><a href="{site_url()}">Seasonal Collection</a></li>
+                        <li class="link">
+                            <div class="dropdown">
+                                Promo
+                                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                            </div>
+                            <ul class="submenuItems">
+                                <li><a href="{site_url()}">Promo BAKERY</a></li>
+                                <li><a href="{site_url()}">Promo RESTO</a></li>
+                                <li><a href="{site_url()}">Promo KOPITIAM</a></li>
+                            </ul>
+                        </li>
+                        <li class="link"><a href="{site_url()}">Hubungi Kami</a></li>
+                        <li class="link">
+                            <div class="dropdown">
+                                Tentang Kami
+                                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                            </div>
+                            <ul class="submenuItems">
+                                <li><a href="{site_url('tentang-kami')}">Folklore Kenes</a></li>
+                                <li><a href="{site_url('tentang-kami')|cat:'#lokasi-terdekat'}">Lokasi Terdekat</a></li>
+                                <li><a href="{site_url('faq')}">FAQ</a></li>
+                                <li><a href="{site_url()}">F&C</a></li>
+                                <li><a href="{site_url()}">Privacy Policy</a></li>
+                            </ul>
+                        </li>
+                        <li class="link"><a href="{site_url('career')}">Karir</a></li> 
+                        </li>
+                    </ul>
+                </ul>
+            </nav>         
+            <!-- Page Content -->
+            <div id="page-content-wrapper">
+                <!-- notification template -->
+                {include file="base/templates/notification.html"}
+                <!-- end of notification template-->
+                <div class="row">
+                    {if !empty($template_content)}
+                        {include file="$template_content"}
+                    {else}
+                        {include file="base/templates/error_template.html"}
+                    {/if}
+                </div>
+                <!-- FOOTER -->
+                <div class="footer">
+                    <div class="bg-kenes halal row">
+                        <div class="halal_icon">
+                            <img src="{$BASEURL}resource/assets-frontend/dist/logo/halal.png">
+                        </div>
+                        <div class="halal_detail">
+                            <p>
+                                Kami tidak menyajikan hidangan yang mengandung alkohol atau makanan yang di larang oleh Majelis Ulama Indonesia
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>         
+        </div>
+        <script src="{$BASEURL}resource/assets-frontend/jquery/jquery-3.7.0.min.js"></script>
+        <script src="{$BASEURL}resource/plugins/bootstrap-5.2.1-dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="{$BASEURL}resource/plugins/bootstrap-5.2.1-dist/js/bootstrap.min.js"></script>
+        <script src="{$BASEURL}resource/assets-frontend/js/kenes_script.js"></script>
+        <script src="{$BASEURL}resource/assets-frontend/js/main.js"></script>
+
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+        <script
+            src="{$BASEURL}resource/assets-frontend/node_modules/@fancyapps/ui/dist/fancybox/fancybox.umd.js"></script> 
+        <script src="{$BASEURL}resource/assets-frontend/jquery/popper.min.js"></script>
+        <!-- include the script -->
+        <script src="{$BASEURL}resource/assets-frontend/jquery/alertify.min.js"></script>
+        <script>
+            
+            $('body').on('click', '#showLoc', function(e) {
+                if($('#listLoc').is(":visible")) {
+                $('#listLoc').hide();
+                } else {
+                $('#listLoc').show();
+                }
+            }); 
+
+        </script>
+    </body>
+</html>

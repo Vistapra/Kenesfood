@@ -1,0 +1,133 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="clearfix">
+                    <form action="{site_url($current_page.nav_url)|cat:'/'|cat:$action|cat:'/'|cat:$detail.season_id}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="season_id" value="{$detail.season_id}" />
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-4 align-self-center center">
+                                        <div class="form-group">
+                                            <img id="preview" src="{$BASEURL}resource/assets-frontend/dist/season/{$detail.season_logo|default:''}" alt="logo" class="img-preview"/><br/>
+                                            <label class="mt-2 pt-2 text-small">Preview</label>
+                                        </div>
+                                    </div>
+                        <div class="col-md-8 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Foto Logo</label>
+                                <input type="file" name="season_logo" class="file-upload-default" onchange="loadPreview(event)" accept="video/mp4, video/mpeg, video/mpg, video/mpe">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="{$detail.season_logo}">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button"> <img id="preview" src="{$BASEURL}resource/assets-frontend/dist/icon/image-upload.png" height="30"; width="30";></img></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 align-self-center center">
+                    <div class="row">
+                        <div class="col-md-4 align-self-center center">
+                            <div class="form-group">
+                                <img id="preview1" src="{$BASEURL}resource/assets-frontend/dist/season/{$detail.season_background|default:''}" alt="logo" class="img-preview"/><br/>
+                                <label class="mt-2 pt-2 text-small">Preview</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Foto Background</label>
+                                <input type="file" name="season_background" class="file-upload-default" onchange="loadPreview2(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="{$detail.season_background}">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button"><img id="preview" src="{$BASEURL}resource/assets-frontend/dist/icon/image-upload.png" height="30"; width="30";></img></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 align-self-center center">
+                    <div class="row">
+                        <div class="col-md-4 align-self-center center">
+                            <div class="form-group">
+                                <img id="preview3" src="{$BASEURL}resource/assets-frontend/dist/season/{$detail.season_banner|default:''}" alt="logo" class="img-preview"/><br/>
+                                <label class="mt-2 pt-2 text-small">Preview</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Foto Banner</label>
+                                <input type="file" name="season_banner" class="file-upload-default" onchange="loadPreview3(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="{$detail.season_banner}">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button"><img id="preview" src="{$BASEURL}resource/assets-frontend/dist/icon/image-upload.png" height="30"; width="30";></img></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Nama Season</label>
+                          <input type="text" class="form-control" name="season_name" value="{$detail.season_name|default:''}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="nav_id">Status</label>
+                            <select name="season_st" class="form-control select2">
+                                <option value="0" {if $detail.season_st|default:'' == '0'}selected{/if}>Aktif</option>
+                                <option value="1" {if $detail.season_st|default:'' == '1'}selected{/if}>Non-aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="nav_id">Keterangan</label>
+                                <textarea rows="4" name="season_desc" class="form-control">{$detail.season_desc|default:''}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>      
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Update</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    var loadPreview2 = function(event) {
+        var output = document.getElementById('preview1');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    var loadPreview3 = function(event) {
+        var output = document.getElementById('preview3');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>

@@ -1,0 +1,38 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{site_url([$current_page.nav_url, 'add'])}" enctype="multipart/form-data">
+                <input type="hidden" class="form-control" name="site_id" id="site_id" value="{$site.site_id}">
+                <div class="row my-2"> 
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Role ID</label>
+                          <input type="text" readonly class="form-control" value="{$role_id}" name="role_id">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Role Name</label>
+                          <input type="text" class="form-control" name="role_nm">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="nav_id">Role Status</label>
+                            <select id="userType" name="role_st" class="form-control select2">
+                                <option value="0" selected>Aktif</option>
+                                <option value="1">Non-aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

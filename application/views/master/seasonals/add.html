@@ -1,0 +1,129 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{site_url([$current_page.nav_url, 'add'])}" enctype="multipart/form-data">
+                <div class="col-md-12 align-self-center center">
+                    <div class="row">
+                        <div class="col-md-4 align-self-center center">
+                            <div class="form-group">
+                                <img id="preview" src="" alt="logo" class="img-preview"/><br/>
+                                <label class="mt-2 pt-2 text-small">Preview</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Foto Logo</label>
+                                <input type="file" name="season_logo" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="Choose File">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button"><img id="preview" src="{$BASEURL}resource/assets-frontend/dist/icon/image-upload.png" height="30"; width="30";></img></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 align-self-center center">
+                    <div class="row">
+                        <div class="col-md-4 align-self-center center">
+                            <div class="form-group">
+                                <img id="preview1" src="" alt="logo" class="img-preview"/><br/>
+                                <label class="mt-2 pt-2 text-small">Preview</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Foto Background</label>
+                                <input type="file" name="season_background" class="file-upload-default" onchange="loadPreview2(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="Choose File">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button"><img id="preview" src="{$BASEURL}resource/assets-frontend/dist/icon/image-upload.png" height="30"; width="30";></img></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 align-self-center center">
+                    <div class="row">
+                        <div class="col-md-4 align-self-center center">
+                            <div class="form-group">
+                                <img id="preview3" src="" alt="logo" class="img-preview"/><br/>
+                                <label class="mt-2 pt-2 text-small">Preview</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Foto Banner</label>
+                                <input type="file" name="season_banner" class="file-upload-default" onchange="loadPreview3(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="Choose File">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button"><img id="preview" src="{$BASEURL}resource/assets-frontend/dist/icon/image-upload.png" height="30"; width="30";></img></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Nama Season</label>
+                          <input type="text" class="form-control" name="season_name">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="nav_id">Status</label>
+                            <select name="season_st" class="form-control select2">
+                                <option value="0" selected>Aktif</option>
+                                <option value="1">Non-aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="nav_id">Keterangan</label>
+                                <textarea class="form-control" name="season_desc" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>      
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    var loadPreview2 = function(event) {
+        var output = document.getElementById('preview1');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    var loadPreview3 = function(event) {
+        var output = document.getElementById('preview3');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>

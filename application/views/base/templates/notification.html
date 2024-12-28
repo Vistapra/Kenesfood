@@ -1,0 +1,21 @@
+{if isset($notification)}
+    <div class="alert-box">
+        {if ($notification.status == "error")}
+            <script>
+                Swal.fire({
+                    title: "Error!",
+                    text: "{$notification.msg|default:''}",
+                    icon: "error"
+                });
+            </script>
+        {elseif ($notification.status == "success")}
+            <script>
+                Swal.fire({
+                    title: "Success!",
+                    text: "{$notification.msg|default:''}",
+                    icon: "success"
+                });
+            </script>
+        {/if}
+    </div>
+{/if}

@@ -1,0 +1,101 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="clearfix">
+                    <form action="{site_url($current_page.nav_url)}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="site_id" value="{$site.site_id}" />
+                        <div class="row">
+                            <!-- <div class="col-md-6 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-4 align-self-center center">
+                                        <div class="form-group file-preview">
+                                            <img id="preview-icon" src="{$BASEURL}resource/assets-frontend/dist/logo/{$site.site_icon|default:''}" alt="logo" class="img-preview"/><br/>
+                                            <label class="mt-2">Icon Preview</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Website Icon</label>
+                                            <input type="file" name="site_icon" class="file-upload-default" onchange="loadIcon(event)">
+                                            <div class="input-group col-xs-12">
+                                                <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Icon">
+                                                <span class="input-group-append">
+                                                    <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-4 align-self-center center">
+                                        <div class="form-group">
+                                            <img id="preview-logo" src="{$BASEURL}resource/assets-frontend/dist/logo/{$site.site_logo|default:''}" alt="logo" class="img-preview"/><br/>
+                                            <label class="mt-2 pt-2 text-small">Logo Preview</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Website Logo</label>
+                                            <input type="file" name="site_logo" class="file-upload-default" onchange="loadLogo(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                            <div class="input-group col-xs-12">
+                                                <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Logo">
+                                                <span class="input-group-append">
+                                                    <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Website Name</label>
+                                    <input type="text" name="site_title" class="form-control" value="{$site.site_title|default:''}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Website Description</label>
+                                    <textarea rows="2" name="site_desc" class="form-control">{$site.site_desc|default:''}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center my-4"> 
+                            <button type="submit" class="btn btn-gradient-primary mr-2">
+                                <span><i class="fa fa-edit"></i></span>
+                                <span>Update</span>
+                            </button>
+                            <a href="{site_url($current_page.nav_url)}" class="btn btn-gradient-secondary">
+                                <span><i class="fa fa-times"></i></span>
+                                <span>Batal</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // var loadIcon = function(event) {
+    //     var output = document.getElementById('preview-icon');
+    //     output.src = URL.createObjectURL(event.target.files[0]);
+    //     output.onload = function() {
+    //     URL.revokeObjectURL(output.src) // free memory
+    //     }
+    // };
+    var loadLogo = function(event) {
+        var output = document.getElementById('preview-logo');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>

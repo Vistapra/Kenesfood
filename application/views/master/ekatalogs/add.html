@@ -1,0 +1,90 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{site_url([$current_page.nav_url, 'add'])}" enctype="multipart/form-data">
+               
+                <div class="row my-2"> 
+                
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Nama Katalog</label>
+                          <input type="text" class="form-control" name="sub_katalog_name">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Contact Person</label>
+                          <input type="text" class="form-control" name="contact_person">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Nama CP</label>
+                          <input type="text" class="form-control" name="cp_name">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Katalog Brand</label>
+                            <select name="katalog_brand" class="form-control select2">
+                                <option value="bakery" selected>Bakery</option>
+                                <option value="resto">Resto</option>
+                                <option value="kopitiam">Kopitiam</option>
+                            </select>
+                          
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="nav_id">Product</label>
+                            <select name="product_id" class="form-control select2">
+                                {foreach from=$products item=product}
+                                    <option value="{$product.product_id}" {if $detail.product_id|default:'' == {$product.product_id}}selected{/if}>{$product.product_name|default:''}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="nav_id">Status Katalog</label>
+                            <select name="sub_katalog_st" class="form-control select2">
+                                <option value="0" selected>Aktif</option>
+                                <option value="1">Non-aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>      
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    var loadPreview2 = function(event) {
+        var output = document.getElementById('preview1');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    var loadPreview3 = function(event) {
+        var output = document.getElementById('preview3');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>

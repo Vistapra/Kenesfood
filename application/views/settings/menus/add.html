@@ -1,0 +1,80 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form action="{site_url($current_page.nav_url)|cat:'/'|cat:$action}" method="post">
+                <input type="hidden" id="url" value="{site_url($current_page.nav_url)|cat:'/get_nav_id'}" >
+                <div class="row my-2"> 
+                    <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="nav_id">ID Menu *</label>
+                          <input type="text" class="form-control" placeholder="ID Menu" name="nav_id" id="nav_id" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Parent Menu *</label>
+                            <select class="form-control select2" name="parent_id" required id="parent_id">
+                                <option value="0">----</option>
+                                {foreach from=$parents key=key item=parent}
+                                    <option value="{$parent.nav_id}">{$parent.nav_title}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Nama Menu *</label>
+                            <input type="text" class="form-control" placeholder="Nama Menu" name="nav_title" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Icon Menu *</label>
+                            <input type="text" class="form-control" placeholder="Icon Menu" name="nav_icon" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>URL *</label>
+                            <input type="text" class="form-control" placeholder="URL" name="nav_url" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Urutan Menu *</label>
+                            <input type="text" class="form-control" placeholder="Urutan Menu" name="nav_no" id="nav_no" required >
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Status *</label>
+                            <select class="form-control select2" name="nav_st" required>
+                                <option value="">Pilih Salah Satu</option>
+                                <option value="0" selected>Aktif</option>
+                                <option value="1">Non-Aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Display *</label>
+                            <select class="form-control select2" name="nav_display" required>
+                                <option value="">Pilih Salah Satu</option>
+                                <option value="0" selected>Tampil</option>
+                                <option value="1">Sembunyi</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

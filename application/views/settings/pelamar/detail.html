@@ -1,0 +1,52 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2">
+                <div class="col-md-4">  
+                    <div class="form-group">
+                        <label>Foto</label>
+                        <div class="form-group position-relative product-pict text-center">
+                            <img src="{$BASEURL}resource/assets-frontend/dist/pelamar/foto/{$detail.foto_pelamar}">
+                        </div>
+                    </div>
+                </div>     
+                <div class="col-md-8">  
+                    <div class="row my-2">
+                        <div class="col-md-6">  
+                            <div class="form-group">
+                                <label>Nama Lengkap</label>
+                                <p class="form-label"><small>KTP - {$detail.ktp}</small><br/><b>{$detail.nama_lengkap}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">  
+                            <div class="form-group">
+                                <label>Tempat, Tanggal Lahir</label>
+                                <p class="form-label"><b>{$detail.tempat_lahir}, {$tdtm->get_date_only($detail.tanggal_lahir)}</b></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-6">  
+                            <div class="form-group">
+                                <label>Jenis Kelamin</label>
+                                <p class="form-label"><b>{$detail.jenis_kelamin}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">  
+                            <div class="form-group">
+                                <label>Kontak</label>
+                                <p class="form-label">
+                                    <a href="{site_url([$current_page.nav_url, 'whatsapp', {$detail.id_pelamar}])}" class="text-decoration-none" target="_blank"><i class="fa-solid fa-phone"></i> <b>{$detail.phone}</b></a><br/>
+                                    <a href = "mailto:{$detail.email}" class="text-decoration-none" target="_blank"><i class="fa-solid fa-at"></i> <b>{$detail.email}</b></a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+            </div>    
+            <div class="text-center my-4"> 
+                <a class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Download" href="{site_url([$current_page.nav_url, 'download', {$detail.id_pelamar}])}" target="_blank"><i class="fa-solid fa-download"></i> Download CV</a>
+            </div>
+        </div>
+    </div>
+</div>

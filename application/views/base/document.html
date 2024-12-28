@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8" />
+        <title>
+            {$page.nav_title|default:'Selamat Datang'} - {$site.site_title|default:'Kenes Food'}
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <!-- App favicon -->
+        <link rel="icon" href="{$BASEURL}resource/assets-frontend/dist/logo/{$site.site_icon|default:'icon.png'}" type="image/png">
+        <!-- Font Awesome Icons -->
+        <link rel="stylesheet" type="text/css" href="{$BASEURL}resource/plugins/fontawesome-free-6.4.0-web/css/all.min.css" />
+        <!-- Vendors -->
+        <link rel="stylesheet" type="text/css" href="{$BASEURL}resource/plugins/bootstrap-5.2.1-dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="{$BASEURL}resource/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" />
+        <link rel="stylesheet" type="text/css" href="{$BASEURL}resource/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" />
+        <link rel="stylesheet" type="text/css" href="{$BASEURL}resource/plugins/select2-4.1.0-rc.0/dist/css/select2.min.css" />
+        <link rel="stylesheet" type="text/css" href="{$BASEURL}resource/plugins/sweetalert2@9.17.2/sweetalert2.min.css" />
+        <link rel="stylesheet" type="text/css" href="{$BASEURL}resource/assets/vendors/mdi/css/materialdesignicons.min.css" />
+        <link rel="stylesheet" type="text/css" href="{$BASEURL}resource/assets/vendors/css/vendor.bundle.base.css" />
+        <link rel="stylesheet" type="text/css" href="{$BASEURL}resource/assets/css/style.css" />
+        <!-- Tempus Dominus Styles -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+        <!-- App css -->
+        <link rel="stylesheet" type="text/css" href="{$BASEURL}resource/assets/default/css/main.css" />
+        <!-- LOAD JQUERY -->
+        <script src="{$BASEURL}resource/assets/default/js/jquery-3.7.1.min.js"></script>
+        <script src="{$BASEURL}resource/plugins/sweetalert2@9.17.2/sweetalert2.min.js"></script>
+        <script src="{$BASEURL}resource/assets/default/js/moment.min.js"></script>
+    </head>
+    <body>
+        <div class="container-scroller">
+          {include file="base/private_template/navbar.html"}
+          <!-- partial -->
+          <div class="container-fluid page-body-wrapper">
+              {include file="base/private_template/sidebar.html"}
+            <!-- partial -->
+            <div class="main-panel">
+              <div class="content-wrapper">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="{$current_page.nav_icon} text-sm"></i>
+                    </span> {$title|default:$current_page.nav_title}
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      {if isset($parent_menu.nav_title) && $parent_menu.nav_title != $current_page.nav_title}
+                        <li class="breadcrumb-item"><a class="opacity-5 text-dark" href="{site_url($current_page.nav_url)}">{$parent_menu.nav_title}</a></li>
+                      {/if}
+                      {if isset($action)}
+                        <li class="breadcrumb-item"><a class="opacity-5 text-dark" href="{site_url($current_page.nav_url)}">{$current_page.nav_title}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{$title|default:(ucfirst($action)|cat:' '|cat:$current_page.nav_title)}</li>
+                      {else}
+                        <li class="breadcrumb-item active" aria-current="page">{$title|default:$current_page.nav_title}</li>
+                      {/if}
+                    </ul>
+                  </nav>
+                </div>
+                <!-- notification template -->
+                {include file="base/templates/notification.html"}
+                <!-- end of notification template-->
+                {if !empty($template_content)}
+                    {$file = 'application/views/'|cat:$template_content}
+                    {if !file_exists($file)}{$file}{/if}
+                    {include file="$template_content"}
+                {else}
+                    {include file="base/templates/error_template.html"}
+                {/if}
+              </div>
+              <footer class="footer">
+                <div class="container-fluid d-flex justify-content-between">
+                  <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © <a href="{site_url()}" target="_blank">{$settings.title|default:'KenesFood'} </a> 
+                    <script>
+                      document.write(new Date().getFullYear());
+                    </script>
+                  </span>
+                </div>
+              </footer>
+            </div>
+            <!-- main-panel ends -->
+          </div>
+          <!-- page-body-wrapper ends -->
+        </div>
+        <!-- END wrapper -->
+        <!-- Vendors -->        
+        <script src="{$BASEURL}resource/plugins/fontawesome-free-6.4.0-web/js/all.min.js"></script>
+        <script src="{$BASEURL}resource/plugins/bootstrap-5.2.1-dist/js/bootstrap.min.js"></script>
+        <script src="{$BASEURL}resource/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+        <script src="{$BASEURL}resource/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+        <script src="{$BASEURL}resource/plugins/select2-4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <!-- Popperjs -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+        <!-- Tempus Dominus JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+        <!-- APP JS -->
+        <script src="{$BASEURL}resource/assets/default/js/main.js"></script>
+        <!-- TEMPLATES -->
+        <script src="{$BASEURL}resource/assets/vendors/js/vendor.bundle.base.js"></script>
+        <script src="{$BASEURL}resource/assets/js/off-canvas.js"></script>
+        <script src="{$BASEURL}resource/assets/js/hoverable-collapse.js"></script>
+        <script src="{$BASEURL}resource/assets/vendors/chart.js/Chart.min.js"></script>
+        <script src="{$BASEURL}resource/assets/js/jquery.cookie.js" type="text/javascript"></script>
+        <!-- SUMERNOTE -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+        <script>
+            $('#summernote').summernote({
+                placeholder: 'Deskripsi',
+                tabsize: 2,
+                height: 100
+            });
+        </script> -->
+        <!--  CKEDITOR  -->
+        <script src="{$BASEURL}resource/plugins/ckeditor5-build-classic/ckeditor.js" type="text/javascript"></script>
+        <script>
+			if($('#456').length)
+			{
+				ClassicEditor
+				.create( document.querySelector('#editor') )
+				.catch( error => {
+					console.error( error );
+				});
+			}
+        </script>      
+        <!-- INIT -->
+        <script src="{$BASEURL}resource/assets/js/misc.js"></script>
+        <script src="{$BASEURL}resource/assets/js/todolist.js"></script>
+        <script src="{$BASEURL}resource/assets/js/dashboard.js"></script>
+        <script src="{$BASEURL}resource/assets/js/file-upload.js"></script>
+    </body>
+
+</html>

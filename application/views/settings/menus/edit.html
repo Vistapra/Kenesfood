@@ -1,0 +1,80 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form action="{site_url($current_page.nav_url)|cat:'/'|cat:$action|cat:'/'|cat:$menu.nav_id}" method="post">
+                <input type="hidden" id="url" value="{site_url($current_page.nav_url)|cat:'/get_nav_id'}" >
+                <div class="row my-2"> 
+                    <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="nav_id">ID Menu *</label>
+                          <input type="text" class="form-control" placeholder="ID Menu" name="nav_id" id="nav_id" required value="{$menu.nav_id}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Parent Menu *</label>
+                            <select class="form-control select2" name="parent_id" required id="parent_id">
+                                <option value="0">----</option>
+                                {foreach from=$parents key=key item=parent}
+                                    <option value="{$parent.nav_id}" {if $menu.parent_id == $parent.nav_id}selected{/if}>{$parent.nav_title}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Nama Menu *</label>
+                            <input type="text" class="form-control" placeholder="Nama Menu" name="nav_title" required value="{$menu.nav_title}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Icon Menu *</label>
+                            <input type="text" class="form-control" placeholder="Icon Menu" name="nav_icon" required value="{$menu.nav_icon}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>URL *</label>
+                            <input type="text" class="form-control" placeholder="URL" name="nav_url" required value="{$menu.nav_url}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Urutan Menu *</label>
+                            <input type="text" class="form-control" placeholder="Urutan Menu" name="nav_no" id="nav_no" required value="{$menu.nav_no}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Status *</label>
+                            <select class="form-control select2" name="nav_st" required>
+                                <option value="" {if $menu.nav_st == ""}selected{/if}>Pilih Salah Satu</option>
+                                <option value="0" {if $menu.nav_st == "0"}selected{/if}>Aktif</option>
+                                <option value="1" {if $menu.nav_st == "1"}selected{/if}>Non-Aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Display *</label>
+                            <select class="form-control select2" name="nav_display" required>
+                                <option value="" {if $menu.nav_display == ""}selected{/if}>Pilih Salah Satu</option>
+                                <option value="0" {if $menu.nav_display == "0"}selected{/if}>Tampil</option>
+                                <option value="1" {if $menu.nav_display == "1"}selected{/if}>Sembunyi</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fas fa-pencil-alt"></i> Ubah</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,157 @@
+<div class="col-lg-5 mx-auto">
+	<div class="auth-form-light text-left p-5 shadow">
+		<div class="login-header-logo">
+			<img src="{$BASEURL}resource\assets\default\images\{$site.site_logo|default:''}" alt="logo">
+		</div>
+		<div class="pb-3 pt-2 login-header-text">
+			<h5 class="text-center">
+				Log in to your account
+			</h5>
+			<p class="text-center small">
+				Enter your username & password
+			</p>
+		</div>
+		<form class="row" action="{site_url('login_process')}" method="post">
+			<div class="form-group">
+				<input type="text" name="username" class="form-control form-control-lg border-left-0 rounded-pill" id="username" required placeholder="Username">
+			</div>
+			<div class="form-group">
+				<input type="password" name="password" class="form-control form-control-lg border-left-0 rounded-pill" id="password" required  placeholder="Password">   
+			</div>
+            <div class="d-flex flex-row justify-content-center">
+                <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
+                <input type="hidden" name="action" value="validate_captcha">
+            </div>
+			<div class="my-3 text-center">
+				<button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn rounded-pill" type="submit">Log In <i class="fas fa-sign-in-alt"></i></button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="https://www.google.com/recaptcha/api.js?render=6LekzUopAAAAAMRYdNEJm9bEVNyyRDV_AWbxvPdW"></script>
+<script>
+    grecaptcha.ready(function() {
+    // do request for recaptcha token
+    // response is promise with passed token
+        grecaptcha.execute('6LekzUopAAAAAMRYdNEJm9bEVNyyRDV_AWbxvPdW', { action:'validate_captcha' })
+                  .then(function(token) {
+            // add token value to form
+            document.getElementById('g-recaptcha-response').value = token;
+        });
+    });
+</script>
+
+<!-- <main>
+    <div class="container login-container mb-5" style="margin-top: 150px;">
+        <div class="row">
+
+            <div class="col-md-6 text-center align-self-center">
+                <img src="{$BASEURL}/resource/assets-frontend/dist/logo/LOGO KENES PNG.png" alt="Logo"
+                    style="max-width: 300px;" class="">
+            </div>
+            <div class="col-md-6">
+                <h1 class="fw-bold text-center" style="margin-bottom: -35px; color:  #662A0C;">Login</h1>
+                <div class="card" style="margin-top: 50px; margin-right: 10px; margin-left: 10px;">
+
+                    <div class="card-body">
+
+                        <form action="{site_url('/process-login')}" method="post">
+                            {include file="base/templates/notification.html"}
+
+                            <div class="form-group">
+                                <label for="username">Email or Phone</label>
+                                <input type="text" class="form-control" id="username" name="username"
+                                    aria-describedby="emailHelp" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+
+                            
+
+
+                            
+                            <div class="d-grid gap-2 col-12 justify-content-center mt-3">
+                                <button type="submit" class="btn btn-primary"
+                                    style="background-color: #662A0C;">Login</button>
+                            </div>
+                        </form>
+
+                        <div class="d-flex flex-column text-center">
+
+                            <small class="text-nowrap mt-2">Don't Have Account ? <a href="#" id="showRegisterModal"
+                                    class="link-underline link-underline-opacity-0 fw-bold"
+                                    style="color: #662A0C;">Register</a> </small>
+                            <small class="text text-center"><a href="{site_url('/forgot_password')}">Forgot
+                                    Password</a></small>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content p-4">
+                    <div class="modal-header border-0">
+                        <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel">Sign Up</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <script>
+                            document.getElementById('showRegisterModal').addEventListener('click', function (event) {
+                                event.preventDefault();
+                                var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+                                modal.show();
+                            });
+                        </script>
+
+
+                        <form action="{site_url('/register')}" method="post">
+
+                            <div class="mb-3">
+                                <label for="fullName" class="form-label">Name</label>
+                                <input name="fullname" type="text" class="form-control" id="fullName"
+                                    placeholder="Enter Your Name" required="">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email address</label>
+                                <input type="email" name="email" class="form-control" id="email"
+                                    placeholder="Enter Email address" required="">
+                            </div>
+
+                            <div class="mb-5">
+                                <label for="password" class="form-label">Password</label>
+                                <input name="password" type="password" class="form-control" id="password"
+                                    placeholder="Enter Password" required="">
+                                <small class="form-text">By Signup, you agree to our <a href="#!">Terms of Service</a>
+                                    &amp; <a href="#!">Privacy Policy</a></small>
+                            </div>
+
+                            <button type="submit" class="btn" style="background-color: #662A0C; color: #fff;">Sign
+                                Up</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer border-0 justify-content-center">
+                        <small class="text-nowrap mt-2">Already have an account? <a href="{site_url('/login')}"
+                                class="link-underline link-underline-opacity-0"><small class="fw-bold"
+                                    style="color: #662A0C;">Login</small></a> </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end section-cs">
+        <span class="customer-service p-3">
+            <a href="https://wa.me/6287839295999?text=Silahkan Tanyakan Ke Admin Seputar Produk Kenes & Bakery ya."
+                class="" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Whatsapp"><i
+                    class="fa-brands fa-whatsapp fa-lg"></i></a>
+        </span>
+    </div>
+</main> -->

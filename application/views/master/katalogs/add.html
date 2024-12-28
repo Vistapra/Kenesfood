@@ -1,0 +1,55 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{site_url([$current_page.nav_url, 'add'])}" enctype="multipart/form-data">
+                <div class="col-md-12 align-self-center center">
+                    <div class="row">
+                        <div class="col-md-2 align-self-center center">
+                            <div class="form-group">
+                                <img id="preview" src="" alt="icon" class="img-preview"/><br/>
+                                <label class="mt-2 pt-2 text-small">Preview</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Banner Katalog Img</label>
+                                <input type="file" name="foto_katalog" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="Banner Image Katalog">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="nav_id">Status</label>
+                                <select name="katalog_st" class="form-control select2">
+                                    <option value="0" selected>Aktif</option>
+                                    <option value="1">Non-aktif</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) 
+        }
+    };
+</script>

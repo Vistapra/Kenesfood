@@ -1,0 +1,38 @@
+{if !empty($seasonals)}
+<div class="banner">
+    <a href="{site_url('seasonalcollection')}">
+        <img src="{$BASEURL}resource/assets-frontend/dist/season/{$seasonals.season_banner}">
+    </a>
+</div>
+{else}
+<!--   -->
+<!-- {print_r($banners)} -->
+{if !empty($banners)}
+<div id="hero-carousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      {foreach from=$banners key=key item=banner}
+      <button type="button" data-bs-target="#promo-banner" data-bs-slide-to="{$key}" {if $key == 0}class="active" aria-current="true"{/if} aria-label="{$banner.banner_name}"></button>
+  {/foreach}
+    </div>
+    
+    <div class="carousel-inner">
+      {foreach from=$banners key=key item=banner}
+      <div class="carousel-item {if $key == 0} active c-item {/if}">
+        <div class="main-banner">
+          <img src="{$BASEURL}resource/assets-frontend/dist/banner/{$banner.banner_img}" alt="Slide 1">
+        </div>
+      </div>
+      {/foreach}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#hero-carousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#hero-carousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+{/if}
+{/if}

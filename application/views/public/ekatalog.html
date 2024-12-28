@@ -1,0 +1,300 @@
+<!-- <section>
+    <div class="container">
+      <div class="banner rounded-4 p-0"
+        style="background-image: url({$BASEURL}resource/assets-frontend/dist/katalog/HeadBakery.jpg); background-size: cover ; background-repeat: no-repeat; background-position: center;">
+      </div>
+    </div>
+  </section> -->
+  {include file="public/billboard.html"}
+  <!-- <div id="hero-carousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        foreach from=1banners key=key item=banner}
+
+    </div>
+  </div> -->
+
+  <div class="banner">
+    <!-- <img id="catalogue-banner" src="{$BASEURL}resource/assets-frontend/dist/katalog/HeadBakery.jpg" alt="Banner Image"> -->
+    <!-- {if !empty($marketing) && empty($marketing_detail)} 
+    <div class="phone-number" data-upper="Delivery Order:">
+        {foreach from=$marketing key=key item=market}
+      <span>{$market.phone_marketing}</a> www.kenesfood.com || <a href="https://www.facebook.com/kenesbakpiabakeryresto" class="fa-brands fa-facebook-f"></a>
+        <a href="https://www.instagram.com/kenesfood?igsh=bTBpZWd2ZTZpOHQ5" class="fab fa-instagram"></a> kenesfood</span>
+        {/foreach}
+    </div>
+    {/if} -->
+    {if !empty($marketing_detail)}
+    <div class="phone-number" data-upper="Delivery Order:">
+      <!-- <span>{$marketing_detail.phone_marketing}</a> www.kenesfood.com || <a href="https://www.facebook.com/kenesbakpiabakeryresto" class="fa-brands fa-facebook-f"></a>
+        <a href="https://www.instagram.com/kenesfood?igsh=bTBpZWd2ZTZpOHQ5" class="fab fa-instagram"></a> kenesfood</span> -->
+        <span>{$marketing_detail.nama_marketing} - {$marketing_detail.phone_marketing}</span>
+    </div>
+    {/if}
+  </div>
+  <section class="explore-section section-padding" id="section_2">
+    <div class="container">
+        <div class="row custom-center-element">
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Browse Products</h2>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row custom-center-element">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="bakery-tab" data-bs-toggle="tab" data-bs-target="#bakery-tab-pane" type="button" role="tab" aria-controls="bakery-tab-pane" aria-selected="true">Bakery</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="resto-tab" data-bs-toggle="tab" data-bs-target="#resto-tab-pane" type="button" role="tab" aria-controls="resto-tab-pane" aria-selected="false">Resto</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="kopitiam-tab" data-bs-toggle="tab" data-bs-target="#kopitiam-tab-pane" type="button" role="tab" aria-controls="kopitiam-tab-pane" aria-selected="false">Kopitiam</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+	<!-- Detail Products -->
+	<div class="modal fade" id="detail-product" tabindex="-1" aria-labelledby="detail-product-label" aria-hidden="true">
+		<div class="modal-dialog modal-sm modal-dialog-centered">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="detail-product-label"></h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container">
+					<div class="row">
+						<div class="col-12">
+							<img id="detail-product-image" src="" class="rounded mx-auto d-block" alt="">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-12">
+							<p id="detail-product-description" class="card-text"></p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+    <div class="container text-center pb-lg-1">
+        <div class="row p-4 p-lg-0" style="margin-left:0;">
+            <div class="col-6 col-md-4">
+                <select id="category-select" class="form-select" aria-label="Select category">
+                    <option value="all" selected>Select Category</option>
+                    {foreach from=$catalogueCategories key=key item=cat}
+                    <option value="{$cat.cat_id}">{$cat.cat_name}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid text-center">
+        <div class="row text-center" style="margin-left: 0;">
+            <div class="col-12 pt-2">
+                <!-- Bakery -->
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="bakery-tab-pane" role="tabpanel" aria-labelledby="bakery-tab">
+                        <div class="container">
+                            {if !empty($product_mb)} 
+                            <div class="row text-center align-items-end" style="margin-left: 0;">
+                                {$categoryID = 0}
+                                {foreach from=$product_mb key=key item=prod}
+                                {if $categoryID != $prod.cat_id}
+                                    {$categoryID = {$prod.cat_id}}
+                                    <div class="col-12 pt-2 rounded" style="background-color: #ff9924;">
+                                        <div class="d-flex justify-content-center">
+                                            <h2 style="color: #fff">{$prod.cat_name}</h2>
+                                        </div>
+                                    </div>
+                                {/if}
+                                <div class="col-6 col-sm-4 pt-3">
+                                    <div class="d-flex justify-content-center image-catalogue">
+                                        <img src="{$BASEURL}resource/assets-frontend/dist/product/{$prod.product_pict}" data-product-id="{$prod.product_id}" class="img-fluid custom-block-ek-image e-catalogue-image" alt="Image-{strtoupper($prod.product_name)}" style="max-height:100%;filter: drop-shadow(5px 5px 10px #000000);">
+                                    </div>
+                                    <div class="pt-2 text-center fw-bold custom-catalogue-product-name" style="margin-bottom: 0; padding-bottom: 0; word-wrap: break-word">{strtoupper($prod.product_name)}</div>
+                                    <hr style="border: 0.1rem solid #725535; opacity: 100; margin:0.25em">
+                                    <sup style="padding-top: 100px"><span class="rounded-circle custom-catalogue-dotrp">Rp</span></sup><span class="custom-catalogue-text"> {$prod.price_catalogue} <sup>K</sup></span>
+                                </div>
+                                {/foreach}
+                            </div>
+                            {/if}
+                    </div>
+                </div>
+     <!-- Resto -->
+                    <div class="tab-pane fade" id="resto-tab-pane" role="tabpanel" aria-labelledby="resto-tab">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 col-6 mb-4 mb-lg-0 mt-3">
+                                
+                            </div>
+
+                            </div>
+                      </div>
+
+       
+                    <div class="tab-pane fade" id="kopitiam-tab-pane" role="tabpanel" aria-labelledby="kopitiam-tab">  
+                    <div class="row">
+                        <div class="col-lg-3 col-md-4 col-6 mb-4 mb-lg-0 mt-3">
+                      
+                        </div>
+               
+                    </div>
+                </div>
+
+        </div>
+    </div>
+</div>
+</div>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+
+<script>
+    function enlargeCatalogueImage() {
+        let images = document.getElementsByClassName("e-catalogue-image");
+        for (let image of images) {
+            if (image.parentNode) {
+                image.classList.remove("img-fluid");
+                image.classList.remove("custom-block-ek-image");
+                let parentElement = image.parentNode;
+                parentElement.parentNode.insertBefore(image, parentElement);
+                parentElement.remove();
+            }
+        }
+    }
+
+    function transformCenterElement() {
+        const marginElement = document.getElementsByClassName("custom-center-element");
+        for (let element of marginElement) {
+            element.style.margin = "0";
+        }
+    }
+
+    let media = window.matchMedia("(max-width: 400px)");
+
+    if (media.matches) {
+        enlargeCatalogueImage();
+        transformCenterElement();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+		const products = document.getElementsByClassName("e-catalogue-image");
+		Array.from(products).forEach(product => {
+			product.addEventListener("click", (item) => {
+				const METHOD = "GET";
+				const URL    = "{site_url('apis/product/detail/')}";
+				const ID     = item.currentTarget.dataset.productId;
+				const XHTTP  = new XMLHttpRequest();
+				XHTTP.responseType = "json";
+				XHTTP.open(METHOD, URL+ID, true);
+				XHTTP.onreadystatechange = () => {
+					if (XHTTP.readyState === XMLHttpRequest.DONE)
+					{
+						const responseStatus = XHTTP.status;
+
+						if (responseStatus !== 200)
+						{
+							return false;
+						}
+
+						const { data } = XHTTP.response;
+						console.log(data);
+
+						const detailProductModal = document.getElementById("detail-product");
+						document.getElementById("detail-product-label").innerText = data.detail.product_name;
+						document.getElementById("detail-product-description").innerText = data.detail.product_desc;
+						document.getElementById("detail-product-image").src = "{$BASEURL}resource/assets-frontend/dist/product/"+data.detail.product_pict;
+
+						const detailProduct = new bootstrap.Modal(detailProductModal, { 
+							keyboard: false,
+						}).show(1);
+					}
+				};
+				XHTTP.send();
+			});
+		});
+        let brands        = ['bakery', 'resto', 'kopitiam'];
+        const queryString = window.location.search;
+        let urlParams     = new URLSearchParams(queryString);
+        let brand = "bakery";
+		const categorySelect = document.getElementById('category-select');
+
+        if(urlParams.has("brand")) {
+            brand = urlParams.get("brand");
+        }
+        
+        // Ambil semua tab link
+        const tabs = document.querySelectorAll('.nav-link');
+        // Ambil semua tab pane
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        let tabLinks = {};
+
+        brands.forEach(type => {
+            tabLinks[type+"-tab"] = "{site_url('ekatalog/')}"+"?brand="+type+"&type="+urlParams.get("type");
+        });
+
+        if(urlParams.get("type") == "marketing" && urlParams.get("marketingId")) {
+            Object.keys(tabLinks).forEach(key => {
+                tabLinks[key] += "&marketingId="+urlParams.get("marketingId");
+            });
+        }
+
+		if(urlParams.has("category")) {
+			const categoryId = urlParams.get('category');
+            categorySelect.value = categoryId;
+		}
+
+ 		categorySelect.addEventListener('change', function() {
+            const selectedValue = this.value;
+			const params = new URLSearchParams(window.location.search);
+			if(selectedValue == "all")
+			{
+				if (typeof URLSearchParams !== 'undefined')
+				{
+					params.delete('category');
+					window.location.href = "{site_url('ekatalog/')}?"+params.toString();
+				}
+				else
+				{
+					console.log("Your browser "+navigator.appVersion+" does not support URLSearchParams");
+				}
+			}
+			else
+			{
+				if(params.has("category"))
+				{
+					params.set("category", selectedValue);
+				}
+				else
+				{
+					params.append("category", selectedValue);
+				}
+					window.location.href = "{site_url('ekatalog/')}?"+params.toString();
+			}
+        });
+
+        document.getElementById(brand+"-tab").classList.add("active");
+        document.querySelectorAll('.nav-link').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.id;
+                const newUrl = tabLinks[tabId];
+                if (newUrl) {
+                    window.location.href = newUrl;
+                }
+            });
+        });
+    });
+</script>
+</section>
+

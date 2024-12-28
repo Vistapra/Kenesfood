@@ -1,0 +1,59 @@
+<main>
+    <div class="container history-container mb-5" style="margin-top: 90px;">
+
+        <div class="d-flex flex-column align-items-center">
+            <div class="heading-page p-2 mt-4">
+                <h2 class="text-uppercase fw-medium text-center"><b style="color:#662A0C">Detail History</b></h2>
+            </div>
+
+            <div class="breadcrumb p-2 ">
+                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{site_url('/')}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Account</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                <div class="card-body overflow-scroll">
+
+                    <table id="datatable" class="table table-striped table-responsive">
+                        <thead>
+                            <tr class="light">
+                                <th>No</th>
+                                <th>Product Name</th>
+                                <th>Product Price</th>
+                                <th>Product Qty</th>
+                                <th>Product pict</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {assign var="no" value=1}
+                            {foreach from=$history key=key item=item}
+                            <tr>
+                                <td width="15" align="center">{$no++}</td>
+                                <td width="200">{$item->product_name}</td>
+                                <td width="200">Rp {$item->product_price|number_format}</td>
+                                <td width="200">{$item->product_qty}</td>
+                                <td><a data-fancybox=""
+                                        href="{$BASEURL}/resource/assets-frontend/dist/product/{$item->product_pict}">
+                                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$item->product_pict}"
+                                            alt="product-kenes" class="img-fluid rounded-2 product-kenes shadow"></a>
+                                </td>
+
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</main>

@@ -1,0 +1,137 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="clearfix">
+                    <form action="{site_url($current_page.nav_url)|cat:'/'|cat:$action}" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-4 align-self-center center">
+                                        <div class="form-group">
+                                            <img id="preview" src="{$BASEURL}resource/assets/default/images/uploads/users/{$detail.user_photo|default:'default.jpg'}" alt="foto-produk" class="img-preview"/><br/>
+                                            <label class="mt-2 pt-2 text-small">Preview</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Foto Profil</label>
+                                            <input type="file" name="user_photo" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                            <div class="input-group col-xs-12">
+                                                <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Foto">
+                                                <span class="input-group-append">
+                                                    <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Username *</label>
+                                    <input type="text" name="user_name" id="user_name" class="form-control" required value="{$detail.user_name|default:''}">
+                                    <small><i>Tidak boleh menggunakan spasi</i></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Password *</label>
+                                    <input type="password" name="user_pass" id="user_pass" class="form-control" required value="{$detail.user_pass|default:''}">
+                                    <small><i>&nbsp;</i></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Verifikasi Password *</label>
+                                    <input type="password" name="user_pass_verif" class="form-control" required value="{$detail.user_pass_verif|default:''}">
+                                    <small><i>&nbsp;</i></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Email *</label>
+                                    <input type="text" name="user_email" class="form-control" required value="{$detail.user_email|default:''}">
+                                </div>
+                            </div>
+                            <div class="col-md-8 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Nama Lengkap *</label>
+                                    <input type="text" name="user_alias" class="form-control" required value="{$detail.user_alias|default:''}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Jenis Kelamin</label>
+                                    <select name="gender" class="form-control select2">
+                                        <option value="L" {if $detail.gender|default:'' == 'L'}selected{/if}>Laki-laki</option>
+                                        <option value="P" {if $detail.gender|default:'' == 'P'}selected{/if}>Perempuan</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Tanggal Lahir</label>
+                                    <input type="text" name="birthday" class="form-control datepicker" value="{$detail.birthday|default:''}">
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Nomor Telepon *</label>
+                                    <input type="text" name="phone" class="form-control" required value="{$detail.phone|default:''}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group text-start">
+                                    <label>Alamat</label>
+                                    <textarea rows="2" name="address" class="form-control">{$detail.address|default:''}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group text-start">
+                                    <label>Link Google Maps</label>
+                                    <textarea rows="2" name="maps" class="form-control">{$detail.maps|default:''}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center my-4"> 
+                            <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                            <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                                <i class="fa fa-times"></i> Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    $('body').on('keypress', '#user_name', function(event) {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if(keycode == '32'){
+            Swal.fire({
+                title: "Tidak boleh ada spasi",
+                icon: "error"
+            });
+            return false;
+        }
+    });
+</script>

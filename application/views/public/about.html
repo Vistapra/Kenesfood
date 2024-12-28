@@ -1,0 +1,86 @@
+<link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/kenes_style.css">
+<main>
+    <div class="container career-container mb-5">
+
+        <div class="d-flex flex-column align-items-center">
+            <div class="heading-page p-2 mt-4">
+                <h2 class="text-uppercase fw-medium text-center"><b style="color:#662A0C">Tentang Kami</b></h2>
+            </div>
+            <div class="breadcrumb p-2">
+                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{site_url('/')}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Tentang Kami</li>
+                    </ol>
+                </nav>
+            </div>
+            {include file="base/templates/notification.html"}
+        </div>
+        <div class="row justify-content-center">
+            <h3 class="text-capitalize fw-medium text-center"><b style="color:#662A0C">Folklore Kenes</b></h3>
+            <div class="col-md-12">
+                <p class="lh-sm  fs-6 text-center">Sejak berdiri pada tahun 2017, Kenes terus menemani warga Yogyakarta dengan berbagai produk dan inovasi. Bermula dari berjualan bakpia dan kue, Kenes terus berkembang dengan mendirikan Kenes Bakery, Kenes Travel Spot, dan Kenes Kopi Tiam.
+                    Melalui Kenes Bakery, Kenes menjual berbagai macam olahan aneka ragam roti, pastry, kue ulang tahun, kue pernikahan, cake, jajanan pasar, dan hantaran dengan kualitas premium.
+                    Sesuai dengan arti nama "Kenes" yang diambil dari bahasa Jawa yang berarti centil atau gemesin, Kenes berharap bahwa melalui produk dan pelayanannya Kenes dapat menarik perhatian dan menawan hati pelanggan.</p>
+
+              </div>
+              <h3 class="text-capitalize fw-medium text-center"><b style="color:#662A0C">Visi</b></h3>
+              <div class="col-md-12">
+                <p class="lh-sm  fs-6 text-muted text-center">Kenes menjadi pilihan favorit anak-anak dan keluarga untuk menemani momen-momen istimewa mereka.
+                </p>
+              </div>
+              <h3 class="text-capitalize fw-medium text-center"><b style="color:#662A0C">Misi</b></h3>
+              <div class="col-md-12">
+                <p class="fs-6 text-muted text-center"><b>Konsistensi Rasa:</b> Menyediakan produk dengan rasa yang konsisten dan lezat untuk memastikan kepuasan pelanggan.</p>
+                <p class="fs-6 text-muted text-center"><b>Pelayanan Unggul:</b> Memberikan pelayanan terbaik yang ramah dan profesional kepada setiap pelanggan.</p>
+                <p class="fs-6 text-muted text-center"><b>Kualitas Terbaik:</b> Menggunakan bahan-bahan berkualitas tinggi dan proses produksi yang higienis untuk menjamin kualitas produk.</p>
+                <p class="fs-6 text-muted text-center"><b>Inovasi Produk:</b> Terus berinovasi dan memperluas varian produk untuk memenuhi selera dan kebutuhan pelanggan.</p>
+                <p class="fs-6 text-muted text-center"><b>Pengalaman Istimewa:</b> Menciptakan pengalaman berbelanja yang menyenangkan dan berkesan bagi pelanggan di setiap outlet.</p>
+               
+              </div>
+
+    </div>
+        <div class="container-map">
+
+
+                <div class="col-lg-6 col-12 mb-4 mb-lg-0">
+                    <div class="custom-block custom-block-full">
+                        <div class="custom-block-image-wrap">
+                            <a href="https://www.google.com/maps/search/kenes+bakery/@-7.8011213,110.2850103,12z/data=!3m1!4b1?entry=ttu"><img src="{$BASEURL}resource/assets-frontend/dist/logo/kenes-map.png" class="custom-block-image" alt="">
+                            </a>
+                        </div>
+
+                        <div class="custom-block-info">
+                            <h5 class="mb-2">
+                                <a href="https://www.google.com/maps/search/kenes+bakery/@-7.8011213,110.2850103,12z/data=!3m1!4b1?entry=ttu">
+                                    Outlet Kenes
+                                </a>
+                            </h5>
+
+                            <p class="mb-0">Kami berada di jantung kota yogyakarta, anda dapat dengan mudah menemukan kami, dengan berbagai fasilitas, parkir yang luas, akses yang mudah dari jalan raya utama.</p>
+                        </div>
+
+                
+                    </div>
+                </div>
+
+     
+        </div>
+
+</main>
+<!--         
+                <div id="list-location">
+                           <ul data-role="listview">
+                            {foreach from=$outlets key=key item=outlet}
+            <div class="lokasi-hub">
+                        <h4>{$outlet.outlet_name}</h4>
+                        <a style="text-decoration: none;" href={$outlet.maps}><p>{$outlet.outlet_address}</p></a>
+                        <a style="text-decoration: none;" href="https://api.whatsapp.com/send?phone={$outlet.outlet_phone}"><p>{substr_replace($outlet.outlet_phone,0,0,2)}</p></a>
+                    </div>
+                    {/foreach}
+
+
+                           </ul>
+                      </div> -->
+           
+

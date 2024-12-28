@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kenesfood_app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    depends_on:
+      - db
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=kenesfood
+      - MYSQL_PASSWORD=kenesfood
+      - MYSQL_DATABASE=kenesfood
+    networks:
+      - kenesfood-network
+
+  db:
+    image: mariadb:10.4
+    container_name: kenesfood_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: kenesfood
+      MYSQL_USER: kenesfood
+      MYSQL_PASSWORD: kenesfood
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_CHARSET: latin1
+      MYSQL_COLLATION: latin1_swedish_ci
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
+      - ./docker/mariadb/init:/docker-entrypoint-initdb.d
+    networks:
+      - kenesfood-network
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    container_name: kenesfood_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - db
+    networks:
+      - kenesfood-network
+
+networks:
+  kenesfood-network:
+    driver: bridge
+
+volumes:
+  dbdata:

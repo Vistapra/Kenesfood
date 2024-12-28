@@ -1,0 +1,70 @@
+<div class="contact-page section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="section-heading">
+          <div class="breadcrumb p-2">
+            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{site_url('/')}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Hubungi Kami</li>
+                </ol>
+            </nav>
+        </div>
+          <h2>Get In Touch With Us</h2>
+        </div>
+        <p> Jika anda memiliki kritik dan saran terhadap kami, silahkan hubungi kami pada nomer atau email yang tertera dibawah ini.</p>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="item phone">
+              <img src="assets/images/phone-icon.png" alt="" style="max-width: 52px;">
+              <h6>+62 878-1112-1888<br><span>Phone Number</span></h6>
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <div class="item email">
+              <img src="assets/images/email-icon.png" alt="" style="max-width: 52px;">
+              
+              <h6>kenesfood@gmail.com<br><span>Business Email</span></h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <form id="contact-form" action="" method="post">
+          <div class="row">
+            <div class="col-lg-12">
+              <fieldset>
+                <label for="name">Full Name</label>
+                <input type="name" name="name" id="name" placeholder="Your Name..." autocomplete="on" required>
+              </fieldset>
+            </div>
+            <div class="col-lg-12">
+              <fieldset>
+                <label for="email">Email Address</label>
+                <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Your E-mail..." required="">
+              </fieldset>
+            </div>
+            <div class="col-lg-12">
+              <fieldset>
+                <label for="subject">Subject</label>
+                <input type="subject" name="subject" id="subject" placeholder="Subject..." autocomplete="on" >
+              </fieldset>
+            </div>
+            <div class="col-lg-12">
+              <fieldset>
+                <label for="message">Message</label>
+                <textarea name="message" id="message" placeholder="Your Message"></textarea>
+              </fieldset>
+            </div>
+            <div class="col-lg-12">
+              <fieldset>
+                <button type="submit" id="form-submit" class="orange-button">Send Message</button>
+              </fieldset>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

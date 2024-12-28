@@ -1,0 +1,104 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr class="text-center">
+                            <th>No</th>
+                            <th>Kode</th>
+                            <th>Nama Produk</th>
+                            <th>Harga</th>
+                            <th>Kategori</th>
+                            <th>Sub Kategori</th>
+                            <th>Brand</th>
+                            <th>Status Produk</th>
+                            <th>Urutan</th>
+                            <th>Status</th>
+                        
+                            <th width="20%">
+                                
+                                {if $allowed.create}
+                                    <div class="row">
+										<div class="col-6">
+											<a href="{site_url([$current_page.nav_url, 'add'])}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tambah" data-container="body" data-animation="true">
+												<button type="button" class="btn btn-primary">
+													<i class="fas fa-plus"></i> Tambah
+												</button>
+											</a>
+										</div>
+										<div class="col-6">
+											<a href="{site_url([$current_page.nav_url, 'sync'])}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Sync" data-container="body" data-animation="true">
+												<button type="button" class="btn btn-primary">
+													<i class="fas fa-sync"></i> Sync
+												</button>
+											</a>
+										</div>
+                                    </div>
+									<!-- <div class="row">
+                                        
+                                    </div> -->
+                                {/if}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach from=$datas key=key item=product}
+                        <tr class="text-center">
+                            <td>{$no++}</td>
+                            <td>{$product.product_code}</td>
+                            <td>{$product.product_name}</td>
+                            <td>{number_format($product.product_price)}</td>
+                            {if empty($product.parent_name_cat)}
+                            <td>{$product.cat_name}</td>
+                            <td>-</td>
+                            {else}
+                            <td>{$product.parent_name_cat}</td>
+                            <td>{$product.cat_name}</td>
+                            {/if}
+                            <td>{strtoupper($product.product_brand)}</td>
+                            <td>{if $product.product_promote == 'none'}
+                                {'-'}
+                                {else}
+                                {strtoupper($product.product_promote)}
+                                {/if}
+                            </td>
+                            <td>{strtoupper($product.product_no)}</td>
+                            <td>
+                                {if $product.product_st == 0}
+                                    <span class="badge badge-pill badge-lg badge-success">Aktif</span>
+                                {else}
+                                    <span class="badge badge-pill badge-lg badge-danger">Non-aktif</span>
+                                {/if}
+                            </td>
+                          
+                            <td class="text-center">
+                                <a class="btn btn-sm btn-outline-info btn-rounded" data-toggle="tooltip" data-placement="top" title="" data-original-title="View" href="{site_url([$current_page.nav_url, 'detail', {$product.product_id}])}"><i class="fa-regular fa-file"></i></a>
+                                {if $allowed.edit}
+                                    <a class="btn btn-sm btn-outline-secondary btn-rounded" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" href="{site_url([$current_page.nav_url, 'edit', {$product.product_id}])}"><i class="fa-regular fa-pen-to-square"></i></a>
+                                {/if}
+                                {if $allowed.delete}
+                                    {$url = site_url([$current_page.nav_url, 'delete', $product.product_id])}
+                                    <a class="btn btn-sm btn-outline-danger btn-rounded" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" href="{$url}" onclick="confirm_delete('{$url}', event)"><i class="fa-solid fa-trash"></i></a>
+                                {/if}
+                            </td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group row mt-3 mb-2 pe-0">
+                <div class="col-md-3 pt-3">
+                    <div class="pagination-info">Menampilkan {$pagination.start|default:0} - {$pagination.end|default:0} dari {$pagination.total|default:0} data</div>
+                </div>
+                <div class="col-md-10 pe-0 mt-2 pe-2">
+                    <nav>
+                        <ul class="pagination justify-content-end">
+                            <li class="page-item">{$pagination.data|default:''}</li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

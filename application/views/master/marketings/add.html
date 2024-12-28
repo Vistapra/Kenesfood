@@ -1,0 +1,57 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="clearfix">
+                    <form action="{site_url($current_page.nav_url)|cat:'/'|cat:$action}" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-6 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Nama</label>
+                                            <input type="text" name="nama_marketing" class="form-control" value="{$marketing.nama_marketing|default:''}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-6 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Nomor Telepon</label>
+                                            <input type="text" name="phone_marketing" class="form-control" value="{$marketing.phone_marketing|default:''}" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-6 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Status</label>
+                                            <select name="marketing_st" class="form-control select2">
+                                                <option value="0" {if $marketing.marketing_st|default:'' == '0'}selected{/if}>Aktif</option>
+                                                <option value="1" {if $marketing.marketing_st|default:'' == '1'}selected{/if}>Non-aktif</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center my-4"> 
+                            <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                            <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                                <i class="fa fa-times"></i> Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

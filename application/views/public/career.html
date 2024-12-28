@@ -1,0 +1,177 @@
+<main>
+    <div class="container career-container mb-5">
+
+        <div class="d-flex flex-column align-items-center">
+            <div class="heading-page p-2 mt-4">
+                <h2 class="text-uppercase fw-medium text-center"><b style="color:#662A0C">Karir</b></h2>
+            </div>
+            <div class="breadcrumb p-2">
+                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{site_url('/')}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Karir</li>
+                    </ol>
+                </nav>
+            </div>
+            {include file="base/templates/notification.html"}
+        </div>
+        <div class="row justify-content-center">
+            <h3 class="text-capitalize fw-medium text-center"><b style="color:#662A0C">Lets work with Kenes !</b></h3>
+            <div class="col-md-6">
+                <p class="lh-sm  fs-5 text-muted text-center">Kami senang bekerja sama dengan Anda, dan mendapatkan
+                    pengalaman baru saat bekerja bersama kami.
+                    Dengan kehadiran Anda, kami pasti akan menjadi lebih baik.
+                    Hubungi kami melalui email untuk informasi lebih lanjut tentang karir.</p>
+
+                <nav>
+                    <div class="nav nav-tabs justify-content-center" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab"
+                            data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home"
+                            aria-selected="true">Loker</button>
+                        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+                            type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Lamar</button>
+                    </div>
+                </nav>
+                <div class="tab-content p-3" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab"
+                        tabindex="0">
+                        <div class="accordion accordion-flush border rounded mb-2" id="accordionFlushExample">
+                            {foreach from=$job key=key item=jobs}
+                            {assign var="jobDate" value=$jobs.job_date|date_format:"%Y-%m-%d"}
+                            {assign var="today" value="now"|date_format:"%Y-%m-%d"}
+
+                            {if $jobDate > $today}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#flush-{$jobs.job_id}" aria-expanded="false"
+                                        aria-controls="flush-{$jobs.job_id}">
+                                        <b>{$jobs.job_name}</b>
+                                    </button>
+                                </h2>
+                                <div id="flush-{$jobs.job_id}" class="accordion-collapse collapse"
+                                    data-bs-parent="#accordionFlushExample">
+                                    <div class="accordion-body">
+                                        <div class="background-career-logo">
+                                            <div class="background-career-blur"></div>
+                                            <ul class="styled-list career-description text-wrap"
+                                                style="width: 50rem;">
+                                                <p>{$jobs.job_description}</p>
+                                            </ul>
+                                        </div>
+
+                                        <div class="card mx-auto d-block" style="width: 18rem;">
+                                            <a href="{$BASEURL}/resource/assets-frontend/dist/loker/{$jobs.job_img}"
+                                                target="_blank">
+                                                <img src="{$BASEURL}/resource/assets-frontend/dist/loker/{$jobs.job_img}"
+                                                    alt="" class="card-img-top">
+                                            </a>
+                                        </div>
+                                        <div style="position: relative; padding: 20px;">
+                                            <h6 style="position: absolute; bottom: 5px; right: 10px;">Valid until:
+                                                {$jobDate|date_format:"%d-%m-%Y"}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {/if}
+                            {/foreach}
+                        </div>
+                        <p class="lh-sm fs-5 text-muted text-center">Kirimkan CV/resume atau hubungi <b
+                                class="text-decoration-underline"><a href="mailto:hrd.kenes@gmail.com" style="text-transform:lowercase;">hrd.kenes@gmail.com</a></b></p>
+                    </div>
+                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab"
+                        tabindex="0">
+                        <!-- <div class="foto-profile text-center p-2">
+                            <label for="profile-picture">
+                                <img id="profile-image"
+                                    src="{$BASEURL}/resource/assets-frontend/dist/logo/profil register.jpeg"
+                                    class="rounded-circle mb-4" max-width="100px" height="100px"
+                                    style="object-fit: cover;" alt="">
+                            </label>
+                        </div> -->
+                        <form action="{site_url('career/pelamar')}" method="post" enctype="multipart/form-data">
+                            <div class="row md-2 text-break">
+                                <!-- <label for="Inputdatadiri" class="col-sm-3 col-form-label">KTP</label>
+                                <div class="col-9 p-2">
+                                    <input type="text" class="form-control" id="datadiri" name="ktp" required>
+                                </div> -->
+                                <label for="inputnama" class="col-sm-3 col-form-label">Nama Lengkap</label>
+                                <div class="col-9">
+                                    <input type="text" class="form-control" id="inputnama" name="nama_lengkap" required>
+                                </div>
+                                <label for="input" class="col-sm-3 col-form-label">Tempat Lahir</label>
+                                <div class="col-9 p-2">
+                                    <input type="text" class="form-control" id="ttl" name="tempat_lahir" required>
+                                </div>
+                                <label for="inputdate" class="col-sm-3 col-form-label">Tanggal Lahir</label>
+                                <div class="col-9 p-2">
+                                    <input type="date" id="tanggal" name="tanggal_lahir" required>
+                                </div>
+                                <label for="input" class="col-sm-3 col-form-label">Jenis Kelamin</label>
+                                <div class="col-9 p-2">
+                                    <select class="form-select" aria-label="Default select example"
+                                        name="jenis_kelamin">
+                                        <option value="Perempuan">Perempuan</option>
+                                        <option value="Laki-Laki">Laki-Laki</option>
+                                    </select>
+                                </div>
+                                <label for="input" class="col-sm-3 col-form-label">Email</label>
+                                <div class="col-9 p-2">
+                                    <input type="email" class="form-control" id="input" name="email" required>
+                                </div>
+                                <label for="input" class="col-sm-3 col-form-label">No. WA</label>
+                                <div class="col-9 p-2">
+                                    <input type="phone" class="form-control" id="input" name="phone" required>
+                                </div>
+
+                                <label for="input" class="col-sm-3 col-form-label">Posisi</label>
+                                <div class="col-9 p-2">
+                                    <select class="form-select" aria-label="Default select example" name="job_id">
+                                        {foreach from=$job_active key=key item=job_aktif}
+                                        <option value="{$job_aktif.job_id}">{$job_aktif.job_name}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+
+                                <label for="foto_pelamar" class="col-sm-3 col-form-label">Foto Pelamar</label>
+                                <div class="col-9 p-2">
+                                    <input type="file" accept="image/jpeg" id="foto_pelamar" name="foto_pelamar"
+                                        required>
+                                    <h6 style="font-size: smaller; text-align: right; color: blue;">*Accept only
+                                        gif|jpg|png|jpeg max
+                                        2 mb</h6>
+                                </div>
+                                <label for="upload_cv" class="col-sm-3 col-form-label">Upload CV</label>
+                                <div class="col-9 p-2">
+                                    <input type="file" accept="application/pdf" id="upload_cv" name="upload_cv"
+                                        required>
+                                    <h6 style="font-size: smaller; text-align: right; color: blue;">*Accept only PDF max
+                                        2 mb</h6>
+                                </div>
+                                <div class="p-2 text-center">
+                                    <button class="btn btn-primary mx-auto" type="submit">Submit</button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="d-flex justify-content-end section-cs">
+            <span class="customer-service p-3">
+                <a href="https://wa.me/6287839295999?text=Silahkan Tanyakan Ke Admin Seputar Produk Kenes & Bakery ya."
+                    class="" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Whatsapp"><i
+                        class="fa-brands fa-whatsapp fa-lg"></i></a>
+            </span>
+        </div> -->
+    <div class="d-flex justify-content-end section-cs">
+        <span class="customer-service p-3">
+            <a href="https://wa.me/6287839295999?text=Silahkan Tanyakan Ke Admin Seputar Produk Kenes & Bakery ya."
+                class="" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Whatsapp"><i
+                    class="fa-brands fa-whatsapp fa-lg"></i></a>
+        </span>
+    </div>
+</main>

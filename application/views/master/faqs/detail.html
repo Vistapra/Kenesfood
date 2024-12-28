@@ -1,0 +1,42 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2">
+                <div class="col-md-3">  
+                    <div class="form-group">
+                        <label>FAQ Icon</label>
+                        <div class="form-group position-relative faq_icon text-center">
+                            <img src="{$BASEURL}resource/assets/public/other/{$faqs.faq_icon}">
+                        </div>
+                    </div>
+                </div>     
+                <div class="col-md-6">  
+                    <div class="row my-2">
+
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Logo</label>
+                                <p class="form-label"><img src="{$BASEURL}resource/assets/public/other/{$faqs.faq_icon}" alt="logo" class="img-preview"/></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Pertanyaan</label>
+                                <p class="form-label"><b>{$faqs.question}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-12">  
+                            <div class="form-group">
+                                <label>Answer</label>
+                                <p class="form-label">{$faqs.answer|default:'-'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>      
+            </div>    
+        </div>
+    </div>
+</div>
+<!-- end -->

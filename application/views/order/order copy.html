@@ -1,0 +1,162 @@
+<!-- Form customer -->
+<section class="section-padding" id="identity-page" hidden>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8 align-self-center center file-input">
+				<div class="form-group text-start">
+					<label>Nama Customer</label>
+					<input type="text" name="name" id="inputCustomerName" class="form-control" autocomplete="name">
+				</div>
+			</div>
+		</div>
+		<div class="row mt-2">
+			<div class="col-md-4 align-self-center center file-input">
+				<div class="form-group text-start">
+					<button type="button" class="btn btn-primary" id="submitName">Enter</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- End of Form customer -->
+
+<section class="explore-section section-padding custom-hidden" id="order-page" hidden>
+
+	<!-- Detail Products -->
+	<div class="modal fade" id="detail-product" tabindex="-1" aria-labelledby="detail-product-label" aria-hidden="true">
+		<div class="modal-dialog modal-sm modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="detail-product-label"></h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="container">
+						<div id="product-id" hidden></div>
+						<div class="row">
+							<div class="col-12">
+								<img id="detail-product-image" src="" class="rounded mx-auto d-block" alt="">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<p id="detail-product-description" class="card-text"></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-info" id="add-to-cart">Add To Cart</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End of Detail Product -->
+	
+	<!-- Cart -->
+	<div class="modal fade" id="cart-modal" tabindex="-1" aria-labelledby="cart-label" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="cart-label"></h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="container text-center" id="container-cart">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-info" id="order">Order Now!</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End of Cart -->
+
+    <div class="container">
+        <div class="row custom-center-element">
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Browse Products</h2>
+            </div>
+        </div>
+    </div>
+
+	<!-- Filter select category -->
+    <div class="container text-center pb-lg-1">
+        <div class="row p-4 p-lg-0" style="margin-left:0;">
+            <div class="col-6 col-md-4">
+                <select id="category-select" class="form-select" aria-label="Select category">
+                    <option value="all" selected>Select Category</option>
+                    {foreach from=$catalogueCategories key=key item=cat}
+                    <option value="{$cat.cat_id}">{$cat.cat_name}</option>
+                    {/foreach}
+                </select>
+            </div>
+			<div class="col-6 col-md-4">
+				<button class="btn btn-primary position-relative" id="show-cart">
+					<i class="fa-solid fa-cart-shopping"></i>
+					<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success" id="count-cart">0</span>
+				</button>
+				<button class="btn position-relative" id="call-a-waiter">
+					<!-- <img src="{$BASEURL}resource/assets-frontend/dist/icon/caw.jpeg" />-->
+				</button>
+			</div>
+			<div class="col-12 col-md-4 mt-2">
+				<h5>Customer: <span id="customer-name"></span></h5>
+			</div>
+        </div>
+    </div>
+	<!-- End of select category -->
+
+	<!-- Browse Product -->
+    <div class="container-fluid text-center">
+        <div class="row text-center" style="margin-left: 0;">
+            <div class="col-12 pt-2">
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="bakery-tab-pane" role="tabpanel" aria-labelledby="bakery-tab">
+                        <div class="container">
+							{if !empty($product_mb)}
+							<div class="row text-center align-items-end" style="margin-left: 0;">
+								{$categoryID = 0}
+								{foreach from=$product_mb key=key item=prod}
+								{if $categoryID != $prod.cat_id}
+									{$categoryID = {$prod.cat_id}}
+									<div class="col-12 pt-2 rounded" style="background-color: #ff9924;">
+										<div class="d-flex justify-content-center">
+											<h2 style="color: #fff">{$prod.cat_name}</h2>
+										</div>
+									</div>
+								{/if}
+								<div class="col-6 col-sm-4 pt-3 product-image-btn" data-product-id="{$prod.product_id}">
+									<div class="d-flex justify-content-center image-catalogue">
+										<img src="{$BASEURL}resource/assets-frontend/dist/product/{$prod.product_pict}" data-product-id="{$prod.product_id}" class="img-fluid custom-block-ek-image e-catalogue-image" alt="Image-{strtoupper($prod.product_name)}" style="max-height:100%;filter: drop-shadow(5px 5px 10px #000000);">
+										{if $prod.stock == 0}
+										<img src="{$BASEURL}resource/assets-frontend/dist/katalog/soldout.png" data-product-id="{$prod.product_id}" class="img-fluid custom-block-ek-image" alt="Image-{strtoupper($prod.product_name)}" style="max-height:3em; max-width:4em; filter: drop-shadow(5px 5px 10px #000000); position:absolute;">
+										{/if}
+									</div>
+									<div class="pt-2 text-center fw-bold custom-catalogue-product-name" style="margin-bottom: 0; padding-bottom: 0; word-wrap: break-word">{strtoupper($prod.product_name)}</div>
+									<hr style="border: 0.1rem solid #725535; opacity: 100; margin:0.25em">
+									<sup style="padding-top: 100px"><span class="rounded-circle custom-catalogue-dotrp">Rp</span></sup><span class="custom-catalogue-text"> {$prod.price_catalogue} <sup>K</sup></span>
+								</div>
+								{/foreach}
+							</div>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End of Browse Product -->
+</section>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+
+<!-- Page Script -->
+<script src="{$BASEURL}resource/assets-frontend/js/order.js"></script>
+<!-- End of Page Script -->
+

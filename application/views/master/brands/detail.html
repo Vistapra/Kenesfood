@@ -1,0 +1,56 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2">
+                <div class="col-md-3">  
+                    <div class="form-group">
+                        <label>Video Banner</label>
+                        <div class="form-group position-relative video_banner text-center">
+                            <source id="preview" src="{$BASEURL}resource/assets-frontend/dist/banner/{$brand.brand_banner}" alt="video-brand" class="video-preview"/>
+                        </div>
+                    </div>
+                </div>     
+                <div class="col-md-3">  
+                    <div class="form-group">
+                        <label>Foto Brand</label>
+                        <div class="form-group position-relative product-pict text-center">
+                            <img src="{$BASEURL}resource/assets/public/other/{$brand.brand_img}">
+                        </div>
+                    </div>
+                </div>     
+                <div class="col-md-6">  
+                    <div class="row my-2">
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Nama Brand</label>
+                                <p class="form-label"><b>{$brand.brand_name}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Logo</label>
+                                <p class="form-label"><img src="{$BASEURL}resource/assets/public/other/{$brand.brand_logo}" alt="logo" class="img-preview"/></p>
+                            </div>
+                        </div>
+                        {if !empty($brand.brand_tagline)}
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Tagline</label>
+                                <p class="form-label"><img src="{$BASEURL}resource/assets/public/other/{$brand.brand_tagline}" alt="tagline" class="img-preview"/></p>
+                            </div>
+                        </div>
+                        {/if}
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-12">  
+                            <div class="form-group">
+                                <label>Deskripsi</label>
+                                <p class="form-label">{$brand.brand_desc|default:'-'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>      
+            </div>    
+        </div>
+    </div>
+</div>

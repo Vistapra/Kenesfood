@@ -1,0 +1,297 @@
+<!-- Order Bell -->
+<audio id="orderBell">
+	<source src="{$BASEURL}resource/assets-frontend/audio/orderBell.mpeg" type="audio/mpeg" />
+</audio>
+<!-- End of Order Bell -->
+<!-- Detail Order -->
+<div class="modal fade" id="detailOrder" tabindex="-1" aria-labelledby="detailOrder-label" aria-hidden="true">
+	<div class="modal-dialog modal-md modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="detailOrder-label"></h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container">
+					<table class="table" id="detailProduct">
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-info" id="detailAction">Done</button>
+				<button type="button" class="btn btn-primary" id="releaseData">Release</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End of Detail Order -->
+<!-- Login -->
+<div class="modal fade" id="popupLogin" tabindex="-1" aria-labelledby="popupLogin-label" aria-hidden="true">
+	<div class="modal-dialog modal-md modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="popupLogin-label"></h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container" id="login">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-info" id="detailAction">Done</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Login -->
+<!-- List Table -->
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2">
+                <div class="col-md-12">  
+					<!-- Select Brand -->
+                    <div class="row my-2">
+						<div class="col-6 col-md-4 col-lg-2">
+							<select id="brand" class="form-select" aria-label="Select Brand">
+								<option value="kopitiam">Kopitiam</option>
+								<option value="bakery">Bakery</option>
+								<option value="resto">Resto</option>
+							</select>
+						</div>
+                    </div>
+					<!-- End of Select Brand -->
+					<!-- Tables List -->
+					<div class="row my-2">
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead>
+									<tr class="text-center">
+										<th>No</th>
+										<th>Status</th>
+										<th width="15%"></th>
+									</tr>
+								</thead>
+								<tbody>
+									{for $table=1 to $datas.count_table}
+									<tr id="tableId-{$table}" class="table-record">
+										<td class="text-center">{$table}</td>
+										<td class="text-center">
+											<span id="tableStatus-{$table}" class="badge badge-pill badge-sm badge-info">Kosong</span>
+										</td>
+										<td class="text-center">
+											<button class="btn btn-sm btn-outline-info btn-rounded view-order" data-table-id="{$table}">
+												<i class="fa-regular fa-eye"></i>
+											</button>
+										</td>
+									</tr>
+									{/for}
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!-- End of Tables List -->
+                </div>
+            </div>    
+        </div>
+    </div>
+</div>
+<!-- End of List Table -->
+
+<script>
+	let statusTable = [];
+	let openDetailSign = ["1"];
+
+	let lastFetch = new Date();
+
+	function changeStatusState(id, signal)
+	{
+		const elem = $("#tableStatus-"+id);
+
+		if(signal == 1)
+		{
+			elem.addClass("bg-success");
+			elem.text("Order bayar di kasir");
+		}
+		else if(signal == 0)
+		{
+			elem.removeClass("bg-success");
+			elem.text("Kosong");
+		}
+	}
+
+	function getTableStatus(response, textStatus, jqXHR)
+	{
+		let orderBell = document.getElementById("orderBell");
+		let orderRang = false;
+
+		if(statusTable.length == 0)
+		{
+			statusTable = response.data;
+
+			response.data.forEach((element, index) => {
+				changeStatusState(++index, element);
+			});
+		}
+
+		response.data.forEach((element, index) => {
+			if(statusTable[index] != element)
+			{
+				statusTable[index] = element;
+
+				if(parseInt(element) == 1)
+				{
+					changeStatusState(++index, 1);
+					orderRang = true;
+				}
+				else
+					changeStatusState(++index, 0);
+			}
+			if(element == 1)
+			{
+				orderRang = true;
+			}
+		});
+
+		if(orderRang)
+		{
+			if(!orderBell.loop)
+			{
+				orderBell.play();
+				orderBell.loop = true;
+			}
+		}
+		else
+		{
+			orderBell.loop = false;
+		}
+	}
+
+    document.addEventListener("DOMContentLoaded", function ()
+	{
+		// get current info
+		const url = new URL(window.location.href);
+		const baseUrl = url.protocol +
+			"//" +
+			url.host +
+			url.pathname.split('/').slice(0, 4).join('/');
+		const brand = url.searchParams.get('brand');
+		const outletId = url.pathname.split("/").pop();
+		const outletParams = new URLSearchParams({
+			outletId: outletId,
+			brand: brand
+		});
+		let orderModal = new bootstrap.Modal(
+			"#detailOrder",
+			{ keyboard: false }
+		)
+
+		// Add event listener on button view order
+		$(".view-order").each(function() {
+			$(this).on("click", function() {
+				const tableId = $(this).data("tableId");
+				$("#detailOrder").data("tableId", tableId);
+				if(!openDetailSign.includes(statusTable[tableId - 1]))
+				{
+					return;
+				}
+				$.ajax({
+					type: "GET",
+					url: baseUrl + "/getData?action=getOrder&tableId=" + tableId + "&" + outletParams.toString(),
+					contentType: "application/json",
+					dataType: "json",
+				})
+				.done(function (response, textStatus, jqXHR) {
+					$("#detailProduct").empty();
+
+					// Order bayar di meja
+					$("#detailAction").text("Cetak Struk");
+
+					let detail = `
+						<tr>
+							<th>Item</th>
+							<th>Qty</th>
+						</tr>
+					`;
+
+					$("#detailOrder").data("orderId", response.data.order.id);
+
+					response.data.orderDetails.forEach((item) => {
+						let itemName = item.product_name;
+						if(item.notes)
+						{
+						}
+
+						detail = detail.concat(`
+							<tr>
+								<td>`+item.product_name+`</td>
+								<td>`+item.qty+`</td>
+							</tr>
+						`);
+					});
+
+					$("#detailProduct").append(detail);
+
+					orderModal.show();
+				})
+				.fail(function(xhr, textStatus) {
+					console.error(textStatus);
+				});
+			});
+		});
+
+		$("#releaseData").on("click", function()
+		{
+			let nowDT = new Date();
+			$.ajax({
+				type: "DELETE",
+				url: baseUrl + "/delete/" + $("#detailOrder").data("orderId"),
+			})
+			.done(function (response, textStatus, jqXHR) {
+				orderModal.hide();
+			});
+		});
+
+		// Action Detail
+		$("#detailAction").on("click", function()
+		{
+			let printReceipt = window.open(baseUrl + "/download?action=printReceipt&tableId=" + $("#detailOrder").data("tableId") + "&" + outletParams.toString(), 'popup', 'width=500,height=500');
+			let style = printReceipt.document.createElement('style');
+			style.innerHTML = `
+			@media print {
+				@page {
+				size: 75mm 60mm;
+				margin: 0;
+				}
+
+				body {
+				width: 75mm;
+				height: 60mm;
+				margin: 0;
+				padding: 0;
+				font-size: 12pt;
+				}
+			}
+			`;
+			printReceipt.document.head.appendChild(style);
+			printReceipt.print();
+		});
+
+		// Fetch status tables
+		window.setInterval(function()
+		{
+			$.ajax({
+				type: "GET",
+				url: baseUrl + "/getData?action=getStatusTable&" + outletParams.toString(),
+				contentType: "application/json",
+				dataType: "json",
+			})
+			.done(getTableStatus)
+			.fail((xhr, textStatus) => {
+				console.error(textStatus);
+			});
+		}, 4000);
+	});
+</script>

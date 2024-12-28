@@ -1,0 +1,302 @@
+<main>
+    <div class="section block-kopitiam">
+        <div class="container-fluid" style="margin-top: 50px;">
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-6 offset-lg-0 text-center align-self-center">
+                    <div class="swiper swiper-bakery">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="card-product-bakery">
+                                    <a href="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/keneskopitiam.png"
+                                        target="_blank" rel="">
+                                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/keneskopitiam.png"
+                                            alt="" class="img-fluid">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="card-product-bakery">
+                                    <a href="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/keneskopitiam.png"
+                                        target="_blank" rel="">
+                                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/keneskopitiam.png"
+                                            alt="" class="img-fluid">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-6">
+                    <div class="card caption-bakery border-0" style="background-color: #A10F18;">
+                        <div class="card-body">
+                            <h4 class="card-title text-center d-none d-md-block"><img
+                                    src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/logokopitiam.png"
+                                    alt="">
+                            </h4>
+                            <p class="card-text text-center lh-sm text-nowrap" style="color: white;">
+                                Kunjungilah
+                            </p>
+                            <h4 class="card-title text-center text-nowrap text-uppercase fw-bold title-kopitiam"
+                                style="color: #E8CA61;">
+                                kenes kopitiam</h4>
+                            <p class="card-text text-center lh-sm" style="color: white;">
+                                Nikmati kelezatan hidangan khas Tiongkok yang otentik. Kami mempersembahkan kepada anda
+                                cita
+                                rasa yang mengangkat budaya Tiongkok kedalam piring anda.
+                            </p>
+                            <div class="d-flex justify-content-center">
+                                <a href="" class="btn btn-md rounded fw-bold text-start text-nowrap"
+                                    style="background-color :#E8CA61; color:#A10F18;">Lihat Promo</a>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- prelaunch & arrival -->
+
+                    <div class="row g-2 p-2">
+                        <div class="col-6 col-md-6 p-2 p-md-0 ">
+                            <div class="card swiper swiper-prelaunch border-0" style="background-color: #A10F18;">
+                                <div class="swiper-wrapper">
+                                    {foreach from=$prelaunch item=prelaunch_item}
+                                    <div class="swiper-slide text-center shadow-sm rounded-3">
+                                        <a target="_blank"
+                                            href="{$BASEURL}/resource/assets-frontend/dist/product/{$prelaunch_item->product_pict}"
+                                            target="blank" rel="">
+                                            <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$prelaunch_item->product_pict}"
+                                                alt="" class="img-fluid rounded pre-launch">
+                                            <!-- <h4><span class="badge rounded position-absolute top-0 end-0 text-uppercase" style="background-color:#f4d406; color: black;">Pre-launch</span></h4> -->
+                                            <span class="span-promo badge position-absolute top-0 end-0"
+                                                style="background-color: #E8CA61; color:#A10F18;"
+                                                alt="">PreLaunch</span>
+
+                                        </a>
+                                        <!-- <div class="position-absolute top-50 start-50 translate-middle" style="transform: translate(-50%, -50%);">
+                                                <a class="btn btn-sm icon-link icon-link-hover text-uppercase fw-bold text-nowrap" role="button" href="{site_url(['products/detail_produk?id=67'])}" style=" color: #ffffff; letter-spacing: 0px; border: solid 2px; background-color: rgba(0, 0, 0, 0.3);">
+                                                    Order Now
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                        <path fill-rule="evenodd"
+                                                            d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                    </svg>
+                                                </a>
+                                            </div> -->
+                                    </div>
+                                    {/foreach}
+                                </div>
+                            </div>
+
+                            <div class="swiper-pagination"></div>
+                        </div>
+                        <div class="col-6 col-md-6 p-2 p-md-0">
+                            <div class="card swiper swiper-prelaunch border-0" style="background-color: #A10F18;">
+                                <div class="swiper-wrapper">
+                                    {foreach from=$arrival item=arrival_item}
+                                    <div class="swiper-slide text-center shadow-sm rounded-3">
+                                        <a href="{$BASEURL}/resource/assets-frontend/dist/product/{$arrival_item->product_pict}"
+                                            target="blank" rel="">
+                                            <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$arrival_item->product_pict}"
+                                                alt="" class="img-fluid rounded pre-launch">
+                                            <span class="span-promo badge position-absolute top-0 end-0"
+                                                style="background-color: #E8CA61; color:#A10F18;" alt="">New
+                                                Arrival</span>
+                                            <!-- <h4><span class="badge rounded-50 position-absolute top-0 start-100 translate-middle text-uppercase" style="background-color:#f4d406; border-radius: 50%; color: black;">New Product</span></h4> -->
+                                        </a>
+                                        <!-- <div class="position-absolute top-50 start-50 translate-middle" style="transform: translate(-50%, -50%);">
+                                                <a class="btn btn-sm icon-link icon-link-hover text-uppercase fw-bold text-nowrap" role="button" href="{site_url(['products/detail_produk?id=67'])}" style=" color: #ffffff; letter-spacing: 0px; border: solid 2px; background-color: rgba(0, 0, 0, 0.3);">
+                                                    Order Now
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                                    </svg>
+                                                </a>
+                                            </div>									 -->
+                                    </div>
+
+                                    {/foreach}
+                                </div>
+                            </div>
+
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    </div>
+
+                    <!-- end prelaunch & arrival -->
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container category-kopitiam">
+        <div class="row g-3 g-lg-4 text-center">
+            <div class="col-12 col-md-4 col-lg-4 col-xl-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <div class="row g-0">
+                            <div class="col-4 col-md-12">
+                                <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/kategorykopitiamvaluemeals.png"
+                                    alt="" class="card-img-top">
+                            </div>
+                            <div class="col-8 col-md-12">
+                                <div class="card-body d-flex flex-column">
+
+                                    <h4 class="text-uppercase card-title mt-auto fw-bold">Value meals</h4>
+                                    <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                                    </h6>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-12 col-md-4 col-lg-4 col-xl-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <div class="row g-0">
+                            <div class="col-4 col-md-12">
+                                <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/kategorykopitiamalacarte.png"
+                                    alt="" class="card-img-top">
+                            </div>
+                            <div class="col-8 col-md-12">
+                                <div class="card-body d-flex flex-column">
+
+                                    <h4 class="text-uppercase card-title mt-auto fw-bold">Ala carte</h4>
+                                    <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                                    </h6>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-12 col-md-4 col-lg-4 col-xl-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <div class="row g-0">
+                            <div class="col-4 col-md-12">
+                                <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/kategorykopitiamnoodle.png"
+                                    alt="" class="card-img-top">
+                            </div>
+                            <div class="col-8 col-md-12">
+                                <div class="card-body d-flex flex-column">
+
+                                    <h4 class="text-uppercase card-title mt-auto fw-bold">noodle</h4>
+                                    <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                                    </h6>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-12 col-md-4 col-lg-4 col-xl-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <div class="row g-0">
+                            <div class="col-4 col-md-12">
+                                <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/kategorykopitiamsoup.png"
+                                    alt="" class="card-img-top">
+                            </div>
+                            <div class="col-8 col-md-12">
+                                <div class="card-body d-flex flex-column">
+
+                                    <h4 class="text-uppercase card-title mt-auto fw-bold">soup</h4>
+                                    <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                                    </h6>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-12 col-md-4 col-lg-4 col-xl-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <div class="row g-0">
+                            <div class="col-4 col-md-12">
+                                <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/kategorykopitiamdessert.png"
+                                    alt="" class="card-img-top">
+                            </div>
+                            <div class="col-8 col-md-12">
+                                <div class="card-body d-flex flex-column">
+
+                                    <h4 class="text-uppercase card-title mt-auto fw-bold">Dessert</h4>
+                                    <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                                    </h6>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-12 col-md-4 col-lg-4 col-xl-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <div class="row g-0">
+                            <div class="col-4 col-md-12">
+                                <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/kategorykopitiamsnack.png"
+                                    alt="" class="card-img-top">
+                            </div>
+                            <div class="col-8 col-md-12">
+                                <div class="card-body d-flex flex-column">
+
+                                    <h4 class="text-uppercase card-title mt-auto fw-bold">snack</h4>
+                                    <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-12 col-md-4 col-lg-4 col-xl-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <div class="row g-0">
+                            <div class="col-4 col-md-12">
+                                <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorykopitiam/kategorykopitiambarspesiality.png"
+                                    alt="" class="card-img-top">
+                            </div>
+                            <div class="col-8 col-md-12">
+                                <div class="card-body d-flex flex-column">
+
+                                    <h4 class="text-uppercase card-title mt-auto fw-bold">bar speciality</h4>
+                                    <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                                    </h6>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</main>

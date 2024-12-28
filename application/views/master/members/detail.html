@@ -1,0 +1,89 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2">
+                <div class="col-md-4">  
+                    <div class="form-group position-relative product-pict text-center">
+                        <img src="{$BASEURL}resource/assets/default/images/uploads/users/{$detail.user_photo|default:'default.jpg'}">
+                    </div>
+                </div>         
+                <div class="col-md-8">  
+                    <div class="row my-2">
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Nama Lengkap</label>
+                                <p class="form-label"><small>{$detail.user_code} - {$detail.user_name}</small><br/><b>{$detail.fullname}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Status</label>
+                                <p class="form-label">
+                                    {if $detail.user_st == 0}
+                                        <span class="badge badge-pill badge-sm badge-success">Aktif</span>
+                                    {else}
+                                        <span class="badge badge-pill badge-sm badge-danger">Non-aktif</span>
+                                    {/if}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Kunci Akun</label>
+                                <p class="form-label">
+                                    {if $detail.user_lock == 0}
+                                        <span class="badge badge-pill badge-sm badge-success">Tidak</span>
+                                    {else}
+                                        <span class="badge badge-pill badge-sm badge-danger">Terkunci</span>
+                                    {/if}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Email</label>
+                                <p class="form-label"><b>{$detail.user_email|default:'-'}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Jenis Kelamin</label>
+                                <p class="form-label"><b>
+                                    {if $detail.gender == 'L'}
+                                        Laki-laki
+                                    {else}
+                                        Perempuan
+                                    {/if}
+                                </b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Tanggal Lahir</label>
+                                <p class="form-label"><b>{$tdtm->get_date_only($detail.birthday)}</b></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Nomor Telepon</label>
+                                <p class="form-label"><b>{$detail.phone|default:'-'}</b></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="col-md-12">  
+                        <div class="form-group">
+                            <label>Alamat</label>
+                            <p class="form-label"><b>{$detail.address|default:'-'}</b></p>
+                        </div>
+                    </div>
+                </div> 
+            </div>    
+        </div>
+    </div>
+</div>

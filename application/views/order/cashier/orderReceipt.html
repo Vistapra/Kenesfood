@@ -1,0 +1,78 @@
+<html>
+	<head>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+	</head>
+	<body>
+		<!-- Title -->
+		<div class="container">
+			<div class="row text-center">
+				<div class="col-12">
+					<h3 id="brand"></h3>
+				</div>
+			</div>
+			<div class="row text-center">
+				<div class="col-12">
+					<h6>Daftar Pesanan</h6>
+				</div>
+			</div>
+		</div>
+		<!-- End of Title -->
+
+		<!-- Title -->
+		<div class="container">
+			<div class="row">
+				<div class="col-6">
+					<p>TID: {$data.customer.order.id}</p>
+				</div>
+				<div class="col-6">
+					<p>{$data.customer.date}</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<p>Meja: <b>{$data.customer.order.table_id}</b></p>
+				</div>
+				<div class="col-6">
+					<p>{$data.customer.time}</p>
+				</div>
+			</div>
+			<div class="row text-end">
+				<p>{$data.customer.order.name}</p>
+			</div>
+		</div>
+		<!-- End of Title -->
+
+		<div class="container">
+			<table class="table">
+				<tr>
+					<th style="text-align: center">No</th>
+					<th style="text-align: center">Nama</th>
+					<th style="text-align: center">Qty</th>
+				</tr>
+				{$i = 1}
+				{foreach from=$data.order key=key item=item}
+				<tr>
+					<td>{$i++}</td>
+					<td>
+						{$item.product_name}
+						{if $item.notes != ''}
+						<br/><p>n.b. {$item.notes}</p>
+						{/if}
+					</td>
+					<td style="text-align: right;">{$item.qty}</td>
+				</tr>
+				{/foreach}
+			</table>
+		</div>
+		<script src="{$BASEURL}resource/assets-frontend/jquery/jquery-3.7.0.min.js"></script>
+		<script>
+			$(document).ready(function() {
+				const url = new URL(window.location.href);
+				const brand = url.searchParams.get('brand');
+				$("#brand").html("Kene&#771s " + url.searchParams.get('brand').replace(/\b[a-z]/g, function(DemoStr) {
+            		return DemoStr.toUpperCase();
+        		}));
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,73 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form id="myForm" method="post" action="{site_url([$current_page.nav_url, 'add'])}" enctype="multipart/form-data">
+                <div class="col-md-12 align-self-center center">
+                    <div class="row">
+                        <div class="col-md-4 align-self-center center">
+                            <div class="form-group">
+                                <img id="preview" src="" alt="logo" class="img-preview"/><br/>
+                                <label class="mt-2 pt-2 text-small">Preview</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Foto Pamflet</label>
+                                <input type="file" name="job_img" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpeg, image/jpg, image/gif, image/svg+xml">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="Foto Outlet">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Pekerjaan *</label>
+                          <input type="text" class="form-control" name="job_name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Tanggal Valid *</label>
+                          <input type="text" class="form-control datepicker" name="job_date" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Tanggal Test</label>
+                          <input type="text" class="form-control datetimepicker permit_time" name="job_date_test" id="permit_time">
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-12">
+                        <div class="form-group">
+                          <label for="nav_id">Deskripsi *</label>
+                          <textarea id="editor" name="job_description" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>

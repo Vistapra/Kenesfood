@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, target-densitydpi=device-dpi">
+        <link rel="stylesheet" href="{$BASEURL}/resource/plugins/bootstrap-5.2.1-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/kenes_style.css">
+       
+    </head>
+    <body>
+
+        <div class="title"> {$detail.cat_name} </div>
+        <div class="cat_detail_sub">
+            <p>{$detail.cat_desc}</p>
+        </div>
+<!-- HIGHLIGHT KATEGORI -->
+<div class="container-sm-2">
+{if !empty($products)}
+<div class="box-container">
+    {foreach from=$products key=key item=product}
+    <a style="text-decoration: none;" href="{site_url(['products/product_detail', $product.product_id])}"><div class="m-5 categories">
+            {if !empty($product.product_pict)}
+                <div class="row_img">
+                    <div class="cat_img">
+                        {if file_exists('resource/assets-frontend/dist/product/'|cat:$product.product_pict)}
+                        <img src="{$BASEURL}resource/assets-frontend/dist/product/{$product.product_pict}">
+                        {else}
+                        <img src="{$BASEURL}resource/assets-frontend/dist/product/imagenotfound.png">
+                        {/if}
+                    </div>
+                    <div class="cat_detail">
+                        <h4 class="text-uppercase">{$product.product_name}</h4>
+                        <p>{$product.product_desc}</p>
+                    </div>
+                    <div class="cat_harga">
+                        <h4 class="" align ="right">Mulai dari : <b>{number_format($product.product_price,0,",",".")}</b></h4>
+                    </div>
+                </div>
+            {else} 
+                <div class="row_img">
+                    <div class="cat_img">
+                        <img src="{$BASEURL}resource/assets-frontend/dist/product/imagenotfound.png">
+                    </div>
+                    <div class="cat_detail">
+                        <h4>{$product.cat_name}</h4>
+                        <p>{$product.cat_desc}</p>
+                    </div>
+                </div>
+            {/if}
+        </div>
+    </a>
+    {/foreach}
+</div>
+
+{/if}
+</div>
+
+<!-- CONTACT INFO -->
+<!-- <div class="contact">
+    {if !empty($market)}
+    <h4>TERSEDIA DI</h4>
+    <div class="contact_img">
+      <a href="https://gofood.co.id/yogyakarta/restaurant/bakpia-bakery-kenes-wijayakusuma-c8ef4bca-9aa4-47fc-874a-b771c285a2f0"><img src="{$BASEURL}resource/assets/public/marketplace/go-food.svg"></a>
+      <a href="https://food.grab.com/id/id/restaurant/bakpia-bakery-kenes-wijayakusuma-delivery/6-CY3GUCKWPGDFC2?"><img src="{$BASEURL}resource/assets/public/marketplace/grabfood.svg"></a>
+      <a href="https://shopee.co.id/bakpiakenes"><img src="{$BASEURL}resource/assets/public/marketplace/shopee.svg"></a>
+      <img src="{$BASEURL}resource/assets/public/marketplace/tokped.svg">
+    </div>
+    {/if}
+    {if !empty($sosmed)}
+    <h4>HUBUNGI KAMI</h4>
+    <div class="contact_img">
+      <a href="https://api.whatsapp.com/send?phone=6287811121888"><img src="{$BASEURL}resource/assets/public/socmed/whatsapp.png"></a>
+      <a href="https://www.instagram.com/kenesfood?igsh=bTBpZWd2ZTZpOHQ5"><img src="{$BASEURL}resource/assets/public/socmed/instagram.png"></a>
+      <a href="https://www.facebook.com/kenesbakpiabakeryresto?mibextid=kFxxJD"><img src="{$BASEURL}resource/assets/public/socmed/facebook.png"></a>
+      <a href="https://www.tiktok.com/@kenesfood.official?_t=8iY4yjI7AyG&_r=1"><img src="{$BASEURL}resource/assets/public/socmed/tiktok.png"></a>
+    </div>
+    {/if}
+    <p>Jangan ragu untuk menghubungi kami untuk informasi lebih lanjut atau reservasi. Terima kasih atas dukungan anda<br/>Selamat makan!</p>
+  </div> -->
+  
+  
+
+</body>
+</html>

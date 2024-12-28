@@ -1,0 +1,88 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{site_url([$current_page.nav_url, 'edit', $ekatalog.katalog_id])}" enctype="multipart/form-data">
+                <input type="hidden" name="katalog_id" value="{$ekatalog.katalog_id}" />
+                <div class="col-md-12 align-self-center center">
+                    <div class="row">
+                        <div class="col-md-4 align-self-center center">
+                            <div class="form-group">
+                                <img id="preview1" src="" alt="foto background" class="img-preview"/><br/>
+                                <label class="mt-2 pt-2 text-small">Preview</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Katalog File</label>
+                                <input type="file" name="katalog_img" class="file-upload-default" onchange="loadPreview2(event)" accept="image/png, image/jpg, image/gif, image/svg+xml,.pdf">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="Choose File">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button"><img id="preview" src="{$BASEURL}resource/assets-frontend/dist/icon/image-upload.png" height="30"; width="30";></img></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Nama Katalog</label>
+                          <input type="text" class="form-control" name="katalog_nama" value="{$ekatalog.katalog_nama|default:''}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="nav_id">Status</label>
+                            <select name="katalog_st" class="form-control select2">
+                                <option value="0" {if $ekatalog.katalog_brand == "0"}selected{/if}>Aktif</option>
+                                <option value="1" {if $ekatalog.katalog_brand == "1"}selected{/if}>Non-aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 align-self-center center file-input">
+                        <div class="form-group text-start">
+                            <label>Brand Katalog</label>
+                            <select name="katalog_brand" class="form-control select2">
+                                {foreach from=$brands item=brand}
+                                    <option value="{$brand.brand_type}" {if $ekatalog.katalog_brand|default:'' == {$brand.brand_type}}selected{/if}>{$brand.brand_name|default:''}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                </div>      
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fas fa-pencil-alt"></i> Edit</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    var loadPreview2 = function(event) {
+        var output = document.getElementById('preview1');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    var loadPreview3 = function(event) {
+        var output = document.getElementById('preview3');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>
