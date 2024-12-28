@@ -1,4 +1,3 @@
-// Constants and Configurations
 const STATUS = {
     RESERVED: 1,
     ORDERED: 2
@@ -1248,6 +1247,81 @@ function formatDateTime(dateString) {
     });
 }
 
+class CategoryManager {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.categorySelect = document.getElementById('category-select');
+        if (this.categorySelect) {
+            this.setupInitialValue();
+            this.setupEventListeners();
+        }
+    }
+
+    setupInitialValue() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category');
+        if (category && this.categorySelect) {
+            this.categorySelect.value = category;
+        }
+    }
+
+    setupEventListeners() {
+        if (this.categorySelect) {
+            this.categorySelect.addEventListener('change', (e) => {
+                this.handleCategoryChange(e.target.value);
+            });
+        }
+    }
+
+    handleCategoryChange(categoryId) {
+        try {
+            const currentUrl = new URL(window.location.href);
+            const outletId = currentUrl.searchParams.get('outletId');
+            const tableId = currentUrl.searchParams.get('tableId');
+            const brand = currentUrl.searchParams.get('brand');
+
+            if (!outletId || !tableId || !brand) {
+                console.error('Missing required parameters');
+                return;
+            }
+
+            // Buat URL baru dengan menyimpan parameter lain
+            const newUrl = new URL(`${window.location.origin}/order`);
+            currentUrl.searchParams.forEach((value, key) => {
+                if (key !== 'category') {
+                    newUrl.searchParams.set(key, value);
+                }
+            });
+
+            // Tambahkan kategori jika dipilih
+            if (categoryId && categoryId !== 'all') {
+                newUrl.searchParams.set('category', categoryId);
+            }
+
+            window.location.href = newUrl.toString();
+        } catch (error) {
+            console.error('Error handling category change:', error);
+        }
+    }
+}
+
+function filterProductsByCategory(categoryId) {
+    const currentUrl = new URL(window.location.href);
+    
+    if (categoryId && categoryId !== 'all') {
+        currentUrl.searchParams.set('category', categoryId);
+    } else {
+        currentUrl.searchParams.delete('category');
+    }
+    
+    window.location.href = currentUrl.toString();
+}
+
+let modalManager, sessionManager, cartManager, packageManager, orderManager, categoryManager;
+
 // Initialize application
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
@@ -1258,6 +1332,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const cartManager = new CartManager();
     const packageManager = new PackageManager();
     const orderManager = new OrderManager();
+	const categoryManager = new CategoryManager();
 
     // Check existing session
     const sessionExists = await sessionManager.initialize(params);
@@ -1292,10 +1367,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('keypress', () => {
         sessionManager.updateLastActivity();
     });
+	
 
     // Handle category filtering
-    document.getElementById('category-select').addEventListener('change', (e) => {
-        const categoryId = e.target.value;
-        filterProductsByCategory(categoryId);
-    });
+	document.getElementById('category-select').addEventListener('change', (e) => {
+		const categoryId = e.target.value;
+		filterProductsByCategory(categoryId);
+	});
+
+	document.addEventListener('DOMContentLoaded', () => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const category = urlParams.get('category');
+		
+		if (category) {
+			const selectElement = document.getElementById('category-select');
+			selectElement.value = category;
+		}
+	});
 });
