@@ -288,8 +288,7 @@ POST   /api/auth/refresh  - Refresh token
 
 ## 👥 Development Team
 
-- Lead Developer: Vista Pramudya
-- Platform: [@Vistapra](https://github.com/Vistapra)
+- Fullstack Developer: [@Vistapra](https://github.com/Vistapra)
 
 ## 🧪 Testing
 

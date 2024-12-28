@@ -191,8 +191,7 @@ class Order extends ApplicationBase
 				]
 			]
 		];
-
-		// Add cart items if available
+		
 		if (!empty($cartItems)) {
 			$response["data"]["cart"] = $cartItems;
 		}
@@ -273,18 +272,18 @@ class Order extends ApplicationBase
 					"latitude" => $outlet["latitude"],
 					"longitude" => $outlet["longitude"]
 				];
-
+			
 				$customerLocation = [[
 					"latitude" => $payload->latitude,
 					"longitude" => $payload->longitude
 				]];
-
+			
 				$inRadius = $this->libgeneralmap->inRadius(
 					0.1,
 					$outletCoordinate,
 					$customerLocation
 				);
-
+			
 				if (in_array(false, $inRadius)) {
 					return $this->output
 						->set_status_header(403)
@@ -603,7 +602,7 @@ class Order extends ApplicationBase
 			parent::display();
 		} catch (Exception $e) {
 			log_message('error', 'Error in list(): ' . $e->getMessage());
-			$this->session->set_flashdata('error', 'Terjadi kesalahan sistem');
+			$this->session->set_flashdata('error', $e->getMessage());
 			redirect(base_url());
 		}
 	}
