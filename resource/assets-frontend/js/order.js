@@ -1,1301 +1,600 @@
-// Constants and Configurations
-const STATUS = {
-    RESERVED: 1,
-    ORDERED: 2
-};
-
-const CONFIG = {
-    AUTO_EXTEND_THRESHOLD: 300000, // 5 minutes in milliseconds
-    REFRESH_INTERVAL: 3000,        // 3 seconds in milliseconds
-    SESSION_LENGTH: 900000,        // 15 minutes in milliseconds
-    MIN_PASSCODE_LENGTH: 4,
-    VALID_BRANDS: ['kopitiam', 'bakery', 'resto']
-};
-
-// State Management
-const state = {
-    session: null,
-    cart: {
-        items: [],
-        total: 0,
-        regularItems: [],
-        packageItems: []
-    },
-    selectedPackage: null,
-    lastActivityTime: Date.now(),
-    modals: {},
-    currentPackage: null,
-    packageSelections: new Map(),
-    validationErrors: []
-};
-
-// Modal Manager
-class ModalManager {
-    constructor() {
-        this.initializeModals();
-        this.setupModalListeners();
+// order.js
+function enlargeCatalogueImage () {
+    let images = document.getElementsByClassName('e-catalogue-image')
+    for (let image of images) {
+      if (image.parentNode) {
+        image.classList.remove('img-fluid')
+        image.classList.remove('custom-block-ek-image')
+        let parentElement = image.parentNode
+        parentElement.parentNode.insertBefore(image, parentElement)
+        parentElement.remove()
+      }
     }
-
-    initializeModals() {
-        const modalIds = [
-            'cart-modal',
-            'package-selection-modal',
-            'package-browse-modal',
-            'add-note-modal',
-            'loading-modal',
-            'error-modal',
-            'connection-modal',
-            'operating-hours-modal',
-            'confirm-order-modal',
-            'order-success-modal'
-        ];
-
-        modalIds.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                state.modals[id] = new bootstrap.Modal(element);
-                
-                // Add event listeners for modal events
-                element.addEventListener('shown.bs.modal', () => {
-                    this.handleModalShow(id);
-                });
-                
-                element.addEventListener('hidden.bs.modal', () => {
-                    this.handleModalHide(id);
-                });
-            }
-        });
+  }
+  
+  function transformCenterElement () {
+    const marginElement = document.getElementsByClassName('custom-center-element')
+    for (let element of marginElement) {
+      element.style.margin = '0'
     }
-
-    setupModalListeners() {
-        // Error modal retry button
-        const retryButton = document.getElementById('retry-connection');
-        if (retryButton) {
-            retryButton.addEventListener('click', () => {
-                this.hide('connection-modal');
-                window.location.reload();
+  }
+  
+  function showHiddenElement (elementId) {
+    const element = document.getElementById(elementId)
+  }
+  
+  let isStartSession = false
+  let media = window.matchMedia('(max-width: 400px)')
+  
+  if (media.matches) {
+    enlargeCatalogueImage()
+    transformCenterElement()
+  }
+  
+  document.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+    const addToCart = document.getElementById('add-to-cart');
+    const categorySelect = document.getElementById('category-select');
+    let dProductModal = new bootstrap.Modal('#detail-product', { keyboard: false });
+    let cartModal = new bootstrap.Modal('#cart-modal', { keyboard: false });
+    let isStartSession = false;
+  
+    // Fetch current session
+    $.ajax({
+      type: 'GET',
+      url: window.location.origin + '/order/session?' + params.toString(),
+      dataType: 'json'
+    })
+      .done(function (response, textStatus, jqXHR) {
+        if (!response.data) {
+          $('#identity-page').removeAttr('hidden')
+          return
+        }
+        // Switch page
+        $('#customer-name').text(response.data.name)
+        $('#identity-page').attr('hidden', true)
+        $('#order-page').removeAttr('hidden')
+        isStartSession = true
+  
+        // Initialize package features
+        addPackageButtons()
+      })
+      .fail(function (jqXHR, textStatus, errorThrown) {
+        console.log(textStatus)
+      })
+  
+    let brand = 'kopitiam'
+  
+    showHiddenElement('order-page')
+  
+    if (params.has('category')) {
+      const categoryId = params.get('category')
+      categorySelect.value = categoryId
+    }
+  
+    // Category change handler
+    categorySelect.addEventListener('change', async function() {
+        const selectedValue = this.value;
+        
+        try {
+            // Show loading
+            Swal.fire({
+                title: 'Loading...',
+                text: 'Memuat produk',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
             });
-        }
 
-        // Operating hours modal close handling
-        const operatingHoursModal = document.getElementById('operating-hours-modal');
-        if (operatingHoursModal) {
-            operatingHoursModal.addEventListener('hidden.bs.modal', () => {
-                window.location.href = '/';
-            });
-        }
-    }
-
-    handleModalShow(modalId) {
-        switch (modalId) {
-            case 'cart-modal':
-                cartManager.refreshCartDisplay();
-                break;
-            case 'package-selection-modal':
-                packageManager.refreshPackageDisplay();
-                break;
-            case 'add-note-modal':
-                const noteInput = document.getElementById('item-note');
-                if (noteInput) noteInput.focus();
-                break;
-        }
-    }
-
-    handleModalHide(modalId) {
-        switch (modalId) {
-            case 'package-selection-modal':
-                state.packageSelections.clear();
-                state.currentPackage = null;
-                break;
-            case 'add-note-modal':
-                document.getElementById('item-note').value = '';
-                document.getElementById('note-product-id').value = '';
-                break;
-        }
-    }
-
-    show(modalId) {
-        if (state.modals[modalId]) {
-            state.modals[modalId].show();
-        }
-    }
-
-    hide(modalId) {
-        if (state.modals[modalId]) {
-            state.modals[modalId].hide();
-        }
-    }
-
-    showError(message, title = 'Error') {
-        const errorModal = document.getElementById('error-modal');
-        if (errorModal) {
-            errorModal.querySelector('#error-message').textContent = message;
-            errorModal.querySelector('.modal-title').textContent = title;
-            this.show('error-modal');
-        }
-    }
-
-    showLoading(message = 'Processing your request...') {
-        const loadingModal = document.getElementById('loading-modal');
-        if (loadingModal) {
-            loadingModal.querySelector('h5').textContent = message;
-            this.show('loading-modal');
-        }
-    }
-}
-
-// Session Manager
-class SessionManager {
-    constructor() {
-        this.sessionCheckInterval = null;
-    }
-
-    async initialize(params) {
-        if (!this.validateParams(params)) {
-            modalManager.showError('Invalid parameters provided');
-            return false;
-        }
-
-        try {
-            const response = await this.checkExistingSession(params);
-            if (response.success) {
-                this.setupActiveSession(response.data.session);
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Session initialization failed:', error);
-            modalManager.showError('Failed to initialize session');
-            return false;
-        }
-    }
-
-    validateParams(params) {
-        const requiredParams = ['outletId', 'tableId', 'brand'];
-        return requiredParams.every(param => params.has(param)) &&
-               CONFIG.VALID_BRANDS.includes(params.get('brand'));
-    }
-
-    async checkExistingSession(params) {
-        try {
-            const response = await fetch(`/order/session?outletId=${params.get('outletId')}&tableId=${params.get('tableId')}&brand=${params.get('brand')}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            throw new Error('Failed to check existing session');
-        }
-    }
-
-    async createNewSession(params, customerData) {
-        if (!this.validateCustomerData(customerData)) {
-            modalManager.showError('Invalid customer data');
-            return false;
-        }
-
-        try {
-            modalManager.showLoading('Creating your session...');
-            
-            const response = await fetch('/order/session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
+            const response = await $.ajax({
+                url: window.location.origin + '/order',
+                data: {
                     outletId: params.get('outletId'),
                     tableId: params.get('tableId'),
                     brand: params.get('brand'),
-                    name: customerData.name,
-                    passcode: customerData.passcode
-                })
-            });
-
-            modalManager.hide('loading-modal');
-
-            const result = await response.json();
-            if (result.success) {
-                this.setupActiveSession(result.data.session);
-                return true;
-            }
-            
-            modalManager.showError(result.message);
-            return false;
-        } catch (error) {
-            modalManager.hide('loading-modal');
-            modalManager.showError('Failed to create session');
-            return false;
-        }
-    }
-
-    validateCustomerData(customerData) {
-        return customerData.name?.trim().length > 0 &&
-               customerData.passcode?.length >= CONFIG.MIN_PASSCODE_LENGTH;
-    }
-
-    setupActiveSession(sessionData) {
-        state.session = sessionData;
-        this.startSessionMonitoring();
-        this.showOrderInterface();
-        this.updateUIWithSessionData();
-    }
-
-    updateUIWithSessionData() {
-        document.getElementById('customer-name').textContent = state.session.name;
-        document.querySelector('.table-info').textContent = `Table #${state.session.table_id}`;
-    }
-
-    startSessionMonitoring() {
-        if (this.sessionCheckInterval) {
-            clearInterval(this.sessionCheckInterval);
-        }
-
-        this.sessionCheckInterval = setInterval(() => {
-            this.checkAndExtendSession();
-        }, CONFIG.REFRESH_INTERVAL);
-    }
-
-    async checkAndExtendSession() {
-        const currentTime = Date.now();
-        if (currentTime - state.lastActivityTime >= CONFIG.AUTO_EXTEND_THRESHOLD) {
-            await this.extendSession();
-            state.lastActivityTime = currentTime;
-        }
-    }
-
-    async extendSession() {
-        if (!state.session) return;
-        
-        try {
-            const response = await fetch('/order/session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+                    category: selectedValue !== 'all' ? selectedValue : null
                 },
-                body: JSON.stringify({
-                    sessionId: state.session.id
-                })
-            });
-            
-            const result = await response.json();
-            if (result.success) {
-                state.session.expire_at = result.data.expire_at;
-            }
-        } catch (error) {
-            console.error('Failed to extend session:', error);
-        }
-    }
-
-    showOrderInterface() {
-        document.getElementById('identity-page').style.display = 'none';
-        document.getElementById('outlet-info').style.display = 'block';
-        document.getElementById('order-page').style.display = 'block';
-    }
-
-    updateLastActivity() {
-        state.lastActivityTime = Date.now();
-    }
-
-    cleanup() {
-        if (this.sessionCheckInterval) {
-            clearInterval(this.sessionCheckInterval);
-        }
-    }
-}
-
-// Cart Manager
-class CartManager {
-    constructor() {
-        this.updateInterval = null;
-    }
-
-    initialize() {
-        this.setupEventListeners();
-        this.startAutoUpdate();
-        this.loadInitialCart();
-    }
-
-    setupEventListeners() {
-        // Add to cart buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('add-to-cart')) {
-                this.handleAddToCart(e);
-            }
-        });
-
-        // Show cart button
-        const showCartButton = document.getElementById('show-cart');
-        if (showCartButton) {
-            showCartButton.addEventListener('click', () => this.showCartModal());
-        }
-
-        // Cart quantity controls
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('decrease-qty')) {
-                this.handleQuantityChange(e, 'decrease');
-            } else if (e.target.classList.contains('increase-qty')) {
-                this.handleQuantityChange(e, 'increase');
-            }
-        });
-
-        // Note buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('add-note')) {
-                this.showAddNoteModal(e);
-            }
-        });
-
-        // Remove item buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('remove-item')) {
-                this.handleRemoveItem(e);
-            }
-        });
-
-        // Place order button
-        const placeOrderButton = document.getElementById('place-order');
-        if (placeOrderButton) {
-            placeOrderButton.addEventListener('click', () => this.handlePlaceOrder());
-        }
-
-        // Save note button
-        const saveNoteButton = document.getElementById('save-note');
-        if (saveNoteButton) {
-            saveNoteButton.addEventListener('click', () => this.handleSaveNote());
-        }
-    }
-
-    async loadInitialCart() {
-        await this.updateCart();
-    }
-
-    async handleAddToCart(event) {
-        const productId = event.target.dataset.productId;
-        const quantity = parseInt(event.target.dataset.quantity || '1');
-        
-        sessionManager.updateLastActivity();
-        modalManager.showLoading('Adding to cart...');
-
-        try {
-            const response = await fetch('/order', {
-                method: 'POST',
+                method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 2,
-                    orderId: state.session.id,
-                    data: [{
-                        productId: productId,
-                        quantity: quantity
-                    }]
-                })
-            });
-
-            const result = await response.json();
-            modalManager.hide('loading-modal');
-
-            if (result.success) {
-                await this.updateCart();
-                this.showSuccessToast('Item added to cart');
-            } else {
-                modalManager.showError(result.message);
-            }
-        } catch (error) {
-            modalManager.hide('loading-modal');
-            modalManager.showError('Failed to add item to cart');
-        }
-    }
-
-    async handleQuantityChange(event, action) {
-        const itemContainer = event.target.closest('.cart-item');
-        const itemId = itemContainer.dataset.itemId;
-        const quantityInput = itemContainer.querySelector('.item-quantity');
-        const currentQty = parseInt(quantityInput.value);
-        const newQty = action === 'decrease' ? currentQty - 1 : currentQty + 1;
-
-        if (newQty < 1) return;
-
-        sessionManager.updateLastActivity();
-        modalManager.showLoading('Updating quantity...');
-
-        try {
-            const response = await fetch('/order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 2,
-                    orderId: state.session.id,
-                    productId: itemId,
-                    quantity: newQty
-                })
-            });
-
-            const result = await response.json();
-            modalManager.hide('loading-modal');
-
-            if (result.success) {
-                await this.updateCart();
-                quantityInput.value = newQty;
-                this.updateItemSubtotal(itemContainer, newQty);
-            } else {
-                modalManager.showError(result.message);
-            }
-        } catch (error) {
-            modalManager.hide('loading-modal');
-            modalManager.showError('Failed to update quantity');
-        }
-    }
-
-    async handleRemoveItem(event) {
-        const itemId = event.target.closest('.cart-item').dataset.itemId;
-        
-        if (confirm('Are you sure you want to remove this item?')) {
-            sessionManager.updateLastActivity();
-            modalManager.showLoading('Removing item...');
-
-            try {
-                const response = await fetch('/order', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        outletId: state.session.outlet_id,
-                        tableId: state.session.table_id,
-                        brand: state.session.brand,
-                        productId: itemId,
-                        count: 1
-                    })
-                });
-
-                const result = await response.json();
-                modalManager.hide('loading-modal');
-
-                if (result.success) {
-                    await this.updateCart();
-                    this.showSuccessToast('Item removed from cart');
-                } else {
-                    modalManager.showError(result.message);
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
-            } catch (error) {
-                modalManager.hide('loading-modal');
-                modalManager.showError('Failed to remove item');
-            }
-        }
-    }
-
-    async handlePlaceOrder() {
-        if (state.cart.items.length === 0) {
-            modalManager.showError('Your cart is empty');
-            return;
-        }
-
-        modalManager.show('confirm-order-modal');
-        this.populateConfirmationModal();
-    }
-
-    populateConfirmationModal() {
-        const confirmModal = document.getElementById('confirm-order-modal');
-        if (!confirmModal) return;
-
-        const regularItems = document.getElementById('confirm-regular-items');
-        const packageItems = document.getElementById('confirm-package-items');
-        const totalItems = document.getElementById('confirm-total-items');
-        const totalAmount = document.getElementById('confirm-total-amount');
-
-        regularItems.textContent = state.cart.regularItems.length;
-        packageItems.textContent = state.cart.packageItems.length;
-        totalItems.textContent = state.cart.items.length;
-        totalAmount.textContent = formatCurrency(state.cart.total);
-
-        // Setup confirm button
-        const confirmButton = confirmModal.querySelector('#submit-final-order');
-        if (confirmButton) {
-            confirmButton.onclick = () => orderManager.placeOrder();
-        }
-    }
-
-    async updateCart() {
-        if (!state.session) return;
-
-        try {
-            const response = await fetch(`/order/cart?outletId=${state.session.outlet_id}&tableId=${state.session.table_id}&brand=${state.session.brand}`);
-            const result = await response.json();
-            
-            if (result.success) {
-                this.updateCartState(result.data.cart);
-                this.updateCartDisplay();
-            }
-        } catch (error) {
-            console.error('Failed to update cart:', error);
-        }
-    }
-
-    updateCartState(cartData) {
-        state.cart.items = cartData.items || [];
-        state.cart.total = cartData.total_amount || 0;
-        state.cart.regularItems = cartData.items.filter(item => !item.is_package) || [];
-        state.cart.packageItems = cartData.items.filter(item => item.is_package) || [];
-    }
-
-    updateCartDisplay() {
-        // Update cart badge
-        const cartCounter = document.getElementById('count-cart');
-        if (cartCounter) {
-            cartCounter.textContent = state.cart.items.length;
-        }
-
-        // Update cart modal if open
-        const cartModal = document.getElementById('cart-modal');
-        if (cartModal && cartModal.classList.contains('show')) {
-            this.refreshCartDisplay();
-        }
-    }
-
-    refreshCartDisplay() {
-        this.populateRegularItems();
-        this.populatePackageItems();
-        this.updateCartTotals();
-    }
-
-    populateRegularItems() {
-        const regularItemsList = document.getElementById('regular-items-list');
-        if (!regularItemsList) return;
-
-        regularItemsList.innerHTML = '';
-        state.cart.regularItems.forEach(item => {
-            const row = this.createRegularItemRow(item);
-            regularItemsList.appendChild(row);
-        });
-    }
-
-    createRegularItemRow(item) {
-        const row = document.createElement('tr');
-        row.className = 'cart-item';
-        row.dataset.itemId = item.product_id;
-
-        row.innerHTML = `
-            <td>
-                <div class="d-flex align-items-center">
-                    <img src="${item.product_image}" alt="${item.product_name}" class="product-thumbnail me-2" width="50">
-                    <div>${item.product_name}</div>
-                </div>
-            </td>
-            <td>${formatCurrency(item.unit_price)}</td>
-            <td>
-                <div class="quantity-selector">
-                    <div class="input-group input-group-sm">
-                        <button class="btn btn-outline-secondary decrease-qty" type="button">-</button>
-                        <input type="number" class="form-control text-center item-quantity" value="${item.quantity}" min="1" readonly>
-                        <button class="btn btn-outline-secondary increase-qty" type="button">+</button>
-                    </div>
-                </div>
-            </td>
-            <td>
-                <div class="d-flex align-items-center">
-                    <span class="note-text">${item.notes || '-'}</span>
-                    <button class="btn btn-sm btn-link add-note">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                </div>
-            </td>
-            <td>${formatCurrency(item.subtotal)}</td>
-            <td>
-                <button class="btn btn-sm btn-danger remove-item">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        `;
-
-        return row;
-    }
-
-    populatePackageItems() {
-        const packageItemsContainer = document.getElementById('package-items-container');
-        if (!packageItemsContainer) return;
-
-        packageItemsContainer.innerHTML = '';
-        state.cart.packageItems.forEach(packageItem => {
-            const packageCard = this.createPackageCard(packageItem);
-            packageItemsContainer.appendChild(packageCard);
-        });
-    }
-
-    createPackageCard(packageItem) {
-        const card = document.createElement('div');
-        card.className = 'card mb-3 package-item';
-        card.dataset.itemId = packageItem.id;
-
-        let packageItemsHtml = '';
-        if (packageItem.package_items) {
-            packageItemsHtml = packageItem.package_items.map(item => `
-                <div class="package-sub-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>${item.product_name}</span>
-                        <span>${item.quantity}x</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        card.innerHTML = `
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h6 class="card-title mb-0">${packageItem.product_name}</h6>
-                    <button class="btn btn-sm btn-danger remove-item">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-                <div class="package-items-list mb-3">
-                    ${packageItemsHtml}
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="quantity-info">
-                        Quantity: ${packageItem.quantity}
-                    </div>
-                    <div class="package-total">
-                        Total: ${formatCurrency(packageItem.subtotal)}
-                    </div>
-                </div>
-                <div class="mt-2">
-                    <small class="text-muted">
-                        Notes: ${packageItem.notes || 'No special instructions'}
-                    </small>
-                </div>
-            </div>
-        `;
-
-        return card;
-    }
-
-    updateCartTotals() {
-        const totalItems = document.getElementById('cart-total-items');
-        const regularItems = document.getElementById('cart-regular-items');
-        const packageItems = document.getElementById('cart-package-items');
-        const totalAmount = document.getElementById('cart-total-amount');
-
-        if (totalItems) totalItems.textContent = state.cart.items.length;
-        if (regularItems) regularItems.textContent = state.cart.regularItems.length;
-        if (packageItems) packageItems.textContent = state.cart.packageItems.length;
-        if (totalAmount) totalAmount.textContent = formatCurrency(state.cart.total);
-    }
-
-    showAddNoteModal(event) {
-        const itemContainer = event.target.closest('.cart-item');
-        const itemId = itemContainer.dataset.itemId;
-        const currentNote = itemContainer.querySelector('.note-text').textContent;
-        
-        document.getElementById('note-product-id').value = itemId;
-        document.getElementById('item-note').value = currentNote === '-' ? '' : currentNote;
-        
-        modalManager.show('add-note-modal');
-    }
-
-    async handleSaveNote() {
-        const productId = document.getElementById('note-product-id').value;
-        const note = document.getElementById('item-note').value.trim();
-        
-        sessionManager.updateLastActivity();
-        modalManager.showLoading('Saving note...');
-
-        try {
-            const response = await fetch('/order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 1,
-                    orderId: state.session.id,
-                    productId: productId,
-                    notes: note
-                })
             });
 
-            const result = await response.json();
-            modalManager.hide('loading-modal');
+            if (response.success) {
+                // Update product display
+                const container = $('#bakery-tab-pane .container .row');
+                container.empty();
 
-            if (result.success) {
-                await this.updateCart();
-                modalManager.hide('add-note-modal');
-                this.showSuccessToast('Note saved successfully');
-            } else {
-                modalManager.showError(result.message);
-            }
-        } catch (error) {
-            modalManager.hide('loading-modal');
-            modalManager.showError('Failed to save note');
-        }
-    }
-
-    startAutoUpdate() {
-        if (this.updateInterval) {
-            clearInterval(this.updateInterval);
-        }
-
-        this.updateInterval = setInterval(() => {
-            this.updateCart();
-        }, CONFIG.REFRESH_INTERVAL);
-    }
-
-    showSuccessToast(message) {
-        // Implementation depends on your toast library
-        // For example, using Bootstrap's toast:
-        const toast = document.createElement('div');
-        toast.className = 'toast align-items-center text-white bg-success border-0';
-        toast.setAttribute('role', 'alert');
-        toast.setAttribute('aria-live', 'assertive');
-        toast.setAttribute('aria-atomic', 'true');
-
-        toast.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">
-                    ${message}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        `;
-
-        document.body.appendChild(toast);
-        const bsToast = new bootstrap.Toast(toast);
-        bsToast.show();
-
-        toast.addEventListener('hidden.bs.toast', () => {
-            toast.remove();
-        });
-    }
-
-    cleanup() {
-        if (this.updateInterval) {
-            clearInterval(this.updateInterval);
-        }
-    }
-}
-
-// Order Manager
-class OrderManager {
-    constructor() {
-        this.setupEventListeners();
-    }
-
-    setupEventListeners() {
-        const submitOrderButton = document.getElementById('submit-final-order');
-        if (submitOrderButton) {
-            submitOrderButton.addEventListener('click', () => this.placeOrder());
-        }
-    }
-
-    async placeOrder() {
-        if (!state.session || state.cart.items.length === 0) {
-            modalManager.showError('Cannot place empty order');
-            return;
-        }
-
-        modalManager.showLoading('Placing your order...');
-
-        try {
-            const response = await fetch('/order/done', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    outletId: state.session.outlet_id,
-                    tableId: state.session.table_id,
-                    brand: state.session.brand
-                })
-            });
-
-            const result = await response.json();
-            modalManager.hide('loading-modal');
-
-            if (result.success) {
-                this.handleOrderSuccess(result.data);
-            } else {
-                modalManager.showError(result.message);
-            }
-        } catch (error) {
-            modalManager.hide('loading-modal');
-            modalManager.showError('Failed to place order');
-        }
-    }
-
-    handleOrderSuccess(orderData) {
-        modalManager.hide('confirm-order-modal');
-        
-        // Update success modal content
-        document.getElementById('receipt-number').textContent = orderData.receipt_number;
-        document.getElementById('order-id').textContent = orderData.order_id;
-        document.getElementById('final-amount').textContent = formatCurrency(orderData.summary.total_amount);
-        document.getElementById('order-time').textContent = formatDateTime(orderData.timing.order_time);
-
-        // Show success modal
-        modalManager.show('order-success-modal');
-
-        // Reset cart state
-        state.cart = {
-            items: [],
-            total: 0,
-            regularItems: [],
-            packageItems: []
-        };
-
-        // Redirect after delay
-        setTimeout(() => {
-            window.location.href = '/';
-        }, 5000);
-    }
-}
-
-// Package Manager
-class PackageManager {
-    constructor() {
-        this.setupEventListeners();
-    }
-
-    setupEventListeners() {
-        document.getElementById('show-packages').addEventListener('click', () => {
-            this.showPackageBrowseModal();
-        });
-
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('select-package')) {
-                this.handlePackageSelection(e);
-            } else if (e.target.classList.contains('add-package')) {
-                this.handleAddPackageToCart();
-            }
-        });
-    }
-
-    async showPackageBrowseModal() {
-        modalManager.show('package-browse-modal');
-        await this.loadPackages();
-    }
-
-    async loadPackages() {
-        try {
-            const response = await fetch(`/order/packages?outletId=${state.session.outlet_id}&brand=${state.session.brand}`);
-            const result = await response.json();
-
-            if (result.success) {
-                this.populatePackageBrowseModal(result.data.packages);
-            }
-        } catch (error) {
-            console.error('Failed to load packages:', error);
-            modalManager.showError('Failed to load packages');
-        }
-    }
-
-    populatePackageBrowseModal(packages) {
-        const container = document.querySelector('#package-browse-modal .row');
-        if (!container) return;
-
-        container.innerHTML = packages.map(pkg => this.createPackageBrowseCard(pkg)).join('');
-    }
-
-    createPackageBrowseCard(packageData) {
-        return `
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">${packageData.name}</h5>
-                        <p class="card-text">${packageData.description}</p>
-                        <div class="package-details">
-                            <h6>Package Contents:</h6>
-                            <ul class="list-unstyled">
-                                ${packageData.categories.map(cat => `
-                                    <li>
-                                        <i class="fas fa-check-circle text-success me-2"></i>
-                                        <span class="fw-bold">${cat.name}:</span>
-                                        Choose ${cat.quantity} items
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                        <button class="btn btn-primary w-100 select-package" 
-                                data-package-id="${packageData.id}">
-                            Select Package
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    async handlePackageSelection(event) {
-        const packageId = event.target.dataset.packageId;
-        modalManager.hide('package-browse-modal');
-        modalManager.show('loading-modal');
-
-        try {
-            const response = await fetch(`/order/packages/${packageId}`);
-            const result = await response.json();
-
-            modalManager.hide('loading-modal');
-            
-            if (result.success) {
-                this.showPackageSelectionModal(result.data.package);
-            } else {
-                modalManager.showError(result.message);
-            }
-        } catch (error) {
-            modalManager.hide('loading-modal');
-            modalManager.showError('Failed to load package details');
-        }
-    }
-
-    showPackageSelectionModal(packageData) {
-        state.currentPackage = packageData;
-        state.packageSelections.clear();
-        
-        modalManager.show('package-selection-modal');
-        this.populatePackageSelectionModal();
-    }
-
-    populatePackageSelectionModal() {
-        if (!state.currentPackage) return;
-
-        // Update package info
-        document.querySelector('.package-name').textContent = state.currentPackage.name;
-        document.querySelector('.package-description').textContent = state.currentPackage.description;
-
-        // Clear existing items
-        const categoriesContainer = document.getElementById('package-categories');
-        categoriesContainer.innerHTML = '';
-
-        // Add categories and their items
-        state.currentPackage.categories.forEach(category => {
-            const categorySection = this.createCategorySection(category);
-            categoriesContainer.appendChild(categorySection);
-        });
-
-        // Setup excluded items if any
-        this.setupExcludedItems();
-
-        // Initialize package summary
-        this.updatePackageSummary();
-
-        // Enable/disable add button based on selections
-        this.validatePackageSelections();
-    }
-
-    createCategorySection(category) {
-        const section = document.createElement('div');
-        section.className = 'package-category mb-4';
-        section.dataset.categoryId = category.id;
-
-        section.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                <h6 class="mb-0">${category.name}</h6>
-                <div class="selection-count">
-                    <span class="selected">0</span>
-                    <span class="text-muted">/ ${category.required_qty} items</span>
-                </div>
-            </div>
-            <div class="package-items row g-3">
-                ${category.items.map(item => this.createPackageItemCard(item, category)).join('')}
-            </div>
-            <div class="progress mt-3" style="height: 5px;">
-                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-            </div>
-        `;
-
-        return section;
-    }
-
-    createPackageItemCard(item, category) {
-        return `
-            <div class="col-md-4">
-                <div class="card h-100 selectable-item" data-item-id="${item.id}" data-category-id="${category.id}">
-                    <img src="${item.image_url}" class="card-img-top" alt="${item.name}" 
-                         style="height: 120px; object-fit: cover;">
-                    <div class="card-body">
-                        <h6 class="card-title item-name">${item.name}</h6>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="price">${formatCurrency(item.price)}</span>
-                            <div class="quantity-selector d-none">
-                                <div class="input-group input-group-sm">
-                                    <button class="btn btn-outline-secondary decrease-qty" type="button">-</button>
-                                    <input type="number" class="form-control text-center item-quantity" value="0" min="0">
-                                    <button class="btn btn-outline-secondary increase-qty" type="button">+</button>
+                if (response.data.products && response.data.products.length > 0) {
+                    let categoryID = 0;
+                    response.data.products.forEach(prod => {
+                        if (categoryID !== prod.cat_id) {
+                            categoryID = prod.cat_id;
+                            container.append(`
+                                <div class="col-12 pt-2 rounded" style="background-color: #ff9924">
+                                    <div class="d-flex justify-content-center">
+                                        <h2 style="color: #fff">${prod.cat_name}</h2>
+                                    </div>
                                 </div>
+                            `);
+                        }
+
+                        container.append(`
+                            <div class="col-6 col-sm-4 pt-3 product-image-btn" data-product-id="${prod.product_id}">
+                                <div class="d-flex justify-content-center image-catalogue">
+                                    <img src="${window.location.origin}/resource/assets-frontend/dist/product/${prod.product_pict}"
+                                        data-product-id="${prod.product_id}"
+                                        class="img-fluid custom-block-ek-image e-catalogue-image"
+                                        alt="Image-${prod.product_name.toUpperCase()}"
+                                        style="max-height: 100%; filter: drop-shadow(5px 5px 10px #000000);" />
+                                    ${prod.current_stock === 0 ? `
+                                        <img src="${window.location.origin}/resource/assets-frontend/dist/katalog/soldout.png"
+                                            data-product-id="${prod.product_id}"
+                                            class="img-fluid custom-block-ek-image"
+                                            alt="Soldout-${prod.product_name.toUpperCase()}"
+                                            style="max-height: 3em; max-width: 4em; filter: drop-shadow(5px 5px 10px #000000); position: absolute;" />
+                                    ` : ''}
+                                </div>
+                                <div class="pt-2 text-center fw-bold custom-catalogue-product-name">
+                                    ${prod.product_name.toUpperCase()}
+                                </div>
+                                <hr style="border: 0.1rem solid #725535; opacity: 100; margin: 0.25em;" />
+                                <sup><span class="rounded-circle custom-catalogue-dotrp">Rp</span></sup>
+                                <span class="custom-catalogue-text">${prod.price_catalogue} <sup>K</sup></span>
                             </div>
-                            <button class="btn btn-sm btn-outline-primary select-item">Select</button>
-                        </div>
-                        ${item.stock <= 5 ? `
-                            <small class="text-warning">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                Only ${item.stock} left
-                            </small>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    setupExcludedItems() {
-        const excludedSection = document.getElementById('excluded-products-section');
-        const excludedList = document.getElementById('excluded-items-list');
-
-        if (!state.currentPackage.excluded_items || state.currentPackage.excluded_items.length === 0) {
-            excludedSection.style.display = 'none';
-            return;
-        }
-
-        excludedSection.style.display = 'block';
-        excludedList.innerHTML = state.currentPackage.excluded_items.map(item => `
-            <li class="mb-2">
-                <i class="fas fa-ban text-danger me-2"></i>
-                ${item.name}
-            </li>
-        `).join('');
-    }
-
-    handleItemSelection(event) {
-        const itemCard = event.target.closest('.selectable-item');
-        const itemId = itemCard.dataset.itemId;
-        const categoryId = itemCard.dataset.categoryId;
-        const category = state.currentPackage.categories.find(cat => cat.id === parseInt(categoryId));
-
-        if (!category) return;
-
-        const currentSelections = state.packageSelections.get(categoryId) || [];
-        const isSelected = itemCard.classList.contains('selected');
-
-        if (isSelected) {
-            // Remove selection
-            itemCard.classList.remove('selected');
-            state.packageSelections.set(categoryId, 
-                currentSelections.filter(id => id !== itemId)
-            );
-        } else {
-            // Add selection if within limits
-            if (currentSelections.length < category.required_qty) {
-                itemCard.classList.add('selected');
-                state.packageSelections.set(categoryId, 
-                    [...currentSelections, itemId]
-                );
-            } else {
-                this.showMaxSelectionWarning(category.name);
-            }
-        }
-
-        this.updateCategoryProgress(categoryId);
-        this.updatePackageSummary();
-        this.validatePackageSelections();
-    }
-
-    updateCategoryProgress(categoryId) {
-        const categorySection = document.querySelector(`.package-category[data-category-id="${categoryId}"]`);
-        const category = state.currentPackage.categories.find(cat => cat.id === parseInt(categoryId));
-        const selections = state.packageSelections.get(categoryId) || [];
-
-        const progressBar = categorySection.querySelector('.progress-bar');
-        const selectedCount = categorySection.querySelector('.selected');
-
-        const progress = (selections.length / category.required_qty) * 100;
-        progressBar.style.width = `${progress}%`;
-        selectedCount.textContent = selections.length;
-    }
-
-    updatePackageSummary() {
-        const summaryContainer = document.querySelector('.package-summary .selected-items-list');
-        summaryContainer.innerHTML = '';
-
-        let totalPrice = state.currentPackage.base_price;
-        let selectedItems = [];
-
-        state.packageSelections.forEach((itemIds, categoryId) => {
-            const category = state.currentPackage.categories.find(cat => cat.id === parseInt(categoryId));
-            
-            itemIds.forEach(itemId => {
-                const item = this.findItemInCategory(itemId, category);
-                if (item) {
-                    selectedItems.push(item);
-                    if (item.additional_price) {
-                        totalPrice += item.additional_price;
-                    }
+                        `);
+                    });
                 }
-            });
-        });
 
-        // Update summary display
-        summaryContainer.innerHTML = selectedItems.map(item => `
-            <div class="selected-item d-flex justify-content-between mb-2">
-                <span>${item.name}</span>
-                ${item.additional_price ? `<span>${formatCurrency(item.additional_price)}</span>` : ''}
-            </div>
-        `).join('');
-
-        // Update totals
-        document.querySelector('.base-price').textContent = formatCurrency(state.currentPackage.base_price);
-        document.querySelector('.additional-price').textContent = formatCurrency(totalPrice - state.currentPackage.base_price);
-        document.querySelector('.total-price').textContent = formatCurrency(totalPrice);
-    }
-
-    validatePackageSelections() {
-        const addPackageButton = document.getElementById('add-package');
-        let isValid = true;
-        const validationMessages = [];
-
-        state.currentPackage.categories.forEach(category => {
-            const selections = state.packageSelections.get(category.id) || [];
-            if (selections.length !== category.required_qty) {
-                isValid = false;
-                validationMessages.push(`Please select ${category.required_qty} items from ${category.name}`);
-            }
-        });
-
-        this.displayValidationMessages(validationMessages);
-        addPackageButton.disabled = !isValid;
-    }
-
-    displayValidationMessages(messages) {
-        const container = document.getElementById('package-validation-messages');
-        container.innerHTML = messages.map(msg => `
-            <div class="alert alert-warning mb-2">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                ${msg}
-            </div>
-        `).join('');
-    }
-
-    async handleAddPackageToCart() {
-        if (!this.validatePackageSelections()) return;
-
-        modalManager.showLoading('Adding package to cart...');
-
-        try {
-            const packageData = this.collectPackageData();
-            
-            const response = await fetch('/order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 3,
-                    orderId: state.session.id,
-                    packageId: state.currentPackage.id,
-                    products: packageData
-                })
-            });
-
-            const result = await response.json();
-            modalManager.hide('loading-modal');
-
-            if (result.success) {
-                modalManager.hide('package-selection-modal');
-                cartManager.updateCart();
-                this.showSuccessToast('Package added to cart successfully');
-            } else {
-                modalManager.showError(result.message);
-            }
-        } catch (error) {
-            modalManager.hide('loading-modal');
-            modalManager.showError('Failed to add package to cart');
-        }
-    }
-
-    collectPackageData() {
-        let packageItems = [];
-        state.packageSelections.forEach((itemIds, categoryId) => {
-            itemIds.forEach(itemId => {
-                packageItems.push({
-                    productId: itemId,
-                    categoryId: parseInt(categoryId),
-                    quantity: 1 // Can be modified if quantities are allowed
+                // Reinitialize product click events
+                $('.product-image-btn').click(function() {
+                    const productId = $(this).data('product-id');
+                    $.ajax({
+                        type: 'GET',
+                        url: `${window.location.origin}/apis/product/detail/${productId}`,
+                        dataType: 'json'
+                    }).done(function(response) {
+                        if (parseInt(response.data.detail.stock) === 0) {
+                            $('#add-to-cart').attr('hidden', true);
+                        }
+                        $('#detail-product-label').text(response.data.detail.product_name);
+                        $('#detail-product-description').text(response.data.detail.product_desc);
+                        $('#detail-product-image').attr('src', 
+                            `${window.location.origin}/resource/assets-frontend/dist/product/${response.data.detail.product_pict}`);
+                        $('#product-id').text(response.data.detail.product_id);
+                        dProductModal.show();
+                    });
                 });
+
+                // Update URL without reload
+                const url = new URL(window.location);
+                if (selectedValue !== 'all') {
+                    url.searchParams.set('category', selectedValue);
+                } else {
+                    url.searchParams.delete('category');
+                }
+                window.history.pushState({}, '', url);
+            }
+
+            Swal.close();
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Gagal memuat produk',
+                icon: 'error'
             });
-        });
-        return packageItems;
-    }
-
-    findItemInCategory(itemId, category) {
-        return category.items.find(item => item.id === itemId);
-    }
-
-    showMaxSelectionWarning(categoryName) {
-        modalManager.showError(`Maximum items already selected for ${categoryName}`);
-    }
-
-    showSuccessToast(message) {
-        // Reuse the cart manager's toast implementation
-        cartManager.showSuccessToast(message);
-    }
-}
-
-// Utility Functions
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0
-    }).format(amount);
-}
-
-function formatDateTime(dateString) {
-    return new Date(dateString).toLocaleString('id-ID', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
-// Initialize application
-document.addEventListener('DOMContentLoaded', async () => {
-    const params = new URLSearchParams(window.location.search);
-    
-    // Initialize managers
-    const modalManager = new ModalManager();
-    const sessionManager = new SessionManager();
-    const cartManager = new CartManager();
-    const packageManager = new PackageManager();
-    const orderManager = new OrderManager();
-
-    // Check existing session
-    const sessionExists = await sessionManager.initialize(params);
-    if (!sessionExists) {
-        document.getElementById('identity-page').style.display = 'block';
-    }
-
-    // Setup customer registration form
-    document.getElementById('submitCustomerInfo').addEventListener('click', async () => {
-        const customerData = {
-            name: document.getElementById('inputCustomerName').value,
-            passcode: document.getElementById('inputPasscode').value
-        };
-
-        if (await sessionManager.createNewSession(params, customerData)) {
-            cartManager.initialize();
-            packageManager.initialize();
         }
     });
-
-    // Initialize managers if session exists
-    if (sessionExists) {
-        cartManager.initialize();
-        packageManager.initialize();
+  
+    document
+      .getElementById('detail-product')
+      .addEventListener('hide.bs.modal', function (event) {
+        $('#add-to-cart').removeAttr('hidden')
+      })
+  
+    $('#add-to-cart').on('click', function () {
+      $.ajax({
+        type: 'POST',
+        url: window.location.origin + '/order',
+        data: JSON.stringify({
+          outletId: params.get('outletId'),
+          tableId: params.get('tableId'),
+          brand: params.get('brand'),
+          productId: document.getElementById('product-id').innerText,
+          action: 'addProduct'
+        }),
+        dataType: 'json'
+      })
+        .done(function (response, textStatus, jqXHR) {
+          dProductModal.hide()
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+          if (jqXHR.status === 422) {
+            Swal.fire({
+              title: 'Stok Habis',
+              // text: jqXHR.responseText,
+              icon: 'error'
+            }).then(result => {
+              if (result.isConfirmed) {
+                dProductModal.hide()
+              }
+            })
+          }
+        })
+    })
+  
+    $('#show-cart').on('click', function () {
+      cartModal.show()
+    })
+  
+    // Cart state management
+    let cartState = {
+      items: [],
+      packages: [],
+      total: 0
     }
+  
+    // Update cart modal content
+    function updateCartContent (cartData) {
 
-    // Track user activity
-    document.addEventListener('click', () => {
-        sessionManager.updateLastActivity();
-    });
-
-    document.addEventListener('keypress', () => {
-        sessionManager.updateLastActivity();
-    });
-
-    // Handle category filtering
-    document.getElementById('category-select').addEventListener('change', (e) => {
-        const categoryId = e.target.value;
-        filterProductsByCategory(categoryId);
-    });
-});
+        if (!Array.isArray(cartData)) {
+        console.error('Invalid cart data:', cartData);
+        return;
+    }
+    
+      const container = document.getElementById('container-cart')
+      container.innerHTML = ''
+  
+      // Sort items into regular items and packages
+      const regularItems = cartData.filter(item => !item.parent_id)
+      const packages = cartData.filter(
+        item => item.package_items && item.package_items.length > 0
+      )
+  
+      // Add regular items
+      regularItems.forEach(item => {
+        if (!item.package_items) {
+          addRegularItemToCart(item)
+        }
+      })
+  
+      // Add packages
+      packages.forEach(pkg => {
+        addPackageToCart(pkg)
+      })
+  
+      updateCartSummary()
+    }
+  
+    // Add regular item to cart
+    function addRegularItemToCart (item) {
+      const template = document.getElementById('regular-item-template')
+      const itemElement = template.cloneNode(true)
+      itemElement.hidden = false
+  
+      // Set item details
+      itemElement.querySelector(
+        '.cart-item-image'
+      ).src = `${window.location.origin}/resource/assets-frontend/dist/product/${item.product_pict}`
+      itemElement.querySelector('.cart-item-name').textContent = item.product_name
+      itemElement.querySelector(
+        '.cart-item-price'
+      ).textContent = `Rp ${item.price_catalogue}`
+      itemElement.querySelector('.cart-item-stock').textContent =
+        item.product_stock
+  
+      const quantityInput = itemElement.querySelector('.action-number')
+      quantityInput.value = item.product_count
+      quantityInput.dataset.productId = item.product_id
+  
+      const noteTextarea = itemElement.querySelector('.notes')
+      noteTextarea.value = item.notes || ''
+      noteTextarea.dataset.productId = item.product_id
+  
+      // Set action buttons
+      const minusBtn = itemElement.querySelector('.action-minus')
+      minusBtn.addEventListener('click', function () {
+        let productCount = itemElement.querySelector('.action-number')
+        if (parseInt(productCount.value) === 0) return false
+  
+        $.ajax({
+          type: 'DELETE',
+          url: window.location.origin + '/order',
+          data: JSON.stringify({
+            outletId: params.get('outletId'),
+            brand: params.get('brand'),
+            tableId: params.get('tableId'),
+            productId: item.product_id,
+            count: 1
+          }),
+          dataType: 'json'
+        }).done(function () {
+          productCount.value = parseInt(productCount.value) - 1
+          updateCartSummary()
+        })
+      })
+  
+      const plusBtn = itemElement.querySelector('.action-plus')
+      plusBtn.addEventListener('click', function () {
+        let productCount = itemElement.querySelector('.action-number')
+        if (parseInt(productCount.value) >= item.product_stock) return false
+  
+        $.ajax({
+          method: 'POST',
+          url: window.location.origin + '/order',
+          contentType: 'application/json',
+          data: JSON.stringify({
+            outletId: params.get('outletId'),
+            tableId: params.get('tableId'),
+            brand: params.get('brand'),
+            productId: item.product_id,
+            action: 'addProduct'
+          })
+        }).done(function () {
+          productCount.value = parseInt(productCount.value) + 1
+          updateCartSummary()
+        })
+      })
+  
+      const notes = itemElement.querySelector('.notes')
+      notes.addEventListener('change', function () {
+        $.ajax({
+          method: 'POST',
+          url: window.location.origin + '/order',
+          contentType: 'application/json',
+          data: JSON.stringify({
+            outletId: params.get('outletId'),
+            tableId: params.get('tableId'),
+            brand: params.get('brand'),
+            productId: item.product_id,
+            action: 'addNote',
+            notes: this.value
+          })
+        })
+      })
+  
+      document.getElementById('container-cart').appendChild(itemElement)
+    }
+  
+    // Add package to cart
+    function addPackageToCart (pkg) {
+      const template = document.getElementById('package-item-template')
+      const packageElement = template.cloneNode(true)
+      packageElement.hidden = false
+  
+      // Set package details
+      packageElement.querySelector(
+        '.package-image'
+      ).src = `${window.location.origin}/resource/assets-frontend/dist/product/${pkg.product_pict}`
+      packageElement.querySelector('.package-name').textContent = pkg.product_name
+      packageElement.querySelector(
+        '.package-price'
+      ).textContent = `Rp ${pkg.price_catalogue}`
+  
+      const quantityInput = packageElement.querySelector('.action-number')
+      quantityInput.value = pkg.product_count
+      quantityInput.dataset.productId = pkg.product_id
+  
+      const noteTextarea = packageElement.querySelector('.notes')
+      noteTextarea.value = pkg.notes || ''
+      noteTextarea.dataset.productId = pkg.product_id
+  
+      // Set action buttons
+      const minusBtn = packageElement.querySelector('.action-minus')
+      const plusBtn = packageElement.querySelector('.action-plus')
+      minusBtn.dataset.productId = pkg.product_id
+      plusBtn.dataset.productId = pkg.product_id
+  
+      // Add package items
+      const packageItemsContainer = packageElement.querySelector('.package-items')
+      pkg.package_items.forEach(childItem => {
+        addPackageChildItem(packageItemsContainer, childItem)
+      })
+  
+      document.getElementById('container-cart').appendChild(packageElement)
+    }
+  
+    // Add package child item
+    function addPackageChildItem (container, childItem) {
+      const template = document.getElementById('package-child-template')
+      const childElement = template.cloneNode(true)
+      childElement.hidden = false
+  
+      // Set child item details
+      childElement.querySelector(
+        '.child-item-image'
+      ).src = `${window.location.origin}/resource/assets-frontend/dist/product/${childItem.product_pict}`
+      childElement.querySelector('.child-item-name').textContent =
+        childItem.product_name
+      childElement.querySelector('.child-item-category').textContent =
+        childItem.package_category_name
+      childElement.querySelector('.child-item-quantity').textContent =
+        childItem.quantity
+  
+      const noteTextarea = childElement.querySelector('.child-notes')
+      noteTextarea.value = childItem.notes || ''
+      noteTextarea.dataset.productId = childItem.product_id
+      noteTextarea.dataset.parentId = childItem.parent_id
+  
+      container.appendChild(childElement)
+    }
+  
+    // Update cart summary
+    function updateCartSummary () {
+      const totalItems = cartState.items.reduce(
+        (sum, item) => sum + item.product_count,
+        0
+      )
+      const totalAmount = cartState.items.reduce(
+        (sum, item) => sum + item.price_catalogue * item.product_count,
+        0
+      )
+  
+      document.getElementById('cart-total-items').textContent = totalItems
+      document.getElementById(
+        'cart-total-amount'
+      ).textContent = `Rp ${totalAmount.toLocaleString()}`
+    }
+  
+    // Handle notes for package items
+    $(document).on('change', '.child-notes', function () {
+      const productId = $(this).data('product-id')
+      const parentId = $(this).data('parent-id')
+      const notes = $(this).val()
+  
+      $.ajax({
+        method: 'POST',
+        url: `${window.location.origin}/order`,
+        contentType: 'application/json',
+        data: JSON.stringify({
+          outletId: new URLSearchParams(window.location.search).get('outletId'),
+          tableId: new URLSearchParams(window.location.search).get('tableId'),
+          brand: new URLSearchParams(window.location.search).get('brand'),
+          productId: productId,
+          parentId: parentId,
+          action: 1,
+          notes: notes
+        })
+      })
+    })
+  
+    // Handle cart modal events
+    document
+      .getElementById('cart-modal')
+      .addEventListener('show.bs.modal', function () {
+        $.ajax({
+          type: 'GET',
+          url: window.location.origin + '/order/cart?' + params.toString(),
+          dataType: 'json'
+        })
+          .done(function (response) {
+            cartState.items = response.data
+            updateCartContent(response.data)
+          })
+          .fail(function (jqXHR, textStatus, errorThrown) {
+            console.error('Failed to fetch cart data:', textStatus)
+            Swal.fire({
+              title: 'Error',
+              text: 'Failed to load cart items',
+              icon: 'error'
+            })
+          })
+      })
+  
+    $('.action-number').on('keydown', function (event) {
+      if (
+        (event.keyCode >= 48 && event.keyCode <= 57) ||
+        (event.keyCode >= 96 && event.keyCode <= 105)
+      ) {
+        return
+      }
+  
+      event.preventDefault()
+    })
+  
+    $(document)
+      .on('focusin', '.action-number', function () {
+        $(this).data('val', $(this).val())
+      })
+      .on('change', '.action-number', function () {
+        let productCount = $('#product-count-' + $(this).data('product-id'))
+        let productStock = $('#product-stock-' + $(this).data('product-id'))
+  
+        if (parseInt($(this).val()) == parseInt(productStock.text())) {
+          return false
+        }
+  
+        $.ajax({
+          method: 'POST',
+          url: window.location.origin + '/order',
+          contentType: 'application/json',
+          data: JSON.stringify({
+            outletId: params.get('outletId'),
+            tableId: params.get('tableId'),
+            brand: params.get('brand'),
+            productId: $(this).data('product-id'),
+            action: 'addProduct',
+            count: $(this).val()
+          })
+        })
+          .done(function (response, textStatus, jqXHR) {})
+          .fail(function (jqXHR, textStatus, errorThrown) {
+            productCount.val($(this).data('val'))
+          })
+      })
+  
+    document.getElementById('order').addEventListener('click', function () {
+      $.ajax({
+        type: 'POST',
+        url: window.location.origin + '/order/done',
+        data: JSON.stringify({
+          outletId: params.get('outletId'),
+          tableId: params.get('tableId'),
+          brand: params.get('brand')
+        }),
+        dataType: 'json'
+      })
+        .done(function (response, textStatus, jqXHR) {
+          Swal.fire({
+            title: 'Sukses Order',
+            text: 'Silahkan lakukan pembayaran',
+            icon: 'success'
+          })
+          cartModal.hide()
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+          if (jqXHR.status === 422) {
+            Swal.fire({
+              title: 'Stok Habis',
+              // text: jqXHR.responseText,
+              icon: 'error'
+            }).then(result => {
+              if (result.isConfirmed) {
+                cartModal.hide()
+              }
+            })
+          }
+        })
+    })
+  
+    $('#submitName').on('click', function () {
+      let name = $('#inputCustomerName').val()
+      $.ajax({
+        type: 'POST',
+        url: window.location.origin + '/order/session',
+        data: JSON.stringify({
+          outletId: params.get('outletId'),
+          tableId: params.get('tableId'),
+          brand: params.get('brand'),
+          name: name
+        }),
+        dataType: 'json'
+      }).done(function (response, textStatus, jqXHR) {
+        $('#customer-name').text(name)
+        // Switch page
+        $('#identity-page').attr('hidden', true)
+        $('#order-page').removeAttr('hidden')
+  
+        isStartSession = true
+      })
+    })
+  
+    window.setInterval(function () {
+      if (!isStartSession) {
+        return
+      }
+  
+      $.ajax({
+        type: 'GET',
+        url: window.location.origin + '/order/countCart?' + params.toString(),
+        dataType: 'json'
+      })
+        .done(function (response, textStatus, jqXHR) {
+          $('#count-cart').text(response.data)
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+          console.log(textStatus)
+        })
+    }, 3000)
+  })
+  

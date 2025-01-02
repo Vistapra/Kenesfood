@@ -267,33 +267,34 @@ class Order extends ApplicationBase
 					]));
 			}
 
-			if (isset($payload->latitude) && isset($payload->longitude)) {
-				$outletCoordinate = [
-					"latitude" => $outlet["latitude"],
-					"longitude" => $outlet["longitude"]
-				];
-			
-				$customerLocation = [[
-					"latitude" => $payload->latitude,
-					"longitude" => $payload->longitude
-				]];
-			
-				$inRadius = $this->libgeneralmap->inRadius(
-					0.1,
-					$outletCoordinate,
-					$customerLocation
-				);
-			
-				if (in_array(false, $inRadius)) {
-					return $this->output
-						->set_status_header(403)
-						->set_output(json_encode([
-							"success" => false,
-							"code" => "005",
-							"message" => "You must be within 100 meters of the outlet"
-						]));
-				}
-			}
+			if (isset($payload->verifyLocation) && $payload->verifyLocation) {
+    // Only validate location
+    $outletCoordinate = [
+        "latitude" => $outlet["latitude"],
+        "longitude" => $outlet["longitude"]
+    ];
+
+    $customerLocation = [[
+        "latitude" => $payload->latitude,
+        "longitude" => $payload->longitude
+    ]];
+
+    $inRadius = $this->libgeneralmap->inRadius(
+        0.1,
+        $outletCoordinate,
+        $customerLocation
+    );
+
+    return $this->output
+        ->set_status_header(200)
+        ->set_output(json_encode([
+            "success" => !in_array(false, $inRadius),
+            "code" => "000",
+            "message" => !in_array(false, $inRadius) ? 
+                "Location validated" : 
+                "You must be within 100 meters of the outlet"
+        ]));
+}
 
 			$existingSession = $this->M_Order->getOne(
 				array_merge($params, [
@@ -431,181 +432,252 @@ class Order extends ApplicationBase
 	}
 
 	public function list()
-	{
-		try {
-			$tableId = $this->input->get('tableId');
-			$outletId = $this->input->get('outletId');
-			$category = $this->input->get('category');
-			$brandType = $this->input->get('brand');
+{
+    try {
+        $tableId = $this->input->get('tableId');
+        $outletId = $this->input->get('outletId');
+        $category = $this->input->get('category');
+        $brandType = $this->input->get('brand');
 
-			log_message('debug', 'Parameters: outletId=' . $outletId . ', tableId=' . $tableId . ', brand=' . $brandType);
+        log_message('debug', 'Parameters: outletId=' . $outletId . ', tableId=' . $tableId . ', brand=' . $brandType);
 
-			if (empty($outletId) || empty($tableId)) {
-				log_message('debug', 'Missing required parameters');
-				$this->session->set_flashdata('error', 'Parameter tidak lengkap');
-				redirect(base_url());
-				return;
-			}
+        if (empty($outletId) || empty($tableId)) {
+            log_message('debug', 'Missing required parameters');
+            if ($this->input->is_ajax_request()) {
+                return $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode([
+                        'success' => false,
+                        'message' => 'Parameter tidak lengkap'
+                    ]));
+            }
+            $this->session->set_flashdata('error', 'Parameter tidak lengkap');
+            redirect(base_url());
+            return;
+        }
 
-			$outlet = $this->MS_Outlet->get_detail_outlet([
-				"outlet_id" => $outletId
-			]);
+        $outlet = $this->MS_Outlet->get_detail_outlet([
+            "outlet_id" => $outletId
+        ]);
 
-			log_message('debug', 'Found outlet: ' . json_encode($outlet));
+        log_message('debug', 'Found outlet: ' . json_encode($outlet));
 
-			if (!$outlet) {
-				log_message('debug', 'Outlet not found');
-				$this->session->set_flashdata('error', 'Outlet tidak ditemukan');
-				redirect(base_url());
-				return;
-			}
+        if (!$outlet) {
+            log_message('debug', 'Outlet not found');
+            if ($this->input->is_ajax_request()) {
+                return $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode([
+                        'success' => false,
+                        'message' => 'Outlet tidak ditemukan'
+                    ]));
+            }
+            $this->session->set_flashdata('error', 'Outlet tidak ditemukan');
+            redirect(base_url());
+            return;
+        }
 
-			if ($outlet['outlet_status'] != '0') {
-				log_message('debug', 'Outlet not active. Status: ' . $outlet['outlet_status']);
-				$this->session->set_flashdata('error', 'Outlet tidak aktif');
-				redirect(base_url());
-				return;
-			}
+        if ($outlet['outlet_status'] != '0') {
+            log_message('debug', 'Outlet not active. Status: ' . $outlet['outlet_status']);
+            if ($this->input->is_ajax_request()) {
+                return $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode([
+                        'success' => false,
+                        'message' => 'Outlet tidak aktif'
+                    ]));
+            }
+            $this->session->set_flashdata('error', 'Outlet tidak aktif');
+            redirect(base_url());
+            return;
+        }
 
-			if ($tableId > $outlet['count_table']) {
-				log_message('debug', 'Invalid table number');
-				$this->session->set_flashdata('error', 'Nomor meja tidak valid');
-				redirect(base_url());
-				return;
-			}
+        if ($tableId > $outlet['count_table']) {
+            log_message('debug', 'Invalid table number');
+            if ($this->input->is_ajax_request()) {
+                return $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode([
+                        'success' => false,
+                        'message' => 'Nomor meja tidak valid'
+                    ]));
+            }
+            $this->session->set_flashdata('error', 'Nomor meja tidak valid');
+            redirect(base_url());
+            return;
+        }
 
-			$timezone = new DateTimeZone('Asia/Jakarta');
-			$currentTime = new DateTime('now', $timezone);
-			$openTime = new DateTime($outlet['hour_open'], $timezone);
-			$closeTime = new DateTime($outlet['hour_close'], $timezone);
+        $timezone = new DateTimeZone('Asia/Jakarta');
+        $currentTime = new DateTime('now', $timezone);
+        $openTime = new DateTime($outlet['hour_open'], $timezone);
+        $closeTime = new DateTime($outlet['hour_close'], $timezone);
 
-			if ($currentTime < $openTime || $currentTime > $closeTime) {
-				log_message('debug', 'Outside operating hours');
-				$this->session->set_flashdata('error', 'Outlet sedang tutup. Jam operasional: ' .
-					$outlet['hour_open'] . ' - ' . $outlet['hour_close']);
-				redirect(base_url());
-				return;
-			}
+        if ($currentTime < $openTime || $currentTime > $closeTime) {
+            log_message('debug', 'Outside operating hours');
+            if ($this->input->is_ajax_request()) {
+                return $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode([
+                        'success' => false,
+                        'message' => 'Outlet sedang tutup. Jam operasional: ' .
+                            $outlet['hour_open'] . ' - ' . $outlet['hour_close']
+                    ]));
+            }
+            $this->session->set_flashdata('error', 'Outlet sedang tutup. Jam operasional: ' .
+                $outlet['hour_open'] . ' - ' . $outlet['hour_close']);
+            redirect(base_url());
+            return;
+        }
 
-			$this->tsmarty->assign("template_content", "order/order.html");
+        switch ($brandType) {
+            case "kopitiam":
+                $categories = $this->M_categories->get_catalogue_categories($brandType);
 
-			switch ($brandType) {
-				case "kopitiam":
-					$categories = $this->M_categories->get_catalogue_categories($brandType);
+                if ($category) {
+                    $products = $this->M_products->get_catalogues(
+                        'catalogue_outlet_filter_category',
+                        [$category, $brandType]
+                    );
+                } else {
+                    $products = $this->M_products->get_catalogues(
+                        'get_list_product_outlet',
+                        [$brandType]
+                    );
+                }
+                break;
 
-					if ($category) {
-						$products = $this->M_products->get_catalogues(
-							'catalogue_outlet_filter_category',
-							[$category, $brandType]
-						);
-					} else {
-						$products = $this->M_products->get_catalogues(
-							'get_list_product_outlet',
-							[$brandType]
-						);
-					}
-					break;
+            default:
+                if ($this->input->is_ajax_request()) {
+                    return $this->output
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            'success' => false,
+                            'message' => 'Brand tidak valid'
+                        ]));
+                }
+                redirect("order?outletId={$outletId}&tableId={$tableId}&brand=kopitiam");
+                return;
+        }
 
-				default:
-					redirect("order?outletId={$outletId}&tableId={$tableId}&brand=kopitiam");
-			}
+        $packages = $this->M_Package->getAll([
+            "where" => [
+                "deleted_at" => NULL
+            ]
+        ]);
 
-			$packages = $this->M_Package->getAll([
-				"where" => [
-					"deleted_at" => NULL
-				]
-			]);
+        $groupedProducts = [];
+        foreach ($products as $product) {
+            if (!isset($groupedProducts[$product['cat_id']])) {
+                $groupedProducts[$product['cat_id']] = [
+                    'category_name' => $product['cat_name'],
+                    'products' => []
+                ];
+            }
 
-			$groupedProducts = [];
-			foreach ($products as $product) {
-				if (!isset($groupedProducts[$product['cat_id']])) {
-					$groupedProducts[$product['cat_id']] = [
-						'category_name' => $product['cat_name'],
-						'products' => []
-					];
-				}
+            $price = floor($product['price_catalogue']);
+            if ($price != $product['price_catalogue']) {
+                $product['price_display'] = str_replace(
+                    '.',
+                    ',',
+                    strval($product['price_catalogue'])
+                );
+            } else {
+                $product['price_display'] = $price;
+            }
 
-				$price = floor($product['price_catalogue']);
-				if ($price != $product['price_catalogue']) {
-					$product['price_display'] = str_replace(
-						'.',
-						',',
-						strval($product['price_catalogue'])
-					);
-				} else {
-					$product['price_display'] = $price;
-				}
+            $product['available_in_packages'] = [];
+            foreach ($packages as $package) {
+                if ($package['product_id'] == $product['product_id']) {
+                    $packageDetails = $this->getPackageDetails($package['id']);
+                    $product['available_in_packages'][] = $packageDetails;
+                }
+            }
 
-				$product['available_in_packages'] = [];
-				foreach ($packages as $package) {
-					if ($package['product_id'] == $product['product_id']) {
-						$packageDetails = $this->getPackageDetails($package['id']);
-						$product['available_in_packages'][] = $packageDetails;
-					}
-				}
+            $stock = $this->MOC_Product->detail($product['product_id']);
+            $product['current_stock'] = $stock ? $stock['stock'] : 0;
 
-				$stock = $this->MOC_Product->detail($product['product_id']);
-				$product['current_stock'] = $stock ? $stock['stock'] : 0;
+            $groupedProducts[$product['cat_id']]['products'][] = $product;
+        }
 
-				$groupedProducts[$product['cat_id']]['products'][] = $product;
-			}
+        $packageCategories = $this->M_Package_Category->getAll([
+            "where" => [
+                "deleted_at" => NULL
+            ]
+        ]);
 
-			$packageCategories = $this->M_Package_Category->getAll([
-				"where" => [
-					"deleted_at" => NULL
-				]
-			]);
+        if ($this->input->is_ajax_request()) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => true,
+                    'data' => [
+                        'products' => $products,
+                        'categories' => $categories,
+                        'groupedProducts' => $groupedProducts,
+                        'packages' => $packages,
+                        'packageCategories' => $packageCategories
+                    ]
+                ]));
+        }
 
-			// Assign data to template
-			$this->tsmarty->assign('product_mb', $products);
-			$this->tsmarty->assign('grouped_products', $groupedProducts);
-			$this->tsmarty->assign("catalogueCategories", $categories);
-			$this->tsmarty->assign("packages", $packages);
-			$this->tsmarty->assign("package_categories", $packageCategories);
-			$this->tsmarty->assign("outlet", $outlet);
-			$this->tsmarty->assign("table_id", $tableId);
+        $this->tsmarty->assign("template_content", "order/order.html");
+        $this->tsmarty->assign('product_mb', $products);
+        $this->tsmarty->assign('grouped_products', $groupedProducts);
+        $this->tsmarty->assign("catalogueCategories", $categories);
+        $this->tsmarty->assign("packages", $packages);
+        $this->tsmarty->assign("package_categories", $packageCategories);
+        $this->tsmarty->assign("outlet", $outlet);
+        $this->tsmarty->assign("table_id", $tableId);
 
-			$sessionData = $this->M_Order->getOne([
-				"outlet_id" => $outletId,
-				"table_id" => $tableId,
-				"brand" => $brandType,
-				"deleted_at" => NULL
-			]);
+        $sessionData = $this->M_Order->getOne([
+            "outlet_id" => $outletId,
+            "table_id" => $tableId,
+            "brand" => $brandType,
+            "deleted_at" => NULL
+        ]);
 
-			if ($sessionData) {
-				$this->tsmarty->assign("session", $sessionData);
+        if ($sessionData) {
+            $this->tsmarty->assign("session", $sessionData);
 
-				if ($sessionData['status'] == $this->M_Order::STATUS_RESERVED) {
-					$cartItems = $this->M_Order_Detail->getAll([
-						"where" => [
-							"order_id" => $sessionData["id"],
-							"deleted_at" => NULL
-						]
-					]);
+            if ($sessionData['status'] == $this->M_Order::STATUS_RESERVED) {
+                $cartItems = $this->M_Order_Detail->getAll([
+                    "where" => [
+                        "order_id" => $sessionData["id"],
+                        "deleted_at" => NULL
+                    ]
+                ]);
 
-					foreach ($cartItems as &$item) {
-						if (!empty($item["parent_id"])) {
-							$packageItems = $this->M_Order_Detail->getAll([
-								"where" => [
-									"parent_id" => $item["parent_id"],
-									"deleted_at" => NULL
-								]
-							]);
-							$item["package_items"] = $packageItems;
-						}
-					}
+                foreach ($cartItems as &$item) {
+                    if (!empty($item["parent_id"])) {
+                        $packageItems = $this->M_Order_Detail->getAll([
+                            "where" => [
+                                "parent_id" => $item["parent_id"],
+                                "deleted_at" => NULL
+                            ]
+                        ]);
+                        $item["package_items"] = $packageItems;
+                    }
+                }
 
-					$this->tsmarty->assign("cart_items", $cartItems);
-				}
-			}
+                $this->tsmarty->assign("cart_items", $cartItems);
+            }
+        }
 
-			parent::display();
-		} catch (Exception $e) {
-			log_message('error', 'Error in list(): ' . $e->getMessage());
-			$this->session->set_flashdata('error', $e->getMessage());
-			redirect(base_url());
-		}
-	}
+        parent::display();
+    } catch (Exception $e) {
+        log_message('error', 'Error in list(): ' . $e->getMessage());
+        if ($this->input->is_ajax_request()) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ]));
+        }
+        $this->session->set_flashdata('error', $e->getMessage());
+        redirect(base_url());
+    }
+}
 
 	private function getPackageDetails($packageId)
 	{

@@ -1,935 +1,1488 @@
-<!-- Main Container -->
-<div class="container-fluid">
-	<!-- Customer Identity Section -->
-	<section class="section-padding" id="identity-page">
-		<div class="container">
-			<div class="row justify-content-center">
-				<div class="col-md-6">
-					<div class="card">
-						<div class="card-body">
-							<div class="logo-container">
-								<img src="{$BASEURL}resource/assets-frontend/dist/logo/logo_Kenes_teristimewa-01_(1).png"
-									alt="Logo" class="logo">
-							</div>
-							<h4 class="text-center mb-4">Welcome to {$outlet.outlet_name}</h4>
-							<div class="form-group mb-4">
-								<label class="form-label">Name</label>
-								<input type="text" class="form-control" id="inputCustomerName" required>
-							</div>
-							<div class="form-group mb-4">
-								<label class="form-label">Passcode</label>
-								<input type="password" class="form-control" id="inputPasscode" required minlength="4">
-								<small class="text-muted">Minimum 4 characters</small>
-							</div>
-							<button type="button" class="btn btn-primary w-100" id="submitCustomerInfo">
-								Start Order
-							</button>
+<!-- Session Management Sections -->
+<div class="container py-4" id="session-page">
+    <!-- Location Verification -->
+    <div id="location-verification" class="location-alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-geo-alt location-icon"></i>
+            <div>
+                <h5 class="mb-1">Verifikasi Lokasi</h5>
+                <p class="mb-0" id="location-status">Mohon izinkan akses lokasi</p>
+                <div class="progress mt-2" style="height: 3px;" id="location-progress" hidden>
+                    <div class="progress-bar progress-bar-striped progress-bar-animated"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Outlet Information -->
+    <div class="modern-card" id="outlet-info-section">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Informasi Outlet</h5>
+            <span class="status-badge" id="outlet-status">Buka</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-2 fs-5 fw-bold" id="outlet-name">{$outlet.outlet_name}</p>
+                    <p class="text-muted" id="outlet-address">{$outlet.outlet_address}</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="operating-hours">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Jam Buka:</span>
+                            <span class="fw-bold" id="outlet-open">{$outlet.hour_open}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Jam Tutup:</span>
+                            <span class="fw-bold" id="outlet-close">{$outlet.hour_close}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session Creation Form -->
+    <div class="modern-card" id="session-creation" {if $session}hidden{/if}>
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Mulai Pesanan</h5>
+        </div>
+        <div class="card-body">
+            <form id="session-form" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label class="form-label">Nama Pelanggan</label>
+                    <input type="text" class="form-control" id="customer-name" minlength="3" required>
+                    <div class="invalid-feedback">Nama minimal 3 karakter</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Passcode</label>
+                    <input type="password" class="form-control" id="passcode" minlength="4" required>
+                    <div class="invalid-feedback">Passcode minimal 4 karakter</div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-clock me-2"></i>Mulai Pesanan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resume Session -->
+    <div class="modern-card" id="resume-session" {if !$session}hidden{/if}>
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Lanjutkan Sesi</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info mb-3">
+                <i class="bi bi-info-circle me-2"></i>
+                Meja ini memiliki sesi yang masih aktif
+            </div>
+            <form id="resume-form">
+                <div class="mb-3">
+                    <label class="form-label">Masukkan Passcode</label>
+                    <input type="password" class="form-control" id="resume-passcode" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Lanjutkan Sesi
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!-- Active Session Display -->
+    <div class="modern-card" id="active-session" {if !$session || $session.status != 'RESERVED'}hidden{/if}>
+        <div class="timer-display">
+            <div class="row align-items-center">
+                <div class="col">
+                    <span class="fs-4" id="session-timer">00:00</span>
+                </div>
+            </div>
+        </div>
+        <div class="p-4">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <p class="mb-1">Pelanggan: <strong id="active-customer">{$session.name}</strong></p>
+                    <p class="mb-0">Meja: <strong id="active-table">{$table_id}</strong></p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-1">Status: <span class="badge bg-info" id="session-status">{$session.status}</span></p>
+                    <p class="mb-0">Mulai: <span id="session-start">{$session.created_at}</span></p>
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            {if isset($cart_items) && count($cart_items) > 0}
+            <div class="cart-summary mb-4">
+                <h6 class="mb-3">Ringkasan Pesanan</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach from=$cart_items item=item}
+                            <tr>
+                                <td>{$item.product_name}</td>
+                                <td class="text-center">{$item.quantity}x</td>
+                                <td class="text-end">Rp {$item.subtotal|number_format:0:',':'.'}</td>
+                            </tr>
+                            {if !empty($item.notes)}
+                            <tr>
+                                <td colspan="3" class="text-muted small">
+                                    <i class="bi bi-pencil-square me-1"></i>{$item.notes}
+                                </td>
+                            </tr>
+                            {/if}
+                            {/foreach}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Total</th>
+                                <th class="text-center">{$total_items} items</th>
+                                <th class="text-end">Rp {$total_amount|number_format:0:',':'.'}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            {/if}
+
+            <div id="session-warning" class="alert alert-warning mb-0 d-flex align-items-center" hidden>
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <div>
+                    Sesi akan berakhir dalam <strong id="warning-time"></strong> menit
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+  <section
+	class="explore-section section-padding custom-hidden"
+	id="order-page"
+	hidden
+  >
+	<!-- Detail Products -->
+	<div
+	  class="modal fade"
+	  id="detail-product"
+	  tabindex="-1"
+	  aria-labelledby="detail-product-label"
+	  aria-hidden="true"
+	>
+	  <div class="modal-dialog modal-sm modal-dialog-centered">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h1 class="modal-title fs-5" id="detail-product-label"></h1>
+			<button
+			  type="button"
+			  class="btn-close"
+			  data-bs-dismiss="modal"
+			  aria-label="Close"
+			></button>
+		  </div>
+		  <div class="modal-body">
+			<div class="container">
+			  <div id="product-id" hidden></div>
+			  <div class="row">
+				<div class="col-12">
+				  <img
+					id="detail-product-image"
+					src=""
+					class="rounded mx-auto d-block"
+					alt=""
+				  />
+				</div>
+			  </div>
+			  <div class="row">
+				<div class="col-12">
+				  <p id="detail-product-description" class="card-text"></p>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		  <div class="modal-footer">
+			<button
+			  type="button"
+			  class="btn btn-secondary"
+			  data-bs-dismiss="modal"
+			>
+			  Close
+			</button>
+			<button type="button" class="btn btn-info" id="add-to-cart">
+			  Add To Cart
+			</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	<!-- End of Detail Product -->
+  
+	<!-- Cart -->
+	<!-- Cart Modal -->
+	<div
+	  class="modal fade"
+	  id="cart-modal"
+	  tabindex="-1"
+	  aria-labelledby="cart-label"
+	  aria-hidden="true"
+	>
+	  <div class="modal-dialog modal-lg modal-dialog-centered">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h1 class="modal-title fs-5" id="cart-label">Shopping Cart</h1>
+			<button
+			  type="button"
+			  class="btn-close"
+			  data-bs-dismiss="modal"
+			  aria-label="Close"
+			></button>
+		  </div>
+		  <div class="modal-body">
+			<div class="container text-center" id="container-cart">
+			  <!-- Cart Items Group -->
+			  <div id="cart-items-container">
+				<!-- Regular Items Template -->
+				<div id="regular-item-template" hidden>
+				  <div class="cart-item mb-3">
+					<div class="row align-items-center">
+					  <div class="col-3">
+						<img src="" class="img-fluid cart-item-image" />
+					  </div>
+					  <div class="col-3">
+						<p class="cart-item-name mb-0"></p>
+						<small class="text-muted cart-item-price"></small>
+					  </div>
+					  <div class="col-6">
+						<div
+						  class="d-flex align-items-center justify-content-end"
+						>
+						  <button
+							class="btn btn-sm btn-primary action-minus me-2"
+						  >
+							<i class="fa-solid fa-minus"></i>
+						  </button>
+						  <input
+							type="number"
+							class="form-control action-number"
+							style="width: 60px"
+							min="0"
+						  />
+						  <button class="btn btn-sm btn-primary action-plus ms-2">
+							<i class="fa-solid fa-plus"></i>
+						  </button>
 						</div>
+					  </div>
 					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- Outlet Info Section -->
-	<section class="outlet-info-section bg-light py-3 mb-3" id="outlet-info" style="display: none;">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-6">
-					<h4 class="mb-2">{$outlet.outlet_name}</h4>
-					<p class="mb-1"><i class="fas fa-map-marker-alt me-2"></i>{$outlet.outlet_address}</p>
-					<p class="mb-1"><i class="fas fa-clock me-2"></i>{$outlet.hour_open} - {$outlet.hour_close}</p>
-					<p class="mb-0"><i class="fas fa-table me-2"></i>Table #{$table_id}</p>
-				</div>
-				<div class="col-md-6 text-md-end">
-					<div class="customer-info">
-						<h5 class="mb-0">Welcome, <span id="customer-name" class="text-primary"></span></h5>
-						<small class="text-muted">Table #{$table_id}</small>
+					<div class="row mt-2">
+					  <div class="col-12 text-start">
+						<small class="text-muted"
+						  >Stock: <span class="cart-item-stock"></span
+						></small>
+					  </div>
 					</div>
+					<div class="row mt-2">
+					  <div class="col-12">
+						<textarea
+						  class="form-control notes"
+						  rows="2"
+						  placeholder="Add Note"
+						></textarea>
+					  </div>
+					</div>
+				  </div>
 				</div>
+  
+				<!-- Package Items Template -->
+				<div id="package-item-template" hidden>
+				  <div class="cart-package mb-4">
+					<div class="package-header bg-light p-2 rounded mb-2">
+					  <div class="row align-items-center">
+						<div class="col-3">
+						  <img src="" class="img-fluid package-image" />
+						</div>
+						<div class="col-5">
+						  <h6 class="package-name mb-0"></h6>
+						  <small class="text-muted package-price"></small>
+						</div>
+						<div class="col-4">
+						  <div
+							class="d-flex align-items-center justify-content-end"
+						  >
+							<button
+							  class="btn btn-sm btn-primary action-minus me-2"
+							>
+							  <i class="fa-solid fa-minus"></i>
+							</button>
+							<input
+							  type="number"
+							  class="form-control action-number"
+							  style="width: 60px"
+							  min="0"
+							/>
+							<button
+							  class="btn btn-sm btn-primary action-plus ms-2"
+							>
+							  <i class="fa-solid fa-plus"></i>
+							</button>
+						  </div>
+						</div>
+					  </div>
+					  <div class="row mt-2">
+						<div class="col-12">
+						  <textarea
+							class="form-control notes"
+							rows="2"
+							placeholder="Add Note"
+						  ></textarea>
+						</div>
+					  </div>
+					</div>
+					<div class="package-items ms-4">
+					  <!-- Package items will be inserted here -->
+					</div>
+				  </div>
+				</div>
+  
+				<!-- Package Child Item Template -->
+				<div id="package-child-template" hidden>
+				  <div class="package-child-item mb-2">
+					<div class="row align-items-center">
+					  <div class="col-3">
+						<img src="" class="img-fluid child-item-image" />
+					  </div>
+					  <div class="col-5">
+						<p class="child-item-name mb-0"></p>
+						<small class="text-muted"
+						  >Category: <span class="child-item-category"></span
+						></small>
+					  </div>
+					  <div class="col-4 text-end">
+						<span class="child-item-quantity"></span> items
+					  </div>
+					</div>
+					<div class="row mt-2">
+					  <div class="col-12">
+						<textarea
+						  class="form-control child-notes"
+						  rows="2"
+						  placeholder="Add Note for this item"
+						></textarea>
+					  </div>
+					</div>
+				  </div>
+				</div>
+			  </div>
+  
+			  <!-- Cart Summary -->
+			  <div class="cart-summary mt-4">
+				<div class="row">
+				  <div class="col-12">
+					<hr />
+					<div class="d-flex justify-content-between">
+					  <h6>Total Items:</h6>
+					  <h6 id="cart-total-items">0</h6>
+					</div>
+					<div class="d-flex justify-content-between">
+					  <h6>Total Amount:</h6>
+					  <h6 id="cart-total-amount">Rp 0</h6>
+					</div>
+				  </div>
+				</div>
+			  </div>
 			</div>
+		  </div>
+		  <div class="modal-footer">
+			<button
+			  type="button"
+			  class="btn btn-secondary"
+			  data-bs-dismiss="modal"
+			>
+			  Close
+			</button>
+			<button type="button" class="btn btn-info" id="order">
+			  Order Now!
+			</button>
+		  </div>
 		</div>
-	</section>
-
-	<!-- Main Order Section -->
-	<section class="explore-section section-padding" id="order-page" style="display: none;">
-		<div class="container">
-			<!-- Navigation and Filters -->
-			<div class="row mb-4">
-				<div class="col-12 text-center">
-					<h2 class="mb-4">Our Menu</h2>
-				</div>
-			</div>
-			<div class="row align-items-center mb-4">
-				<div class="col-md-4">
-					<select id="category-select" class="form-select">
-						<option value="all">Semua Kategori</option>
-						{foreach from=$catalogueCategories item=cat}
-						<option value="{$cat.cat_id}" {if isset($selected_category) &&
-							$selected_category==$cat.cat_id}selected{/if}>
-							{$cat.cat_name}
-							{if isset($cat.product_count)}
-							({$cat.product_count})
-							{/if}
-						</option>
-						{/foreach}
-					</select>
-				</div>
-				<div class="col-md-4 text-center my-3 my-md-0">
-					<button class="btn btn-primary position-relative me-3" id="show-cart">
-						<i class="fa-solid fa-cart-shopping"></i>
-						<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-							id="count-cart">
-							0
-						</span>
-					</button>
-					<button class="btn btn-outline-primary" id="show-packages">
-						<i class="fa-solid fa-box"></i> View Packages
-					</button>
-				</div>
-			</div>
-
-			<!-- Product Grid -->
-			<div class="row" id="product-grid">
+	  </div>
+	</div>
+	<!-- End of Cart -->
+  
+	<div class="container">
+	  <div class="row custom-center-element">
+		<div class="col-12 text-center">
+		  <h2 class="mb-4">Browse Products</h2>
+		</div>
+	  </div>
+	</div>
+  
+	<!-- Filter select category -->
+	<div class="container text-center pb-lg-1">
+	  <div class="row p-4 p-lg-0" style="margin-left: 0">
+		<div class="col-6 col-md-4">
+		  <select
+			id="category-select"
+			class="form-select"
+			aria-label="Select category"
+		  >
+			<option value="all" selected>Select Category</option>
+			{foreach from=$catalogueCategories key=key item=cat}
+			<option value="{$cat.cat_id}">{$cat.cat_name}</option>
+			{/foreach}
+		  </select>
+		</div>
+		<div class="col-6 col-md-4">
+		  <button class="btn btn-primary position-relative" id="show-cart">
+			<i class="fa-solid fa-cart-shopping"></i>
+			<span
+			  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
+			  id="count-cart"
+			  >0</span
+			>
+		  </button>
+		  <button class="btn position-relative" id="call-a-waiter">
+			<!-- <img src="{$BASEURL}resource/assets-frontend/dist/icon/caw.jpeg" />-->
+		  </button>
+		</div>
+		<div class="col-12 col-md-4 mt-2">
+		  <h5>Customer: <span id="customer-name"></span></h5>
+		</div>
+	  </div>
+	</div>
+	<!-- End of select category -->
+  
+	<!-- Browse Product -->
+	<div class="container-fluid text-center">
+	  <div class="row text-center" style="margin-left: 0">
+		<div class="col-12 pt-2">
+		  <div class="tab-content" id="myTabContent">
+			<div
+			  class="tab-pane fade show active"
+			  id="bakery-tab-pane"
+			  role="tabpanel"
+			  aria-labelledby="bakery-tab"
+			>
+			  <div class="container">
 				{if !empty($product_mb)}
-				{$categoryID = 0}
-				{foreach from=$product_mb key=key item=prod}
-				{if $categoryID != $prod.cat_id}
-				{$categoryID = {$prod.cat_id}}
-				<div class="col-12 mb-4">
-					<div class="category-header bg-primary text-white p-3 rounded">
-						<h4 class="mb-0">{$prod.cat_name}</h4>
+				<div
+				  class="row text-center align-items-end"
+				  style="margin-left: 0"
+				>
+				  {$categoryID = 0} {foreach from=$product_mb key=key item=prod}
+				  {if $categoryID != $prod.cat_id} {$categoryID = {$prod.cat_id}}
+				  <div
+					class="col-12 pt-2 rounded"
+					style="background-color: #ff9924"
+				  >
+					<div class="d-flex justify-content-center">
+					  <h2 style="color: #fff">{$prod.cat_name}</h2>
 					</div>
+				  </div>
+				  {/if}
+				  <div
+					class="col-6 col-sm-4 pt-3 product-image-btn"
+					data-product-id="{$prod.product_id}"
+				  >
+					<div class="d-flex justify-content-center image-catalogue">
+					  <img
+						src="{$BASEURL}resource/assets-frontend/dist/product/{$prod.product_pict}"
+						data-product-id="{$prod.product_id}"
+						class="img-fluid custom-block-ek-image e-catalogue-image"
+						alt="Image-{strtoupper($prod.product_name)}"
+						style="
+						  max-height: 100%;
+						  filter: drop-shadow(5px 5px 10px #000000);
+						"
+					  />
+					  {if $prod.stock == 0}
+					  <img
+						src="{$BASEURL}resource/assets-frontend/dist/katalog/soldout.png"
+						data-product-id="{$prod.product_id}"
+						class="img-fluid custom-block-ek-image"
+						alt="Image-{strtoupper($prod.product_name)}"
+						style="
+						  max-height: 3em;
+						  max-width: 4em;
+						  filter: drop-shadow(5px 5px 10px #000000);
+						  position: absolute;
+						"
+					  />
+					  {/if}
+					</div>
+					<div
+					  class="pt-2 text-center fw-bold custom-catalogue-product-name"
+					  style="
+						margin-bottom: 0;
+						padding-bottom: 0;
+						word-wrap: break-word;
+					  "
+					>
+					  {strtoupper($prod.product_name)}
+					</div>
+					<hr
+					  style="
+						border: 0.1rem solid #725535;
+						opacity: 100;
+						margin: 0.25em;
+					  "
+					/>
+					<sup style="padding-top: 100px"
+					  ><span class="rounded-circle custom-catalogue-dotrp"
+						>Rp</span
+					  ></sup
+					><span class="custom-catalogue-text">
+					  {$prod.price_catalogue} <sup>K</sup></span
+					>
+				  </div>
+				  {/foreach}
 				</div>
 				{/if}
-				<div class="col-6 col-md-4 col-lg-3 mb-4">
-					<div class="card product-card h-100">
-						<div class="position-relative">
-							<img src="{$BASEURL}resource/assets-frontend/dist/product/{$prod.product_pict}"
-								class="card-img-top product-image" alt="{$prod.product_name}"
-								style="height: 200px; object-fit: cover;">
-							{if $prod.stock == 0}
-							<div class="sold-out-overlay">
-								<span class="badge bg-danger">Sold Out</span>
-							</div>
-							{/if}
-						</div>
-						<div class="card-body">
-							<h5 class="card-title">{$prod.product_name}</h5>
-							<p class="card-text">
-								<span class="price">Rp {$prod.price_catalogue}K</span>
-								{if $prod.stock > 0}
-								<small class="text-success">Stock: {$prod.stock}</small>
-								{/if}
-							</p>
-							<button class="btn btn-primary w-100 add-to-cart" data-product-id="{$prod.product_id}" {if
-								$prod.stock==0}disabled{/if}>
-								Add to Cart
-							</button>
-						</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  
+	<!-- Package Modal -->
+	<div
+	  class="modal fade"
+	  id="package-modal"
+	  tabindex="-1"
+	  aria-labelledby="package-modal-label"
+	  aria-hidden="true"
+	>
+	  <div class="modal-dialog modal-lg modal-dialog-centered">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h1 class="modal-title fs-5" id="package-modal-label">
+			  Package Selection
+			</h1>
+			<button
+			  type="button"
+			  class="btn-close"
+			  data-bs-dismiss="modal"
+			  aria-label="Close"
+			></button>
+		  </div>
+		  <div class="modal-body">
+			<div class="container">
+			  <!-- Package Details -->
+			  <div class="row">
+				<div class="col-12">
+				  <h5 id="package-name"></h5>
+				  <p id="package-description"></p>
+				</div>
+			  </div>
+			  <!-- Package Categories -->
+			  <div id="package-categories"></div>
+			  <!-- Package Items Selection -->
+			  <div class="row mt-3">
+				<div class="col-12">
+				  <div class="accordion" id="packageItemsAccordion"></div>
+				</div>
+			  </div>
+			  <!-- Selected Items Summary -->
+			  <div class="row mt-3">
+				<div class="col-12">
+				  <div class="card">
+					<div class="card-header">Selected Items</div>
+					<div class="card-body">
+					  <ul
+						id="selected-package-items"
+						class="list-group list-group-flush"
+					  ></ul>
 					</div>
+				  </div>
 				</div>
-				{/foreach}
-				{/if}
+			  </div>
 			</div>
+		  </div>
+		  <div class="modal-footer">
+			<button
+			  type="button"
+			  class="btn btn-secondary"
+			  data-bs-dismiss="modal"
+			>
+			  Close
+			</button>
+			<button
+			  type="button"
+			  class="btn btn-primary"
+			  id="add-package-to-cart"
+			  disabled
+			>
+			  Add Package to Cart
+			</button>
+		  </div>
 		</div>
-	</section>
-</div>
-
-<!-- Package Selection Modal -->
-<div class="modal fade package-selection-modal" id="package-selection-modal" tabindex="-1">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Customize Your Package</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			</div>
-			<div class="modal-body">
-				<div id="package-info" class="mb-4">
-					<h5 class="package-name mb-2"></h5>
-					<p class="package-description text-muted"></p>
-				</div>
-
-				<!-- Category Selection -->
-				<div id="package-categories">
-					{foreach from=$package_categories item=category}
-					<div class="package-category mb-4" data-category-id="{$category.id}">
-						<div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-							<h6 class="mb-0">{$category.name}</h6>
-							<div class="selection-count">
-								<span class="selected">0</span>
-								<span class="text-muted">/ {$category.required_qty} items</span>
-							</div>
-						</div>
-						<div class="package-items row g-3">
-							<!-- Items will be dynamically loaded here -->
-							<div class="col-md-4 template-item d-none">
-								<div class="card h-100 selectable-item">
-									<img src="" class="card-img-top" style="height: 120px; object-fit: cover;">
-									<div class="card-body">
-										<h6 class="card-title item-name"></h6>
-										<div class="d-flex justify-content-between align-items-center">
-											<span class="price"></span>
-											<div class="quantity-selector d-none">
-												<div class="input-group input-group-sm">
-													<button class="btn btn-outline-secondary decrease-qty"
-														type="button">-</button>
-													<input type="number" class="form-control text-center item-quantity"
-														value="0" min="0">
-													<button class="btn btn-outline-secondary increase-qty"
-														type="button">+</button>
-												</div>
-											</div>
-											<button class="btn btn-sm btn-outline-primary select-item">Select</button>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- Category Progress -->
-						<div class="progress mt-3" style="height: 5px;">
-							<div class="progress-bar" role="progressbar" style="width: 0%"></div>
-						</div>
-					</div>
-					{/foreach}
-				</div>
-
-				<!-- Excluded Products -->
-				<div class="excluded-products mt-4" id="excluded-products-section" style="display: none;">
-					<h6 class="text-danger border-bottom pb-2">Excluded Items</h6>
-					<ul id="excluded-items-list" class="list-unstyled mt-2">
-						<!-- Excluded items will be dynamically populated -->
-					</ul>
-				</div>
-
-				<!-- Package Summary -->
-				<div class="package-summary mt-4">
-					<div class="card">
-						<div class="card-body">
-							<h6 class="card-title border-bottom pb-2">Package Summary</h6>
-							<!-- Selected Items Summary -->
-							<div id="selected-items-summary">
-								<div class="selected-items-list">
-									<!-- Selected items will be dynamically populated -->
-								</div>
-							</div>
-							<!-- Package Totals -->
-							<div class="package-totals mt-3 pt-3 border-top">
-								<div class="d-flex justify-content-between mb-2">
-									<span>Base Package Price:</span>
-									<span class="base-price">Rp 0</span>
-								</div>
-								<div class="d-flex justify-content-between mb-2">
-									<span>Additional Items:</span>
-									<span class="additional-price">Rp 0</span>
-								</div>
-								<div class="d-flex justify-content-between fw-bold">
-									<span>Total Price:</span>
-									<span class="total-price">Rp 0</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Validation Messages -->
-				<div id="package-validation-messages" class="mt-3">
-					<!-- Validation messages will appear here -->
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-primary" id="add-package" disabled>
-					Add Package to Cart
-				</button>
-			</div>
-		</div>
+	  </div>
 	</div>
-</div>
-
-<!-- Package Browse Modal -->
-<div class="modal fade" id="package-browse-modal" tabindex="-1">
-	<div class="modal-dialog modal-xl">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Available Packages</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			</div>
-			<div class="modal-body">
-				<div class="container">
-					<div class="row">
-						{foreach from=$packages item=package}
-						<div class="col-md-6 col-lg-4 mb-4">
-							<div class="card h-100">
-								<div class="card-body">
-									<h5 class="card-title">{$package.name}</h5>
-									<p class="card-text">{$package.description}</p>
-									<div class="package-details">
-										<h6>Package Contents:</h6>
-										<ul class="list-unstyled">
-											{foreach from=$package.categories item=category}
-											<li>
-												<i class="fas fa-check-circle text-success me-2"></i>
-												<span class="fw-bold">{$category.name}:</span>
-												Choose {$category.quantity} items
-											</li>
-											{/foreach}
-										</ul>
-									</div>
-									<button class="btn btn-primary w-100 select-package" data-package-id="{$package.id}"
-										data-bs-toggle="modal" data-bs-target="#package-selection-modal">
-										Select Package
-									</button>
-								</div>
-							</div>
-						</div>
-						{/foreach}
-					</div>
-				</div>
-			</div>
-		</div>
+  
+	<!-- Add Package Selection Button to Product Card -->
+	<div id="package-button-template" hidden>
+	  <button
+		type="button"
+		class="btn btn-outline-primary btn-sm mt-2 select-package"
+		data-product-id=""
+	  >
+		Add as Package
+	  </button>
 	</div>
-</div>
-
-<!-- Cart Modal -->
-<div class="modal fade" id="cart-modal" tabindex="-1">
-	<div class="modal-dialog modal-xl modal-dialog-scrollable">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Shopping Cart</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			</div>
-			<div class="modal-body">
-				<div class="container">
-					<!-- Regular Items -->
-					<div class="regular-items mb-4">
-						<h6 class="border-bottom pb-2">Regular Items</h6>
-						<div class="table-responsive">
-							<table class="table table-hover">
-								<thead>
-									<tr>
-										<th>Product</th>
-										<th>Price</th>
-										<th>Quantity</th>
-										<th>Notes</th>
-										<th>Subtotal</th>
-										<th>Actions</th>
-									</tr>
-								</thead>
-								<tbody id="regular-items-list">
-									<!-- Cart items will be loaded dynamically -->
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-					<!-- Package Items -->
-					<div class="package-items mb-4">
-						<h6 class="border-bottom pb-2">Package Items</h6>
-						<div id="package-items-container">
-							<!-- Package items will be loaded dynamically -->
-						</div>
-					</div>
-
-					<!-- Cart Summary -->
-					<div class="cart-summary">
-						<div class="card">
-							<div class="card-body">
-								<div class="row">
-									<div class="col-md-6">
-										<h6>Order Summary</h6>
-										<div class="d-flex justify-content-between mb-2">
-											<span>Total Items:</span>
-											<span id="cart-total-items">0</span>
-										</div>
-										<div class="d-flex justify-content-between mb-2">
-											<span>Regular Items:</span>
-											<span id="cart-regular-items">0</span>
-										</div>
-										<div class="d-flex justify-content-between">
-											<span>Package Items:</span>
-											<span id="cart-package-items">0</span>
-										</div>
-									</div>
-									<div class="col-md-6 text-end">
-										<h6>Total Amount</h6>
-										<h3 id="cart-total-amount">Rp 0</h3>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continue Shopping</button>
-				<button type="button" class="btn btn-success" id="place-order">Place Order</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Order Success Modal -->
-<div class="modal fade" id="order-success-modal" tabindex="-1">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header bg-success text-white">
-				<h5 class="modal-title">Order Placed Successfully!</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			</div>
-			<div class="modal-body">
-				<div class="text-center mb-4">
-					<i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
-				</div>
-				<div class="order-details">
-					<div class="card">
-						<div class="card-body">
-							<h6 class="card-title">Order Details</h6>
-							<div class="row mb-2">
-								<div class="col-5">Receipt Number:</div>
-								<div class="col-7 text-end" id="receipt-number"></div>
-							</div>
-							<div class="row mb-2">
-								<div class="col-5">Order ID:</div>
-								<div class="col-7 text-end" id="order-id"></div>
-							</div>
-							<div class="row mb-2">
-								<div class="col-5">Total Amount:</div>
-								<div class="col-7 text-end" id="final-amount"></div>
-							</div>
-							<div class="row">
-								<div class="col-5">Order Time:</div>
-								<div class="col-7 text-end" id="order-time"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Done</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Add Note Modal -->
-<div class="modal fade" id="add-note-modal" tabindex="-1">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Add Note</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			</div>
-			<div class="modal-body">
-				<input type="hidden" id="note-product-id">
-				<div class="form-group">
-					<label>Special Instructions</label>
-					<textarea class="form-control" id="item-note" rows="3"
-						placeholder="Ex: No sugar, extra spicy, etc"></textarea>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-primary" id="save-note">Save Note</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Loading State Modal -->
-<div class="modal fade" id="loading-modal" data-bs-backdrop="static" tabindex="-1">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-body text-center py-4">
-				<div class="spinner-border text-primary mb-3"></div>
-				<h5 class="mb-0">Processing your request...</h5>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Error Modal -->
-<div class="modal fade" id="error-modal" tabindex="-1">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header bg-danger text-white">
-				<h5 class="modal-title">Error</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			</div>
-			<div class="modal-body">
-				<div class="text-center">
-					<i class="fas fa-exclamation-circle text-danger" style="font-size: 3rem;"></i>
-					<h5 class="mt-3" id="error-message">Something went wrong</h5>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- No Internet Connection Modal -->
-<div class="modal fade" id="connection-modal" tabindex="-1">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header bg-danger text-white">
-				<h5 class="modal-title"><i class="fas fa-wifi-slash me-2"></i>No Internet Connection</h5>
-			</div>
-			<div class="modal-body text-center">
-				<i class="fas fa-cloud-slash text-danger mb-3" style="font-size: 3rem;"></i>
-				<h5>Unable to connect to server</h5>
-				<p>Please check your internet connection and try again.</p>
-				<button class="btn btn-primary" id="retry-connection">
-					<i class="fas fa-sync me-2"></i>Retry Connection
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Operating Hours Warning Modal -->
-<div class="modal fade" id="operating-hours-modal" tabindex="-1">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header bg-warning">
-				<h5 class="modal-title">Operating Hours Notice</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			</div>
-			<div class="modal-body">
-				<div class="text-center">
-					<i class="fas fa-clock text-warning mb-3" style="font-size: 3rem;"></i>
-					<h5>Outlet is currently closed</h5>
-					<p>Operating Hours:</p>
-					<h6><span id="operating-hours"></span></h6>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Okay</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Order Confirmation Modal -->
-<div class="modal fade" id="confirm-order-modal" tabindex="-1">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Confirm Order</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-			</div>
-			<div class="modal-body">
-				<div class="order-confirmation-summary">
-					<h6>Order Summary</h6>
-					<div class="table-responsive">
-						<table class="table table-sm">
-							<tbody>
-								<tr>
-									<td>Regular Items:</td>
-									<td class="text-end" id="confirm-regular-items">0</td>
-								</tr>
-								<tr>
-									<td>Package Items:</td>
-									<td class="text-end" id="confirm-package-items">0</td>
-								</tr>
-								<tr>
-									<td>Total Items:</td>
-									<td class="text-end" id="confirm-total-items">0</td>
-								</tr>
-								<tr>
-									<td><strong>Total Amount:</strong></td>
-									<td class="text-end"><strong id="confirm-total-amount">Rp 0</strong></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-				<div class="alert alert-info mt-3">
-					<i class="fas fa-info-circle me-2"></i>
-					Please confirm your order. Orders cannot be modified after submission.
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Review Order</button>
-				<button type="button" class="btn btn-success" id="submit-final-order">
-					<i class="fas fa-check me-2"></i>Confirm Order
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- CSS Styles -->
-<style>
-	/* General Styles */
-	:root {
-		--primary-color: #61411e;
-		/* Deep Brown */
-		--primary-hover: #4a3217;
-		/* Darker Brown */
-		--secondary-color: #8B5A2B;
-		/* Medium Brown */
-		--accent-color: #D2B48C;
-		/* Soft Tan */
-		--bg-color: #f8f9fa;
-		/* Light Gray */
-		--card-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
-	}
-
-	body {
-		background-color: var(--bg-color);
-		font-family: 'Arial', sans-serif;
-		color: var(--primary-color);
-		line-height: 1.6;
-	}
-
-	/* Card Styles */
-	.card {
-		border: none;
-		border-radius: 15px;
-		box-shadow: var(--card-shadow);
-		transition: all 0.3s ease;
-		background: rgba(255, 255, 255, 0.98);
-		overflow: hidden;
-	}
-
-	.card:hover {
-		transform: translateY(-10px);
-		box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-	}
-
-	.card-body {
-		padding: 1.5rem;
-		position: relative;
-	}
-
-	/* Product Card Specific */
-	.product-card {
-		position: relative;
-	}
-
-	.product-card .product-image {
-		transition: transform 0.3s ease;
-	}
-
-	.product-card:hover .product-image {
-		transform: scale(1.05);
-	}
-
-	/* Button Styles */
-	.btn-primary {
-		background-color: var(--primary-color);
-		border-color: var(--primary-color);
-		padding: 0.75rem 1.25rem;
-		border-radius: 10px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 1px;
-		transition: all 0.3s ease;
-		position: relative;
-		overflow: hidden;
-	}
-
-	.btn-primary:before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-		transition: all 0.3s ease;
-	}
-
-	.btn-primary:hover:before {
-		left: 100%;
-	}
-
-	.btn-primary:hover {
-		background-color: var(--primary-hover);
-		transform: translateY(-3px);
-		box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-	}
-
-	/* Category Header */
-	.category-header {
-		background-color: var(--primary-color) !important;
-		color: white !important;
-		padding: 1rem;
-		border-radius: 10px;
-		position: relative;
-		overflow: hidden;
-	}
-
-	.category-header:before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(45deg, rgba(0, 0, 0, 0.1), transparent);
-	}
-
-	/* Form Styles */
-	.form-control {
-		border: 2px solid var(--accent-color);
-		border-radius: 10px;
-		padding: 0.75rem 1rem;
-		background-color: rgba(210, 180, 140, 0.05);
-		transition: all 0.3s ease;
-	}
-
-	.form-control:focus {
-		border-color: var(--primary-color);
-		box-shadow: 0 0 0 0.2rem rgba(97, 65, 30, 0.1);
-	}
-	.package-category {
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
+	<!-- End of Browse Product -->
+  </section>
+  
+  <style>
+  	/* Core Variables */
+:root {
+    --primary: #62411e;
+    --primary-light: #8b6337;
+    --primary-dark: #442d15;
+    --secondary: #ff9924;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-400: #ced4da;
+    --gray-500: #adb5bd;
+    --gray-600: #6c757d;
+    --gray-700: #495057;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
 }
 
-.package-item {
-    position: relative;
-}
-
-.package-item .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.package-item:hover .overlay {
-    opacity: 1;
-}
-
-.quantity-controls {
-    background: white;
-    border-radius: 0.25rem;
-    padding: 0.25rem;
-}
-
-.progress {
-    height: 0.5rem;
-    border-radius: 1rem;
-    background-color: #e9ecef;
-}
-
-.progress-bar {
-    transition: width 0.3s ease;
-}
-
-/* Cart Styles */
-.cart-item {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.cart-item:last-child {
-    border-bottom: none;
-}
-
-.cart-item-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 0.5rem;
-}
-
-.cart-item-details {
-    flex: 1;
+/* Base Layout */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 0 1rem;
 }
 
-.cart-item-price {
-    font-weight: bold;
-    color: #198754;
+.section-padding {
+    padding: 4rem 0;
 }
 
+/* Modern Cards */
+.modern-card {
+    background: #ffffff;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.modern-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+    padding: 1.25rem;
+    background: linear-gradient(45deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Location Alert */
+.location-alert {
+    background: linear-gradient(to right, var(--gray-100), white);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--secondary);
+    box-shadow: var(--shadow-sm);
+}
+
+.location-icon {
+    color: var(--secondary);
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: var(--secondary);
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Timer Display */
+.timer-display {
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    padding: 1.5rem;
+    text-align: center;
+    color: white;
+}
+
+#session-timer {
+    font-family: 'Monaco', monospace;
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+/* Forms */
+.form-control {
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-300);
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(98, 65, 30, 0.15);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    box-shadow: 0 2px 4px rgba(98, 65, 30, 0.2);
+}
+
+.btn-primary:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(98, 65, 30, 0.3);
+}
+
+.btn-info {
+    background: var(--secondary);
+    border: none;
+    color: white;
+}
+
+.btn-info:hover {
+    background: #e88813;
+    color: white;
+}
+
+/* Cart Styling */
 .cart-summary {
-    background: #f8f9fa;
-    border-radius: 0.5rem;
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+    padding: 1.5rem;
+}
+
+.cart-item, .package-item {
+    background: white;
+    border-radius: var(--radius-sm);
     padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--gray-200);
+    transition: transform 0.2s;
 }
 
-/* Animation Keyframes */
-@keyframes slideIn {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
+.cart-item:hover, .package-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Tables */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 2px solid var(--gray-300);
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* Product Display */
+.product-image-btn {
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.product-image-btn:hover {
+    transform: translateY(-5px);
+}
+
+.custom-catalogue-product-name {
+    color: var(--primary);
+    font-size: 1.1rem;
+    margin: 1rem 0;
+}
+
+.custom-catalogue-dotrp {
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 50%;
+    font-size: 0.8rem;
+}
+
+.custom-catalogue-text {
+    color: var(--primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Modal Styling */
+.modal-content {
+    border-radius: var(--radius-md);
+    border: none;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    background: linear-gradient(45deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    border-bottom: none;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--gray-200);
+}
+
+/* Alert Styling */
+.alert {
+    border-radius: var(--radius-sm);
+    border: none;
+    padding: 1rem 1.25rem;
+}
+
+.alert-warning {
+    background: rgba(255, 153, 36, 0.1);
+    color: #856404;
+}
+
+.alert-info {
+    background: rgba(98, 65, 30, 0.1);
+    color: var(--primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .section-padding {
+        padding: 2rem 0;
     }
-    to {
-        transform: translateY(0);
-        opacity: 1;
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn {
+        padding: 0.625rem 1.25rem;
+    }
+    
+    #session-timer {
+        font-size: 1.5rem;
     }
 }
 
-/* Toast Notifications */
-.toast-container {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    z-index: 1050;
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.toast {
-    animation: slideIn 0.3s ease forwards;
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
 }
 
-/* Loading States */
-.loading-overlay {
-    position: fixed;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
+}
+
+/* Package Modal Styles */
+#package-modal .modal-dialog {
+    max-width: 800px;
+}
+
+.package-header {
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.package-items {
+    padding-left: 1.5rem;
+    border-left: 2px solid var(--gray-300);
+}
+
+.package-child-item {
+    background: white;
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--gray-200);
+}
+
+/* Product Card Styles */
+.product-image-btn {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.image-catalogue {
+    position: relative;
+    padding-top: 100%;
+    overflow: hidden;
+}
+
+.image-catalogue img {
+    position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.image-catalogue:hover img {
+    transform: scale(1.05);
+}
+
+/* Soldout Overlay */
+.product-image-btn .soldout-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    z-index: 2;
+}
+
+/* Category Header */
+.category-header {
+    background: var(--secondary);
+    color: white;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    margin: 2rem 0 1rem;
+}
+
+.category-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Filter Section */
+.filter-section {
+    background: white;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+}
+
+#category-select {
+    background: white;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    width: 100%;
+    font-weight: 500;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#category-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(98, 65, 30, 0.15);
+}
+
+/* Cart Button */
+#show-cart {
+    position: relative;
+    padding: 0.75rem;
+    background: var(--primary);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1060;
 }
 
-.spinner {
-    width: 3rem;
-    height: 3rem;
+#show-cart i {
+    color: white;
+    font-size: 1.25rem;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .card-body {
-        padding: 0.75rem;
-    }
+#count-cart {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--secondary);
+    color: white;
+    border-radius: 50%;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
 
-    .cart-item {
-        flex-direction: column;
-        text-align: center;
-    }
+/* Quantity Controls */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
 
-    .cart-item-image {
-        margin-bottom: 0.5rem;
-    }
+.action-number {
+    width: 60px !important;
+    text-align: center;
+    font-weight: 500;
+    padding: 0.5rem;
+}
 
-    .cart-item-details {
-        padding: 0.5rem 0;
-    }
+.action-minus, .action-plus {
+    padding: 0.5rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: white;
+    border-radius: var(--radius-sm);
+    border: none;
+    transition: all 0.2s ease;
+}
 
-    .quantity-controls {
-        justify-content: center;
+.action-minus:hover, .action-plus:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+/* Notes Textarea */
+.notes, .child-notes {
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    resize: none;
+    transition: all 0.2s ease;
+}
+
+.notes:focus, .child-notes:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(98, 65, 30, 0.15);
+}
+
+/* Progress Bar */
+#location-progress {
+    height: 3px;
+    background: var(--gray-200);
+    border-radius: 1.5px;
+    overflow: hidden;
+}
+
+.progress-bar-animated {
+    background: linear-gradient(45deg, var(--primary) 25%, var(--primary-light) 50%, var(--primary) 75%);
+    background-size: 200% 200%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Modal Improvements */
+.modal-sm {
+    max-width: 400px;
+}
+
+.modal-lg {
+    max-width: 800px;
+}
+
+.modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 3.5rem);
+}
+
+/* Customer Details */
+#customer-name-display {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--primary);
+    margin: 0;
+}
+
+/* Operating Hours */
+.operating-hours {
+    background: linear-gradient(135deg, var(--gray-100), white);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+}
+
+.operating-hours span {
+    color: var(--gray-700);
+}
+
+.operating-hours .fw-bold {
+    color: var(--primary);
+}
+
+/* Responsive Improvements */
+@media (max-width: 576px) {
+    .product-image-btn {
+        width: calc(50% - 1rem);
+        margin: 0.5rem;
+    }
+    
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .cart-item .col-3 {
+        width: 40%;
+    }
+    
+    .cart-item .col-6 {
+        width: 60%;
+    }
+    
+    .package-header .col-3 {
+        width: 30%;
+    }
+    
+    .package-header .col-5 {
+        width: 40%;
+    }
+    
+    .package-header .col-4 {
+        width: 30%;
     }
 }
 
-/* Print Styles for Receipt */
+/* Print Styles */
 @media print {
-    .no-print {
+    .modern-card {
+        box-shadow: none;
+        border: 1px solid var(--gray-300);
+    }
+    
+    .btn, 
+    .modal-footer,
+    #show-cart,
+    #category-select {
         display: none !important;
     }
+}
 
-    .receipt {
-        width: 80mm;
-        margin: 0 auto;
-        font-size: 12px;
-    }
+/* Additional Animations */
+@keyframes pulseWarning {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
 
-    .receipt-header {
-        text-align: center;
-        border-bottom: 1px dashed #000;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1rem;
-    }
+.alert-warning {
+    animation: pulseWarning 2s infinite;
+}
 
-    .receipt-items {
-        margin: 1rem 0;
-    }
+/* Accessibility Improvements */
+:focus {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
 
-    .receipt-total {
-        border-top: 1px dashed #000;
-        padding-top: 0.5rem;
-        margin-top: 1rem;
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(98, 65, 30, 0.4);
+}
+
+/* Browse Products Section */
+.explore-section {
+    padding: 2rem 0;
+    background: var(--gray-100);
+}
+
+.browse-title {
+    color: var(--primary);
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Value Meals Section */
+.value-meals {
+    background: var(--secondary);
+    color: white;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 2rem 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Product Grid */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+/* Price Display */
+.price-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.price-currency {
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.price-amount {
+    color: var(--primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Detail Product Modal */
+#detail-product .modal-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+#detail-product-description {
+    color: var(--gray-700);
+    line-height: 1.6;
+    margin-top: 1rem;
+}
+
+/* Package Modal */
+#packageItemsAccordion .accordion-item {
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.5rem;
+}
+
+#packageItemsAccordion .accordion-button {
+    background: var(--gray-100);
+    color: var(--primary);
+    font-weight: 500;
+    padding: 1rem;
+}
+
+#packageItemsAccordion .accordion-button:not(.collapsed) {
+    background: var(--primary);
+    color: white;
+}
+
+/* Selected Items List */
+#selected-package-items {
+    list-style: none;
+    padding: 0;
+}
+
+#selected-package-items li {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Call Waiter Button */
+#call-a-waiter {
+    background: var(--primary);
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+#call-a-waiter:hover {
+    background: var(--primary-light);
+    transform: scale(1.1);
+}
+
+/* Navigation Links */
+.nav-link {
+    color: var(--primary);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary-light);
+}
+
+.nav-link.active {
+    background: var(--primary);
+    color: white;
+    border-radius: var(--radius-sm);
+}
+
+/* Header Section */
+.header-section {
+    background: white;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Loader Animation */
+@keyframes loading {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--gray-200);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: loading 1s infinite linear;
+}
+
+/* Additional Responsive Styles */
+@media (max-width: 992px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
 }
 
-	/* Logo Styling */
-	.logo-container {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		margin-bottom: 2rem;
-		position: relative;
-	}
+@media (max-width: 768px) {
+    .browse-title {
+        font-size: 1.5rem;
+    }
+    
+    .value-meals {
+        font-size: 1.25rem;
+        padding: 0.75rem;
+    }
+}
 
-	.logo {
-		max-width: 200px;
-		height: auto;
-		border-radius: 15px;
-		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-		transition: transform 0.3s ease;
-	}
+@media (max-width: 576px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .price-display {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
 
-	.logo:hover {
-		transform: scale(1.05);
-	}
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --primary: #000000;
+        --secondary: #ffffff;
+    }
+    
+    .btn, .status-badge, .card-header {
+        border: 2px solid black;
+    }
+}
 
-	/* Responsive Adjustments */
-	@media (max-width: 768px) {
-		.card-body {
-			padding: 1rem;
-		}
-	}
-
-	/* Added Subtle Animations */
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-			transform: translateY(20px);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.card,
-	.category-header {
-		animation: fadeIn 0.5s ease forwards;
-	}
-
-
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
 </style>
-
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
-
-<script>
-	window.onerror = function (msg, url, lineNo, columnNo, error) {
-		console.error('Global error:', { msg, url, lineNo, columnNo, error });
-		if (window.modalManager) {
-			window.modalManager.showError('An unexpected error occurred');
-		}
-		return false;
-	};
-
-	window.onunhandledrejection = function (event) {
-		console.error('Unhandled promise rejection:', event.reason);
-		if (window.modalManager) {
-			window.modalManager.showError('An unexpected error occurred');
-		}
-	};
-</script>
-
-<script src="{$BASEURL}resource/assets-frontend/js/order.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <!-- Page Script -->
+  <script src="{$BASEURL}resource/assets-frontend/js/order.js"></script>
+  <script src="{$BASEURL}resource/assets-frontend/js/package.js"></script>
+  <script src="{$BASEURL}resource/assets-frontend/js/session-management.js"></script>
+  
