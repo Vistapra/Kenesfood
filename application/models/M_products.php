@@ -604,4 +604,84 @@ class M_products extends CI_Model
 
 		return ($query->num_rows() > 0) ? $query->result_array() : array();
 	}
+
+    public function get_product_detail_with_stock($product_id) {
+        $sql = $this->db->select('p.*, c.cat_name, ROUND(p.product_price/1000, 1) AS price_catalogue')
+  
+            ->join('data_categories c', 'p.cat_id = c.cat_id', 'left')
+            ->where('p.product_id', $product_id)
+            ->where('p.product_st', '0')
+            ->get();
+            
+        return ($sql->num_rows() > 0) ? $sql->row_array() : null;
+    }
+
+public function get_products_by_outlet($outlet_id, $brand_type) {
+        $sql = $this->db->select('p.*, c.cat_name, ROUND(p.product_price/1000, 1) AS price_catalogue')
+            ->from('data_product p')
+            ->join('data_categories c', 'p.cat_id = c.cat_id', 'left')
+            ->where('p.product_brand', $brand_type)
+            ->where('p.product_st', '0')
+            ->where('p.product_parent', 0)
+            ->where('p.ek_outlet', '0')
+            ->order_by('c.cat_id ASC, p.product_name ASC')
+            ->get();
+            
+        return ($sql->num_rows() > 0) ? $sql->result_array() : array();
+    }
+
+public function get_package_products($package_id) {
+    $sql = "SELECT 
+        p.*,
+        pc.quantity as required_quantity,
+        pc.sale_price as package_price
+    FROM data_product p
+    INNER JOIN package_custom_products pc ON p.product_id = pc.product_id
+    WHERE pc.package_id = ?
+    AND p.product_st = '0'
+    ORDER BY p.product_name ASC";
+
+    $query = $this->db->query($sql, [$package_id]);
+    return ($query->num_rows() > 0) ? $query->result_array() : [];
+}
+
+public function validate_product_stock($product_id, $outlet_id, $quantity) {
+    $sql = "SELECT 
+        p.product_id,
+        p.product_name,
+        COALESCE(s.stock, 0) as current_stock
+    FROM data_product p
+    LEFT JOIN product_stock s ON p.product_id = s.product_id AND s.outlet_id = ?
+    WHERE p.product_id = ?
+    AND p.product_st = '0'";
+
+    $query = $this->db->query($sql, [$outlet_id, $product_id]);
+    if ($query->num_rows() > 0) {
+        $result = $query->row_array();
+        return [
+            'valid' => $result['current_stock'] >= $quantity,
+            'current_stock' => $result['current_stock'],
+            'product_name' => $result['product_name']
+        ];
+    }
+    return ['valid' => false, 'current_stock' => 0];
+}
+
+public function get_filtered_products($filters) {
+    $this->db->select('p.*, c.cat_name');
+    $this->db->from('data_product p');
+    $this->db->join('data_categories c', 'p.cat_id = c.cat_id', 'left');
+    
+    if (!empty($filters['category_id'])) {
+        $this->db->where('p.cat_id', $filters['category_id']);
+    }
+    
+    $this->db->where('p.product_st', '0');
+    $this->db->where('p.product_parent', 0);
+    $this->db->where('p.ek_outlet', '0');
+    
+    $query = $this->db->get();
+    return ($query->num_rows() > 0) ? $query->result_array() : array();
+}
+
 }

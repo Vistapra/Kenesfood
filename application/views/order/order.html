@@ -1,449 +1,516 @@
 <link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/Kenesfood.css">
 <!-- Session Management Sections -->
 <div class="container py-4" id="session-page">
-  <!-- Location Verification -->
-  <div id="location-verification" class="location-alert">
-    <div class="d-flex align-items-center">
-      <i class="bi bi-geo-alt location-icon"></i>
-      <div>
-        <h5 class="mb-1">Verifikasi Lokasi</h5>
-        <p class="mb-0" id="location-status">Mohon izinkan akses lokasi</p>
-        <div class="progress mt-2" style="height: 3px;" id="location-progress" hidden>
-          <div class="progress-bar progress-bar-striped progress-bar-animated"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+	<!-- Location Verification -->
+	<div id="location-verification" class="location-alert">
+		<div class="d-flex align-items-center">
+			<i class="bi bi-geo-alt location-icon"></i>
+			<div>
+				<h5 class="mb-1">Verifikasi Lokasi</h5>
+				<p class="mb-0" id="location-status">Mohon izinkan akses lokasi</p>
+				<div class="progress mt-2" style="height: 3px;" id="location-progress" hidden>
+					<div class="progress-bar progress-bar-striped progress-bar-animated"></div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-  <!-- Outlet Information -->
-  <div class="modern-card" id="outlet-info-section">
-    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Informasi Outlet</h5>
-      <span class="status-badge" id="outlet-status">Buka</span>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-6">
-          <p class="mb-2 fs-5 fw-bold" id="outlet-name">{$outlet.outlet_name}</p>
-          <p class="text-muted" id="outlet-address">{$outlet.outlet_address}</p>
-        </div>
-        <div class="col-md-6">
-          <div class="operating-hours">
-            <div class="d-flex justify-content-between mb-2">
-              <span>Jam Buka:</span>
-              <span class="fw-bold" id="outlet-open">{$outlet.hour_open}</span>
-            </div>
-            <div class="d-flex justify-content-between">
-              <span>Jam Tutup:</span>
-              <span class="fw-bold" id="outlet-close">{$outlet.hour_close}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+	<!-- Outlet Information -->
+	<div class="modern-card" id="outlet-info-section">
+		<div class="card-header bg-light d-flex justify-content-between align-items-center">
+			<h5 class="mb-0">Informasi Outlet</h5>
+			<span class="status-badge" id="outlet-status">
+				{if isset($outlet.outlet_status) && $outlet.outlet_status == '0'}Buka{else}Tutup{/if}
+			</span>
+		</div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col-md-6">
+					<p class="mb-2 fs-5 fw-bold" id="outlet-name">
+						{if isset($outlet.outlet_name)}{$outlet.outlet_name}{else}Outlet Tidak Tersedia{/if}
+					</p>
+					<p class="text-muted" id="outlet-address">
+						{if isset($outlet.outlet_address)}{$outlet.outlet_address}{else}Alamat Tidak Tersedia{/if}
+					</p>
+				</div>
+				<div class="col-md-6">
+					<div class="operating-hours">
+						<div class="d-flex justify-content-between mb-2">
+							<span>Jam Buka:</span>
+							<span class="fw-bold" id="outlet-open">
+								{if isset($outlet.hour_open)}{$outlet.hour_open}{else}--:--{/if}
+							</span>
+						</div>
+						<div class="d-flex justify-content-between">
+							<span>Jam Tutup:</span>
+							<span class="fw-bold" id="outlet-close">
+								{if isset($outlet.hour_close)}{$outlet.hour_close}{else}--:--{/if}
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-  <!-- Session Creation Form -->
-  <div class="modern-card" id="session-creation" {if $session}hidden{/if}>
-    <div class="card-header bg-light">
-      <h5 class="mb-0">Mulai Pesanan</h5>
-    </div>
-    <div class="card-body">
-      <form id="session-form" class="needs-validation" novalidate>
-        <div class="mb-3">
-          <label class="form-label">Nama Pelanggan</label>
-          <input type="text" class="form-control" id="customer-name" minlength="3" required>
-          <div class="invalid-feedback">Nama minimal 3 karakter</div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Passcode</label>
-          <input type="password" class="form-control" id="passcode" minlength="4" required>
-          <div class="invalid-feedback">Passcode minimal 4 karakter</div>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">
-          <i class="bi bi-clock me-2"></i>Mulai Pesanan
-        </button>
-      </form>
-    </div>
-  </div>
+	<!-- Session Creation Form -->
+	<div class="modern-card" id="session-creation" {if isset($session) && $session}hidden{/if}>
+		<div class="card-header bg-light">
+			<h5 class="mb-0">Mulai Pesanan</h5>
+		</div>
+		<div class="card-body">
+			<form id="session-form" class="needs-validation" novalidate>
+				<div class="mb-3">
+					<label class="form-label">Nama Pelanggan</label>
+					<input type="text" class="form-control" id="customer-name" minlength="3" maxlength="50" required
+						placeholder="Masukkan nama Anda">
+					<div class="invalid-feedback">
+						Nama minimal 3 karakter dan maksimal 50 karakter
+					</div>
+				</div>
+				<div class="mb-3">
+					<label class="form-label">Passcode</label>
+					<input type="password" class="form-control" id="passcode" minlength="4" maxlength="10" required
+						placeholder="Masukkan passcode">
+					<div class="invalid-feedback">
+						Passcode minimal 4 karakter dan maksimal 10 karakter
+					</div>
+				</div>
+				<button type="submit" class="btn btn-primary w-100">
+					<i class="bi bi-clock me-2"></i>Mulai Pesanan
+				</button>
+			</form>
+		</div>
+	</div>
 
-  <!-- Resume Session -->
-  <div class="modern-card" id="resume-session" {if !$session}hidden{/if}>
-    <div class="card-header bg-light">
-      <h5 class="mb-0">Lanjutkan Sesi</h5>
-    </div>
-    <div class="card-body">
-      <div class="alert alert-info mb-3">
-        <i class="bi bi-info-circle me-2"></i>
-        Meja ini memiliki sesi yang masih aktif
-      </div>
-      <form id="resume-form">
-        <div class="mb-3">
-          <label class="form-label">Masukkan Passcode</label>
-          <input type="password" class="form-control" id="resume-passcode" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">
-          <i class="bi bi-arrow-clockwise me-2"></i>Lanjutkan Sesi
-        </button>
-      </form>
-    </div>
-  </div>
+	<!-- Resume Session -->
+	<div class="modern-card" id="resume-session" {if !isset($session) || !$session}hidden{/if}>
+		<div class="card-header bg-light">
+			<h5 class="mb-0">Lanjutkan Sesi</h5>
+		</div>
+		<div class="card-body">
+			<div class="alert alert-info mb-3">
+				<i class="bi bi-info-circle me-2"></i>
+				Meja ini memiliki sesi yang masih aktif
+			</div>
+			<form id="resume-form">
+				<div class="mb-3">
+					<label class="form-label">Masukkan Passcode</label>
+					<input type="password" class="form-control" id="resume-passcode" required minlength="4"
+						maxlength="10" placeholder="Masukkan passcode">
+				</div>
+				<button type="submit" class="btn btn-primary w-100">
+					<i class="bi bi-arrow-clockwise me-2"></i>Lanjutkan Sesi
+				</button>
+			</form>
+		</div>
+	</div>
+
+	<!-- Active Session Display -->
+	{if isset($session) && $session && $session.status == $smarty.const.STATUS_RESERVED}
+	<div class="modern-card" id="active-session">
+		<div class="timer-display">
+			<div class="row align-items-center">
+				<div class="col">
+					<span class="fs-4" id="session-timer">00:00</span>
+				</div>
+			</div>
+		</div>
+		<div class="p-4">
+			<div class="row mb-4">
+				<div class="col-md-6">
+					<p class="mb-1">
+						Nama Pelanggan:
+						<strong id="active-customer">
+							{if isset($session.name)}{$session.name}{else}Nama Tidak Tersedia{/if}
+						</strong>
+					</p>
+					<p class="mb-0">
+						Nomor Meja:
+						<strong id="active-table">
+							{if isset($table_id)}{$table_id}{else}--{/if}
+						</strong>
+					</p>
+				</div>
+				<div class="col-md-6 text-md-end">
+					<p class="mb-1">
+						Status:
+						<span class="badge bg-info" id="session-status">
+							{if isset($session.status)}
+							{if $session.status == $smarty.const.STATUS_RESERVED}Dipesan{else}Status Tidak Dikenal{/if}
+							{else}
+							Status Tidak Tersedia
+							{/if}
+						</span>
+					</p>
+					<p class="mb-0">
+						Mulai:
+						<span id="session-start">
+							{if isset($session.created_at)}{$session.created_at}{else}--{/if}
+						</span>
+					</p>
+				</div>
+			</div>
+
+			{* Cart Summary Section *}
+			{if isset($cart_items) && is_array($cart_items) && count($cart_items) > 0}
+			<div class="cart-summary mb-4">
+				<h6 class="mb-3">Ringkasan Pesanan</h6>
+				<div class="table-responsive">
+					<table class="table table-sm">
+						<thead>
+							<tr>
+								<th>Item</th>
+								<th class="text-center">Qty</th>
+								<th class="text-end">Subtotal</th>
+							</tr>
+						</thead>
+						<tbody>
+							{foreach from=$cart_items item=item}
+							<tr>
+								<td>
+									{if isset($item.product_name)}
+									{$item.product_name}
+									{else}
+									Item Tidak Dikenal
+									{/if}
+								</td>
+								<td class="text-center">
+									{if isset($item.quantity)}
+									{$item.quantity}x
+									{else}
+									0x
+									{/if}
+								</td>
+								<td class="text-end">
+									{if isset($item.subtotal)}
+									Rp {$item.subtotal|number_format:0:',':'.'}
+									{else}
+									Rp 0
+									{/if}
+								</td>
+							</tr>
+							{if isset($item.notes) && !empty($item.notes)}
+							<tr>
+								<td colspan="3" class="text-muted small">
+									<i class="bi bi-pencil-square me-1"></i>
+									{$item.notes}
+								</td>
+							</tr>
+							{/if}
+							{/foreach}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th>Total</th>
+								<th class="text-center">
+									{if isset($total_items)}{$total_items}{else}0{/if} items
+								</th>
+								<th class="text-end">
+									Rp {if isset($total_amount)}{$total_amount|number_format:0:',':'.'}{else}0{/if}
+								</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+			{/if}
+		</div>
+	</div>
+	{/if}
 </div>
-
-<!-- Active Session Display -->
-{if isset($session) && $session}
-<div class="modern-card" id="active-session" {if !$session || $session.status !='RESERVED' }hidden{/if}>
-  <div class="timer-display">
-    <div class="row align-items-center">
-      <div class="col">
-        <span class="fs-4" id="session-timer">00:00</span>
-      </div>
-    </div>
-  </div>
-  <div class="p-4">
-    <div class="row mb-4">
-      <div class="col-md-6">
-        <p class="mb-1">Nama Pelanggan: <strong id="active-customer">{$session.name}</strong></p>
-        <p class="mb-0">Nomor Meja: <strong id="active-table">{$table_id}</strong></p>
-      </div>
-      <div class="col-md-6 text-md-end">
-        <p class="mb-1">Status: <span class="badge bg-info" id="session-status">{$session.status}</span></p>
-        <p class="mb-0">Mulai: <span id="session-start">{$session.created_at}</span></p>
-      </div>
-    </div>
-
-    <!-- Cart Summary -->
-    {if isset($cart_items) && count($cart_items) > 0}
-    <div class="cart-summary mb-4">
-      <h6 class="mb-3">Ringkasan Pesanan</h6>
-      <div class="table-responsive">
-        <table class="table table-sm">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th class="text-center">Qty</th>
-              <th class="text-end">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {foreach from=$cart_items item=item}
-            <tr>
-              <td>{$item.product_name}</td>
-              <td class="text-center">{$item.quantity}x</td>
-              <td class="text-end">Rp {$item.subtotal|number_format:0:',':'.'}</td>
-            </tr>
-            {if !empty($item.notes)}
-            <tr>
-              <td colspan="3" class="text-muted small">
-                <i class="bi bi-pencil-square me-1"></i>{$item.notes}
-              </td>
-            </tr>
-            {/if}
-            {/foreach}
-          </tbody>
-          <tfoot>
-            <tr>
-              <th>Total</th>
-              <th class="text-center">{$total_items} items</th>
-              <th class="text-end">Rp {$total_amount|number_format:0:',':'.'}</th>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
-    {/if}
-  </div>
-</div>
-{/if}
 
 
 <section class="explore-section section-padding custom-hidden" id="order-page" hidden>
-  <!-- Cart Modal -->
-  <div class="modal fade" id="cart-modal" tabindex="-1" aria-labelledby="cart-label" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="cart-label">Shopping Cart</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="container text-center" id="container-cart">
-            <!-- Cart Items Group -->
-            <!-- Cart Summary -->
-            <div class="cart-summary mt-4">
-              <div class="row">
-                <div class="col-12">
-                  <hr />
-                  <div class="d-flex justify-content-between">
-                    <h6>Total Items:</h6>
-                    <h6 id="cart-total-items">0</h6>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <h6>Total Amount:</h6>
-                    <h6 id="cart-total-amount">Rp 0</h6>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Close
-          </button>
-          <button type="button" class="btn btn-info" id="order">
-            Order Now!
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- End of Cart -->
+	<!-- Cart Modal -->
+	<div class="modal fade" id="cart-modal" tabindex="-1" aria-labelledby="cart-label" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" style="color: white;" id="cart-label">Shopping Cart</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="container text-center" id="container-cart">
+						<!-- Cart Items Group -->
+						<!-- Cart Summary -->
+						<div class="cart-summary mt-4">
+							<div class="row">
+								<div class="col-12">
+									<hr />
+									<div class="d-flex justify-content-between">
+										<h6>Total Items:</h6>
+										<h6 id="cart-total-items">0</h6>
+									</div>
+									<div class="d-flex justify-content-between">
+										<h6>Total Amount:</h6>
+										<h6 id="cart-total-amount">Rp 0</h6>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						Close
+					</button>
+					<button type="button" class="btn btn-info" style="background-color: #6b4823; color: white;"
+						id="order">
+						Order Now!
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End of Cart -->
 
-  <div class="container">
-    <div class="row custom-center-element">
-      <div class="col-12 text-center">
-        <h2 class="mb-4">Browse Products</h2>
-      </div>
-    </div>
-  </div>
+	<div class="container">
+		<div class="row custom-center-element">
+			<div class="col-12 text-center">
+				<h2 class="mb-4">Browse Products</h2>
+			</div>
+		</div>
+	</div>
 
-  <!-- Filter select category -->
-  <div class="container text-center pb-lg-1">
-    <div class="row p-4 p-lg-0" style="margin-left: 0">
-      <div class="col-6 col-md-4">
-        <select id="category-select" class="form-select" aria-label="Select category">
-          <option value="all" selected>Select Category</option>
-          {foreach from=$catalogueCategories key=key item=cat}
-          <option value="{$cat.cat_id}">{$cat.cat_name}</option>
-          {/foreach}
-        </select>
-      </div>
-      <div class="col-6 col-md-4">
-        <button class="btn btn-primary position-relative" id="show-cart">
-          <i class="fa-solid fa-cart-shopping"></i>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-            id="count-cart">0</span>
-        </button>
-      </div>
-      <div class="col-12 col-md-4 mt-2">
-        <input type="text" class="form-control" placeholder="Search products..." id="product-search">
-      </div>
-    </div>
-  </div>
-  <!-- End of select category -->
+	<!-- Filter select category -->
+	<div class="container text-center pb-lg-1">
+		<div class="row p-4 p-lg-0" style="margin-left: 0">
+			<div class="col-6 col-md-4">
+				<select id="category-select" class="form-select" aria-label="Select category">
+					<option value="all" selected>Select Category</option>
+					{foreach from=$catalogueCategories key=key item=cat}
+					<option value="{$cat.cat_id}">{$cat.cat_name}</option>
+					{/foreach}
+				</select>
+			</div>
+			<div class="col-6 col-md-4">
+				<button class="btn btn-primary position-relative" id="show-cart">
+					<i class="fa-solid fa-cart-shopping"></i>
+					<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
+						id="count-cart">0</span>
+				</button>
+			</div>
+			<div class="col-12 col-md-4 mt-2">
+				<input type="text" class="form-control" placeholder="Search products..." id="product-search">
+			</div>
+		</div>
+	</div>
+	<!-- End of select category -->
 
-  <!-- Browse Product -->
-  <div class="container-fluid text-center" id="product-listing">
-    <div class="row text-center" style="margin-left: 0">
-      <div class="col-12 pt-2">
-        <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="products-tab-pane" role="tabpanel">
-            <div class="container">
-              {if !empty($grouped_products)}
-              {foreach from=$grouped_products key=cat_id item=category}
-              <!-- Header Kategori -->
-              <div class="col-12 pt-2 rounded mb-4" style="background-color: #6b4823">
-                <div class="d-flex justify-content-center">
-                  <h2 style="color: #fff">{$category.category_name}</h2>
-                </div>
-              </div>
+	<!-- Browse Product -->
+	<div class="container-fluid text-center" id="product-listing">
+		<div class="row text-center" style="margin-left: 0">
+			<div class="col-12 pt-2">
+				<div class="tab-content" id="myTabContent">
+					<div class="tab-pane fade show active" id="products-tab-pane" role="tabpanel">
+						<div class="container">
+							{if !empty($grouped_products)}
+							{foreach from=$grouped_products key=cat_id item=category}
+							<!-- Header Kategori -->
+							<div class="col-12 pt-2 rounded mb-4" style="background-color: #6b4823">
+								<div class="d-flex justify-content-center">
+									<h2 style="color: #fff">{$category.category_name}</h2>
+								</div>
+							</div>
 
-              <!-- Grid Produk -->
-              <div class="row mb-5">
-                {foreach from=$category.products item=prod}
-                <div class="col-6 col-sm-4 pt-3 product-card" data-product-id="{$prod.product_id}"
-                  data-category-id="{$prod.cat_id}" data-is-package="{if isset($prod.package_info)}1{else}0{/if}">
+							<!-- Grid Produk -->
+							<div class="row mb-5">
+								{foreach from=$category.products item=prod}
+								<div class="col-6 col-sm-4 pt-3 product-card" data-product-id="{$prod.product_id}"
+									data-category-id="{$prod.cat_id}"
+									data-is-package="{if isset($prod.package_info)}1{else}0{/if}">
 
-                  <!-- Gambar & Badge Container -->
-                  <div class="position-relative mb-3">
-                    <!-- Gambar Produk -->
-                    <div class="product-image-container">
-                      <img src="{$BASEURL}resource/assets-frontend/dist/product/{$prod.product_pict}"
-                        class="img-fluid rounded product-image" alt="{$prod.product_name}"
-                        style="max-height: 200px; object-fit: cover;" />
-                    </div>
+									<!-- Gambar & Badge Container -->
+									<div class="position-relative mb-3">
+										<!-- Gambar Produk -->
+										<div class="product-image-container">
+											<img src="{$BASEURL}resource/assets-frontend/dist/product/{$prod.product_pict}"
+												class="img-fluid rounded product-image" alt="{$prod.product_name}"
+												style="max-height: 200px; object-fit: cover;" />
+										</div>
 
-                    <!-- Badge Container -->
-                    <div class="position-absolute top-0 end-0 p-2 d-flex flex-column gap-2">
-                      <!-- Badge Stok -->
-                      <span class="badge bg-light text-dark">
-                        Stok: {$prod.current_stock}
-                      </span>
+										<!-- Badge Container -->
+										<div class="position-absolute top-0 end-0 p-2 d-flex flex-column gap-2">
+											<!-- Badge Stok -->
+											<span class="badge bg-light text-dark">
+												Stok: {$prod.current_stock}
+											</span>
 
-                      <!-- Badge Paket jika ada -->
-                      {if isset($prod.package_info)}
-                      <span class="badge bg-primary">
-                        <i class="bi bi-box"></i> Paket
-                      </span>
-                      {/if}
-                    </div>
+											<!-- Badge Paket jika ada -->
+											{if isset($prod.package_info)}
+											<span class="badge bg-primary">
+												<i class="bi bi-box"></i> Paket
+											</span>
+											{/if}
+										</div>
 
-                    <!-- Overlay Sold Out -->
-                    {if $prod.current_stock == 0}
-                    <div
-                      class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
-                      <img src="{$BASEURL}resource/assets-frontend/dist/katalog/soldout.png" class="img-fluid"
-                        alt="Sold Out" style="max-height: 60px;" />
-                    </div>
-                    {/if}
-                  </div>
+										<!-- Overlay Sold Out -->
+										{if $prod.current_stock == 0}
+										<div
+											class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
+											<img src="{$BASEURL}resource/assets-frontend/dist/katalog/soldout.png"
+												class="img-fluid" alt="Sold Out" style="max-height: 60px;" />
+										</div>
+										{/if}
+									</div>
 
-                  <!-- Info Produk -->
-                  <div class="product-info p-2">
-                    <h5 class="product-name fw-bold mb-2">
-                      {$prod.product_name|upper}
-                    </h5>
-                    <div class="price-tag mb-3">
-                      <span class="rounded-circle price-dot">Rp</span>
-                      <span class="price-amount">
-                        {$prod.price_display}<sup>K</sup>
-                      </span>
-                    </div>
-                    <button class="btn btn-primary w-100 view-product" {if $prod.current_stock==0}disabled{/if}>
-                      Pilih
-                    </button>
-                  </div>
-                </div>
-                {/foreach}
-              </div>
-              {/foreach}
-              {else}
-              <div class="col-12 py-5">
-                <div class="alert alert-info">
-                  Tidak ada produk tersedia saat ini
-                </div>
-              </div>
-              {/if}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+									<!-- Info Produk -->
+									<div class="product-info p-2">
+										<h5 class="product-name fw-bold mb-2">
+											{$prod.product_name|upper}
+										</h5>
+										<div class="price-tag mb-3">
+											<span class="rounded-circle price-dot">Rp</span>
+											<span class="price-amount">
+												{$prod.price_display}<sup>K</sup>
+											</span>
+										</div>
+										<button class="btn btn-primary w-100 view-product" {if
+											$prod.current_stock==0}disabled{/if}>
+											Pilih
+										</button>
+									</div>
+								</div>
+								{/foreach}
+							</div>
+							{/foreach}
+							{else}
+							<div class="col-12 py-5">
+								<div class="alert alert-info">
+									Tidak ada produk tersedia saat ini
+								</div>
+							</div>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-  <!-- Modal Produk -->
-  <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <!-- Header Modal -->
-        <div class="modal-header">
-          <h5 class="modal-title" id="modal-product-name"></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
+	<!-- Modal Produk -->
+	<div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Header Modal -->
+				<div class="modal-header">
+					<h5 class="modal-title" id="modal-product-name"></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
 
-        <!-- Body Modal Regular Product -->
-        <div id="regular-product-content">
-          <div class="modal-body">
-            <div class="row">
-              <!-- Gambar Produk -->
-              <div class="col-md-5 mb-3 mb-md-0">
-                <img id="modal-product-image" class="img-fluid rounded" />
-              </div>
+				<!-- Regular Product Content -->
+				<div id="regular-product-content">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-5 mb-3">
+								<img id="modal-product-image" class="img-fluid rounded w-100"
+									style="object-fit: cover; max-height: 300px;">
+							</div>
+							<div class="col-md-7">
+								<div class="mb-3">
+									<label class="form-label fw-bold">Deskripsi</label>
+									<p id="modal-product-description" class="text-muted"></p>
+								</div>
 
-              <!-- Info Produk -->
-              <div class="col-md-7">
-                <p id="modal-product-description" class="text-muted mb-3"></p>
+								<div class="d-flex justify-content-between mb-3">
+									<div>
+										<label class="form-label fw-bold">Harga</label>
+										<div id="modal-product-price" class="fs-5"></div>
+									</div>
+									<div>
+										<label class="form-label fw-bold">Stok</label>
+										<div id="modal-product-stock" class="fs-5"></div>
+									</div>
+								</div>
 
-                <!-- Harga & Stok -->
-                <div class="d-flex justify-content-between mb-3">
-                  <div>
-                    <span class="fw-bold">Harga:</span>
-                    <span id="modal-product-price" class="ms-2"></span>
-                  </div>
-                  <div>
-                    <span class="fw-bold">Stok:</span>
-                    <span id="modal-product-stock" class="ms-2"></span>
-                  </div>
-                </div>
+								<div class="mb-3">
+									<label class="form-label fw-bold">Jumlah</label>
+									<div class="input-group" style="width: 150px;">
+										<button class="btn btn-outline-secondary decrease-qty" type="button">-</button>
+										<input type="number" class="form-control text-center product-qty" value="1"
+											min="1">
+										<button class="btn btn-outline-secondary increase-qty" type="button">+</button>
+									</div>
+								</div>
 
-                <!-- Quantity Input -->
-                <div class="mb-3">
-                  <label class="form-label">Jumlah</label>
-                  <div class="input-group" style="width: 150px;">
-                    <button class="btn btn-outline-secondary decrease-qty" type="button">-</button>
-                    <input type="number" class="form-control text-center product-qty" value="1" min="1" />
-                    <button class="btn btn-outline-secondary increase-qty" type="button">+</button>
-                  </div>
-                </div>
+								<div class="mb-3">
+									<label class="form-label fw-bold">Subtotal</label>
+									<div id="product-subtotal" class="fs-5"></div>
+								</div>
 
-                <!-- Notes -->
-                <div class="mb-3">
-                  <label class="form-label">Catatan</label>
-                  <textarea class="form-control" id="product-note" rows="2"
-                    placeholder="Tambahkan catatan..."></textarea>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+								<div>
+									<label class="form-label fw-bold">Catatan</label>
+									<textarea id="product-note" class="form-control" rows="2"
+										placeholder="Tambahkan catatan khusus..."></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        <!-- Body Modal Package Product -->
-        <div id="package-product-content" style="display: none;">
-          <div class="modal-body">
-            <!-- Package Info -->
-            <div class="row mb-4">
-              <div class="col-md-5">
-                <img id="modal-package-image" class="img-fluid rounded mb-3" />
-              </div>
-              <div class="col-md-7">
-                <p id="modal-package-description" class="text-muted"></p>
-                <div class="mb-3">
-                  <span class="fw-bold">Harga Dasar:</span>
-                  <span id="modal-package-base-price" class="ms-2"></span>
-                </div>
-              </div>
-            </div>
+				<!-- Body Modal Package Product -->
+				<div id="package-product-content" style="display: none;">
+					<div class="modal-body">
+						<!-- Package Info -->
+						<div class="row mb-4">
+							<div class="col-md-5">
+								<img id="modal-package-image" class="img-fluid rounded mb-3" />
+							</div>
+							<div class="col-md-7">
+								<p id="modal-package-description" class="text-muted"></p>
+								<div class="mb-3">
+									<span class="fw-bold">Harga Dasar:</span>
+									<span id="modal-package-base-price" class="ms-2"></span>
+								</div>
+							</div>
+						</div>
 
-            <!-- Required Categories -->
-            <div class="mb-4">
-              <h6 class="border-bottom pb-2">Kategori Wajib</h6>
-              <div id="package-categories" class="d-flex flex-wrap gap-2"></div>
-            </div>
+						<!-- Required Categories -->
+						<div class="mb-4">
+							<h6 class="border-bottom pb-2">Kategori Wajib</h6>
+							<div id="package-categories" class="d-flex flex-wrap gap-2"></div>
+						</div>
 
-            <!-- Product Selection -->
-            <div class="mb-4">
-              <h6 class="border-bottom pb-2">Pilih Produk</h6>
-              <div class="accordion" id="package-products-accordion"></div>
-            </div>
+						<!-- Product Selection -->
+						<div class="mb-4">
+							<h6 class="border-bottom pb-2">Pilih Produk</h6>
+							<div class="accordion" id="package-products-accordion"></div>
+						</div>
 
-            <!-- Excluded Products -->
-            <div id="excluded-products-section" class="mb-4" style="display: none;">
-              <h6 class="border-bottom pb-2">Produk Tidak Tersedia dalam Paket</h6>
-              <div id="excluded-products-list" class="row g-2"></div>
-            </div>
+						<!-- Excluded Products -->
+						<div id="excluded-products-section" class="mb-4" style="display: none;">
+							<h6 class="border-bottom pb-2">Produk Tidak Tersedia dalam Paket</h6>
+							<div id="excluded-products-list" class="row g-2"></div>
+						</div>
 
-            <!-- Package Summary -->
-            <div class="card bg-light">
-              <div class="card-body">
-                <h6 class="card-title border-bottom pb-2">Ringkasan Paket</h6>
-                <div id="package-summary" class="mb-3"></div>
-                <div class="d-flex justify-content-between">
-                  <span class="fw-bold">Total:</span>
-                  <span id="package-total" class="fw-bold"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+						<!-- Package Summary -->
+						<div class="card bg-light">
+							<div class="card-body">
+								<h6 class="card-title border-bottom pb-2">Ringkasan Paket</h6>
+								<div id="package-summary" class="mb-3"></div>
+								<div class="d-flex justify-content-between">
+									<span class="fw-bold">Total:</span>
+									<span id="package-total" class="fw-bold"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        <!-- Footer Modal -->
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Tutup
-          </button>
-          <!-- Button untuk produk regular -->
-          <button type="button" class="btn btn-primary" id="add-to-cart-regular">
-            Tambah ke Keranjang
-          </button>
-          <!-- Button untuk paket -->
-          <button type="button" class="btn btn-primary" id="add-to-cart-package" style="display: none;">
-            Tambah Paket ke Keranjang
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+				<!-- Footer Modal -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+					<button type="button" class="btn btn-primary" id="add-to-cart-regular">
+						Tambah ke Keranjang
+					</button>
+					<button type="button" class="btn btn-primary" id="add-to-cart-package" style="display: none;">
+						Tambah Paket ke Keranjang
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </section>
 
 <!-- Bootstrap JS and dependencies -->
@@ -453,5 +520,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- Page Script -->
-<script src="{$BASEURL}resource/assets-frontend/js/order.js"></script>
-<script src="{$BASEURL}resource/assets-frontend/js/session-management.js"></script>
+<script src="{$BASEURL}resource/assets-frontend/js/Order/order.js"></script>
+<script src="{$BASEURL}resource/assets-frontend/js/Order/session-management.js"></script>
+<script src="{$BASEURL}resource/assets-frontend/js/Order/product-modal.js"></script>

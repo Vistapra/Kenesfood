@@ -114,7 +114,6 @@ class SessionManager {
         const position = await this.getCurrentPosition();
         
         const locationValid = await this.validateLocation(position);
-        // Hapus throw error dan ganti dengan return
         if (!locationValid) {
             this.locationVerified = false;
             this.updateLocationStatus('warning', 'Lokasi diluar jangkauan outlet');
@@ -124,7 +123,7 @@ class SessionManager {
         this.locationVerified = true;
         this.updateLocationStatus('success', 'Lokasi terverifikasi');
         return true;
-    } catch (error) {
+    }  catch (error) {
         console.error('Location error:', error);
         this.updateLocationStatus('warning', 'Gagal mendapatkan lokasi');
         return false;
@@ -376,37 +375,50 @@ console.log('Navigasi ke:', `/order?outletId=${this.outletId}&tableId=${this.tab
      * Check for existing session
      */
     async checkExistingSession() {
-    try {
-        const response = await $.ajax({
-            type: 'GET',
-            url: `${window.location.origin}/order/session?${this.params.toString()}`
-        });
-
-        if (response.success && response.data.session) {
-            const sessionStatus = response.data.session.status;
-            
-            // Hide all session elements first
-            $('#session-page, #session-creation, #resume-session').attr('hidden', true);
-            
-            if (sessionStatus === 'RESERVED') {
-                // Only show resume for RESERVED status
-                $('#resume-session').removeAttr('hidden');
+        try {
+            const response = await $.ajax({
+                type: 'GET',
+                url: `${window.location.origin}/order/session`,
+                data: new URLSearchParams(window.location.search).toString()
+            });
+    
+            // Reset tampilan semua elemen sesi
+            $('#session-page, #session-creation, #resume-session, #active-session')
+                .attr('hidden', true);
+    
+            if (response.success && response.data.session) {
+                const sessionStatus = response.data.session.status;
+                const expireTime = new Date(response.data.session.expire_at);
+                const currentTime = new Date();
+    
+                // Validasi waktu sesi
+                if (currentTime > expireTime) {
+                    $('#session-creation').removeAttr('hidden');
+                    return;
+                }
+    
+                // Manajemen status sesi yang lebih detail
+                switch(sessionStatus) {
+                    case 'RESERVED':
+                        $('#resume-session').removeAttr('hidden');
+                        break;
+                    case 'ORDERED':
+                    case 'COMPLETED':
+                        $('#active-session, #order-page').removeAttr('hidden');
+                        this.startSession(response.data);
+                        break;
+                    default:
+                        $('#session-creation').removeAttr('hidden');
+                }
             } else {
-                // For other statuses, show active session
-                $('#active-session').removeAttr('hidden');
-                $('#order-page').removeAttr('hidden');
-                this.startSession(response.data);
+                $('#session-creation').removeAttr('hidden');
             }
-        } else {
-            // No active session, show creation form
+        } catch (error) {
+            console.error('Kesalahan pemeriksaan sesi:', error);
             $('#session-creation').removeAttr('hidden');
-            $('#resume-session, #active-session').attr('hidden', true);
+            this.showError('Gagal memeriksa status sesi');
         }
-    } catch (error) {
-        console.error('Error checking session:', error);
-        this.showError('Gagal memeriksa status sesi');
     }
-}
 
     /**
      * Validate session input
