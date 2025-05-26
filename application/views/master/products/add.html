@@ -1,0 +1,339 @@
+<div class="row">
+	<div class="col-md-12 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<h4 class="card-title">Tambah Produk</h4>
+
+				{if isset($flash_message)}
+				<div class="alert alert-{$flash_message.status} alert-dismissible fade show" role="alert">
+					{$flash_message.msg}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+				{/if}
+
+				<!-- Step 1: Select Brand -->
+				<div id="step1" class="{if isset($selected_brand)}d-none{/if}">
+					<div class="mb-4">
+						<h5>Pilih Brand</h5>
+
+						<form id="brandForm" action="{site_url('master/products/add')}" method="get" class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="form-label">Brand Produk</label>
+									<div class="input-group">
+										<select name="brand" class="form-control select2" required>
+											<option value="">-- Pilih Brand --</option>
+											{foreach from=$brands item=brand}
+											<option value="{$brand.brand_type}">{$brand.brand_name}</option>
+											{/foreach}
+										</select>
+										<button type="submit" class="btn btn-primary">
+											<i class="fas fa-arrow-right"></i> Lanjutkan
+										</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<!-- Step 2: Product Selection and Form -->
+				<div id="step2" class="{if !isset($selected_brand)}d-none{/if}">
+					{if isset($selected_brand)}
+					<div class="mb-4 d-flex justify-content-between align-items-center">
+						<a href="{site_url('master/products/add')}" class="btn btn-outline-secondary">
+							<i class="fas fa-sync"></i> Ganti Brand
+						</a>
+					</div>
+
+					<!-- Main Form Container -->
+					<div class="row">
+						<!-- Product Selection Column -->
+						<div class="col-md-5">
+							<!-- Search Card -->
+							<div class="card mb-4">
+								<div class="card-header bg-light d-flex justify-content-between align-items-center">
+									<h6 class="mb-0">Pilih Produk dari API</h6>
+									<div class="input-group input-group-sm" style="width: 250px;">
+										<input type="text" id="search-products" class="form-control"
+											placeholder="Cari produk...">
+										<button class="btn btn-outline-secondary" type="button" id="search-button">
+											<i class="fas fa-search"></i>
+										</button>
+									</div>
+								</div>
+								<div class="card-body p-0">
+									<div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+										<table class="table table-hover table-sm mb-0">
+											<thead class="sticky-top bg-light">
+												<tr>
+													<th>Kode</th>
+													<th>Nama Produk</th>
+													<th>Kategori</th>
+													<th>Harga</th>
+													<th style="width: 70px">Pilih</th>
+												</tr>
+											</thead>
+											<tbody id="product-list">
+												<!-- Produk akan dimuat di sini via AJAX -->
+												<tr id="loading-row">
+													<td colspan="5" class="text-center p-3">
+														<div class="spinner-border spinner-border-sm text-primary"
+															role="status">
+															<span class="visually-hidden">Loading...</span>
+														</div>
+														<span class="ms-2">Memuat produk...</span>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<!-- Pagination untuk produk -->
+									<div class="card-footer bg-light" id="product-pagination">
+										<div class="d-flex justify-content-between align-items-center">
+											<small class="text-muted">Halaman <span id="current-page">1</span> dari
+												<span id="total-pages">1</span></small>
+											<div>
+												<button class="btn btn-sm btn-outline-primary" id="prev-page" disabled>
+													<i class="fas fa-chevron-left"></i>
+												</button>
+												<button class="btn btn-sm btn-outline-primary ms-1" id="next-page"
+													disabled>
+													<i class="fas fa-chevron-right"></i>
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Current Selection Preview -->
+							<div class="card mb-4">
+								<div class="card-header bg-light">
+									<h6 class="mb-0">Preview Produk</h6>
+								</div>
+								<div class="card-body">
+									<div class="text-center mb-3">
+										<img id="preview"
+											src="{$BASEURL}resource/assets-frontend/dist/product/default-product.jpg"
+											alt="foto-produk" class="img-fluid rounded shadow-sm"
+											style="max-height: 180px;" />
+									</div>
+
+									<div id="selected-product-info" class="text-center text-muted">
+										<p>Belum ada produk yang dipilih</p>
+									</div>
+
+									<div class="form-group mt-3">
+										<label for="product_pict" class="form-label">Upload Foto Produk</label>
+										<input type="file" name="product_pict" id="product_pict" class="form-control"
+											form="productForm" onchange="loadPreview(event)"
+											accept="image/png, image/jpg, image/gif, image/svg+xml">
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Product Form Column -->
+						<div class="col-md-7">
+							<form action="{site_url('master/products/add')}" method="post" enctype="multipart/form-data"
+								id="productForm">
+								<input type="hidden" name="product_brand" value="{$selected_brand}">
+								<input type="hidden" name="api_id" id="api_id" value="">
+
+								<div class="card mb-4">
+									<div class="card-header bg-light">
+										<h6 class="mb-0">Informasi Dasar Produk</h6>
+									</div>
+									<div class="card-body">
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group mb-3">
+													<label class="form-label">Kode Produk <span
+															class="text-danger">*</span></label>
+													<input type="text" name="product_code" id="product_code"
+														class="form-control" required>
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group mb-3">
+													<label class="form-label">Kategori <span
+															class="text-danger">*</span></label>
+													<select name="cat_id" id="cat_id" class="form-control select2"
+														required>
+														<option value="">-- Pilih Kategori --</option>
+														{foreach from=$categories item=category}
+														<option value="{$category.cat_id}">{$category.cat_name}</option>
+														{/foreach}
+													</select>
+												</div>
+											</div>
+										</div>
+
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group mb-3">
+													<label class="form-label">Nama Produk <span
+															class="text-danger">*</span></label>
+													<input type="text" name="product_name" id="product_name"
+														class="form-control" required>
+												</div>
+											</div>
+										</div>
+
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group mb-3">
+													<label class="form-label">Harga (Rp) <span
+															class="text-danger">*</span></label>
+													<input type="number" name="product_price" id="product_price"
+														class="form-control" required>
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group mb-3">
+													<label class="form-label">Urutan Tampil</label>
+													<input type="number" name="product_no" id="product_no"
+														class="form-control" value="1">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="card mb-4">
+									<div class="card-header bg-light">
+										<h6 class="mb-0">Status & Promosi</h6>
+									</div>
+									<div class="card-body">
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group mb-3">
+													<label class="form-label">Status Produk</label>
+													<select name="product_st" class="form-control select2">
+														<option value="0" selected>Aktif</option>
+														<option value="1">Non-aktif</option>
+													</select>
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group mb-3">
+													<label class="form-label">Jenis Promosi</label>
+													<select name="product_promote" class="form-control select2">
+														<option value="none" selected>Tidak Ada</option>
+														<option value="arrival">Arrival</option>
+														<option value="prelaunch">Prelaunch</option>
+														<option value="seasonal">Seasonal Collection</option>
+													</select>
+												</div>
+											</div>
+										</div>
+
+										<div class="row">
+											<div class="col-md-4">
+												<div class="form-group mb-3">
+													<label class="form-label">Status Marketing</label>
+													<select name="ek_marketing" class="form-control select2">
+														<option value="0" selected>Aktif</option>
+														<option value="1">Non-aktif</option>
+													</select>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group mb-3">
+													<label class="form-label">Status Customer</label>
+													<select name="ek_customer" class="form-control select2">
+														<option value="0" selected>Aktif</option>
+														<option value="1">Non-aktif</option>
+													</select>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group mb-3">
+													<label class="form-label">Status Outlet</label>
+													<select name="ek_outlet" class="form-control select2">
+														<option value="0" selected>Aktif</option>
+														<option value="1">Non-aktif</option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="card mb-4">
+									<div class="card-header bg-light">
+										<h6 class="mb-0">Detail Produk</h6>
+									</div>
+									<div class="card-body">
+										<div class="row">
+											<div class="col-md-12 mb-3">
+												<div class="form-group">
+													<label class="form-label">Deskripsi Produk</label>
+													<textarea rows="3" name="product_desc" id="product_desc"
+														class="form-control"></textarea>
+												</div>
+											</div>
+										</div>
+
+										<div class="row">
+											<div class="col-md-12 mb-3">
+												<div class="form-group">
+													<label class="form-label">Komposisi Product <span
+															class="text-danger">*</span></label>
+													<textarea rows="2" name="product_komposisi" id="product_komposisi"
+														class="form-control" required>-</textarea>
+												</div>
+											</div>
+										</div>
+
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group mb-3">
+													<label class="form-label">Durability (Hari) <span
+															class="text-danger">*</span></label>
+													<div class="input-group">
+														<input type="number" name="expired_date" id="expired_date"
+															class="form-control" value="30" required>
+														<span class="input-group-text">Hari</span>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group mb-3">
+													<label class="form-label">Netto Product <span
+															class="text-danger">*</span></label>
+													<div class="input-group">
+														<input type="number" name="product_netto" id="product_netto"
+															class="form-control" value="0" required>
+														<span class="input-group-text">gram</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="text-center my-4">
+									<button type="submit" id="submitButton" class="btn btn-primary px-4 py-2">
+										<i class="fa fa-plus me-2"></i> Tambah Produk
+									</button>
+									<a href="{site_url('master/products')}" class="btn btn-secondary px-4 py-2 ms-2">
+										<i class="fa fa-times me-2"></i> Batal
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+					{/if}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+  window.apiSearchUrl = "{site_url('master/products/apiSearchProducts')}";
+</script>
+<script src="{$BASEURL}resource/assets-frontend/js/Master-Products/add.js"></script>

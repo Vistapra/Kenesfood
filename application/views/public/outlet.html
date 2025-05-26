@@ -1,0 +1,148 @@
+<main>
+                <div class="container outlets-page mb-5">
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="heading-page p-2 mt-4">
+                            <h2 class="text-uppercase fw-medium text-center"><b style="color:#662A0C">Our Outlets</b></h2>
+                        </div>
+                        <div class="breadcrumb p-2">
+                            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{site_url('/')}">Home</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Outlets</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-4 mb-4 mb-md-0">
+                             <div class="list-group" id="list-tab" role="tablist">
+                                <a class="list-group-item list-group-item-action active" id="list-semua-list" data-bs-toggle="list" href="#list-semua" role="tab" aria-controls="list-semua" onclick="changeDropdownText('Semua')">Semua</a>
+                                {foreach from=$kota key=key item=city}
+                                <a class="list-group-item list-group-item-action" id="list-{str_replace(' ','-',$key)}-outlet" data-bs-toggle="list" href="#list-{str_replace(' ','-',$key)}" role="tab"  aria-controls="list-{str_replace(' ','-',$key)}-outlet" onclick="changeDropdownText('{str_replace(' ','-',$key)}')">{$key}</a>
+                                {/foreach}
+
+                            </div>
+                            <div class="dropdown text-center">
+                                <button class="btn dropdown-toggle" type="button" id="dropdown-list" data-bs-toggle="dropdown" aria-expanded="false" style="border: solid 3px; border-color: #662A0C;">
+                                Semua
+                                </button>
+                                <ul class="dropdown-menu dropdown-city-outlet">
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <div class="tab-content" id="nav-tabContent">
+                                <div class="tab-pane fade show active" id="list-semua" role="tabpanel" aria-labelledby="list-semua-list">
+                                    <div class="row g-4">
+                                        {foreach from=$kota key=key item=kategories_kota}
+                                        {foreach from=$kategories_kota['outlets'] key=key1 item=outlet}
+                                        <div class="col-sm-6">
+                                            <div class="card">
+                                                <div class="card-img">
+                                                    <img src="{$BASEURL}/resource/assets-frontend/dist/outlet/{$outlet['outlet_photo']}" alt="" class="img-fluid rounded-2  mx-auto d-block">
+                                                </div>
+                                                <div class="desc-outlet m-3">
+                                                    <h5 class="text-uppercase fw-bold">{$outlet['outlet_name']}</h5>
+                                                    <div class="alamat-outlet ">
+                                                        <p class="text-capitalize text-body-secondary lh-1">{$outlet['outlet_address']}</p>
+                                                    </div>
+                                                    <div class="contact-outlet d-flex flex-column mt-3">
+                                                        <div class="phone-outlet">
+                                                            <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16">
+                                                                <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                                                            </svg>
+                                                            {$outlet['outlet_phone']}
+                                                            </span>
+                                                        </div>
+                                                        <div class="phone-outlet">
+                                                        <!-- <span>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shop" viewBox="0 0 16 16">
+                                                                    <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.371 2.371 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976l2.61-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5zM4 15h3v-5H4v5zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3zm3 0h-2v3h2v-3z"/>
+                                                                </svg>
+                                                                07.00 - 20.00
+                                                        </span> -->
+                                                        </div>
+                                                        <div class="phone-outlet">
+                                                            <a class="icon-link link-dark" target="_blank" href="https://goo.gl/maps/CV1ZCtUmEgEpo6Ky9">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                                                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                                                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                                                </svg>
+                                                            <span> View Location ></span>
+                                                            </a>
+                                                        </div>
+                                                        <div class="phone-outlet">
+                                                            <a class="icon-link  link-dark" href="#">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo" viewBox="0 0 16 16">
+                                                                    <path fill-rule="evenodd" d="M8 1a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.319 1.319 0 0 0-.37.265.301.301 0 0 0-.057.09V14l.002.008a.147.147 0 0 0 .016.033.617.617 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.619.619 0 0 0 .146-.15.148.148 0 0 0 .015-.033L12 14v-.004a.301.301 0 0 0-.057-.09 1.318 1.318 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465-1.281 0-2.462-.172-3.34-.465-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411z"/>
+                                                                </svg>
+                                                            </a>
+                                                            <span class="jarak{$key1}">
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/foreach}
+                                        {/foreach}
+                                    </div>
+                                </div>
+                                {foreach from=$kota key=key item=kategories_kota}
+                                <div class="tab-pane fade" id="list-{str_replace(' ','-',$key)}" role="tabpanel" aria-labelledby="list-{str_replace(' ','-',$key)}-outlet">
+                                    <div class="row g-4">
+                                        {foreach from=$kategories_kota['outlets'] key=key1 item=outlet}
+                                        <div class="col-sm-6">
+                                            <div class="card">
+                                                <div class="card-img">
+                                                    <img src="{$BASEURL}/resource/assets-frontend/dist/outlet/{$outlet['outlet_photo']}" alt="" class="img-fluid rounded-2 mx-auto d-block">
+                                                </div>
+                                                <div class="desc-outlet m-3">
+                                                    <h5 class="text-uppercase fw-bold">{$outlet['outlet_name']}</h5>
+                                                    <div class="alamat-outlet ">
+                                                        <p class="text-capitalize text-body-secondary lh-1">{$outlet['outlet_address']}</p>
+                                                    </div>
+                                                    <div class="contact-outlet d-flex flex-column mt-3">
+                                                        <div class="phone-outlet">
+                                                            <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16">
+                                                                <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                                                            </svg>
+                                                            {$outlet['outlet_phone']}
+                                                            </span>
+                                                        </div>
+                                                        <div class="phone-outlet">
+                                                            <a class="icon-link  link-dark" target="_blank" href="https://goo.gl/maps/CV1ZCtUmEgEpo6Ky9">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                                                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                                                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                                                </svg>
+                                                            <span> View Location ></span>
+                                                            </a>
+                                                        </div>
+                                                        <div class="phone-outlet">
+                                                            <a class="icon-link  link-dark" href="#">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo" viewBox="0 0 16 16">
+                                                                    <path fill-rule="evenodd" d="M8 1a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.319 1.319 0 0 0-.37.265.301.301 0 0 0-.057.09V14l.002.008a.147.147 0 0 0 .016.033.617.617 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.619.619 0 0 0 .146-.15.148.148 0 0 0 .015-.033L12 14v-.004a.301.301 0 0 0-.057-.09 1.318 1.318 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465-1.281 0-2.462-.172-3.34-.465-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411z"/>
+                                                                </svg>
+                                                            </a>
+                                                            <span class="jarak{$key1}">
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/foreach}
+                                    </div>
+                                </div>
+                                {/foreach}
+                            </div>
+                        </div>      
+                    </div>
+                </div>
+            <div class="d-flex justify-content-end section-cs">
+                <span class="customer-service p-3">
+                    <a href="https://wa.me/6287839295999?text=Silahkan Tanyakan Ke Admin Seputar Produk Kenes & Bakery ya." class="" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Whatsapp"><i class="fa-brands fa-whatsapp fa-lg"></i></a>
+                </span>
+            </div>
+        </main>

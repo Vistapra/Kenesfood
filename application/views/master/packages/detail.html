@@ -1,0 +1,355 @@
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="row my-2">
+				<div class="col-md-4">
+					<div class="form-group position-relative product-pict text-center">
+						<img src="{$BASEURL}/resource/assets-frontend/dist/product/{$detail.product_pict}"
+							class="img-fluid">
+						<span class="position-absolute top-5 start-5 translate-middle">
+							{if $detail.product_promote == 'arrival'}
+							<span class="badge badge-pill badge-lg badge-success rotate-20">Arrival</span>
+							{elseif $detail.product_promote == 'prelaunch'}
+							<span class="badge badge-pill badge-lg badge-warning rotate-20">Prelaunch</span>
+							{elseif $detail.product_promote == 'promote'}
+							<span class="badge badge-pill badge-lg badge-danger rotate-20">Promo</span>
+							{/if}
+						</span>
+					</div>
+				</div>
+
+				<div class="col-md-8">
+					<div class="row my-2">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Nama Paket</label>
+								<p class="form-label"><small>{strtoupper($detail.product_brand)} -
+										{$detail.product_code}</small><br /><b>{$detail.product_name}</b></p>
+							</div>
+							<div class="form-group">
+								<label>Kategori</label>
+								<p class="form-label"><b>{$detail.cat_name|default:'-'}</b></p>
+							</div>
+							<div class="form-group">
+								<label>Tipe Paket</label>
+								<p class="form-label">
+									{if $detail.package_type == 'standard'}
+									<span class="badge badge-pill badge-sm badge-info">Standar</span>
+									{else}
+									<span class="badge badge-pill badge-sm badge-primary">Custom</span>
+									{/if}
+								</p>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Harga Dasar</label>
+								<p class="form-label"><b>
+										Rp {number_format($detail.base_price|default:0, 0, ',', '.')}
+									</b></p>
+							</div>
+							<div class="form-group">
+								<label>Status</label>
+								<p class="form-label">
+									{if $detail.product_st == 0}
+									<span class="badge badge-pill badge-sm badge-success">Aktif</span>
+									{else}
+									<span class="badge badge-pill badge-sm badge-danger">Non-aktif</span>
+									{/if}
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="row my-2">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label>Deskripsi</label>
+								<p class="form-label">{$detail.product_desc|default:'-'}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Kategori Paket -->
+			<div class="card mt-4">
+				<div class="card-header bg-light d-flex justify-content-between align-items-center">
+					<h5 class="mb-0">Kategori Paket</h5>
+					{if $allowed.create}
+					<a href="{site_url(['master/package', 'add_category', $detail.id])}" class="btn btn-sm btn-primary">
+						<i class="fas fa-plus"></i> Tambah Kategori
+					</a>
+					{/if}
+				</div>
+				<div class="card-header bg-light d-flex justify-content-between align-items-center">
+					<h5 class="mb-0">Detail Paket</h5>
+					<div>
+						{if $allowed.edit}
+						<a href="{site_url(['master/package', 'edit', $detail.id])}"
+							class="btn btn-sm btn-outline-secondary">
+							<i class="fa-regular fa-pen-to-square"></i> Edit Paket
+						</a>
+						{/if}
+						<a href="{site_url(['master/package', 'manage_stock', $detail.id])}"
+							class="btn btn-sm btn-outline-primary">
+							<i class="fas fa-boxes"></i> Kelola Stok
+						</a>
+					</div>
+				</div>
+
+				<div class="card-body">
+					{if empty($categories)}
+					<div class="alert alert-info">
+						Belum ada kategori untuk paket ini. Silakan tambahkan kategori terlebih dahulu.
+					</div>
+					{else}
+					{foreach from=$categories key=key item=category}
+					<div class="card mb-3 category-card" data-category-id="{$category.id}">
+						<div class="card-header bg-light d-flex justify-content-between align-items-center">
+							<h6 class="mb-0">{$category.name} ({count($products_by_category[$category.id])|default:0}
+								produk)</h6>
+							<div>
+								{if $allowed.create}
+								<a href="{site_url(['master/package', 'add_product', $category.id])}"
+									class="btn btn-sm btn-outline-primary">
+									<i class="fas fa-plus"></i> Tambah Produk
+								</a>
+								<a href="{site_url(['master/package', 'add_product_bulk', $category.id])}"
+									class="btn btn-sm btn-outline-success">
+									<i class="fas fa-layer-group"></i> Tambah Massal
+								</a>
+								{/if}
+								{if $allowed.edit}
+								<a href="{site_url(['master/package', 'edit_category', $category.id])}"
+									class="btn btn-sm btn-outline-secondary">
+									<i class="fa-regular fa-pen-to-square"></i>
+								</a>
+								{/if}
+								{if $allowed.delete}
+								{* PERBAIKAN: Mengubah dari delete_product menjadi delete_category dan dari $product.id
+								menjadi $category.id *}
+								{$url = site_url(['master/package', 'delete_category', $category.id])}
+								<a href="javascript:void(0);" class="btn btn-sm btn-outline-danger"
+									onclick="confirm_delete('{$url}', event)">
+									<i class="fa-solid fa-trash"></i>
+								</a>
+								{/if}
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="mb-3">
+								<div class="row">
+									<div class="col-md-4">
+										<small class="text-muted">Tipe Seleksi:</small>
+										<span class="badge bg-info">
+											{if $category.selection_type == 'single'}
+											Single (Pilih 1)
+											{else}
+											Multiple (Pilih Banyak)
+											{/if}
+										</span>
+									</div>
+									<div class="col-md-4">
+										<small class="text-muted">Minimal Item:</small>
+										<span class="badge bg-secondary">{$category.min_items}</span>
+									</div>
+									<div class="col-md-4">
+										<small class="text-muted">Maksimal Item:</small>
+										<span class="badge bg-secondary">{$category.max_items}</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Products Table -->
+							{$products = $products_by_category[$category.id]|default:[]}
+							{if empty($products)}
+							<div class="alert alert-warning">
+								Belum ada produk dalam kategori ini.
+							</div>
+							{else}
+							<div class="table-responsive">
+								<table class="table table-sm table-hover">
+									<thead>
+										<tr>
+											<th>Produk</th>
+											<th>Kode</th>
+											<th>Harga Produk</th>
+											<th>Harga Kustom</th>
+											<th>Stok</th>
+											<th>Default</th>
+											<th style="width:150px">Aksi</th>
+										</tr>
+									</thead>
+									<tbody>
+										{foreach from=$products key=prod_key item=product}
+										<tr>
+											<td>
+												<div class="d-flex align-items-center">
+													<img src="{$BASEURL}/resource/assets-frontend/dist/product/{$product.product_pict}"
+														class="me-2"
+														style="width: 40px; height: 40px; object-fit: cover;">
+													<div>
+														<div class="fw-bold">{$product.product_name}</div>
+														<small
+															class="text-muted">{$product.cat_name|default:'-'}</small>
+													</div>
+												</div>
+											</td>
+											<td>{$product.product_code}</td>
+											<td>Rp {number_format($product.product_price, 0, ',', '.')}</td>
+											<td>
+												{if $product.custom_price !== null}
+												Rp {number_format($product.custom_price, 0, ',', '.')}
+												{else}
+												<span class="text-muted">-</span>
+												{/if}
+											</td>
+											<td>
+												{* PERBAIKAN: Menambahkan class stock-value untuk kompatibilitas dengan
+												JavaScript *}
+												{if $product.stock > 10}
+												<span class="badge bg-success stock-value">{$product.stock}</span>
+												{elseif $product.stock > 0}
+												<span class="badge bg-warning stock-value">{$product.stock}</span>
+												{else}
+												<span class="badge bg-danger stock-value">0</span>
+												{/if}
+											</td>
+											<td>
+												{if isset($product.is_default) && $product.is_default == 1}
+												<span class="badge bg-primary"><i class="fas fa-check"></i></span>
+												{else}
+												<span class="text-muted">-</span>
+												{/if}
+											</td>
+											<td>
+												{if $allowed.edit}
+												<a href="{site_url(['master/package', 'edit_product', $product.id])}"
+													class="btn btn-sm btn-outline-secondary">
+													<i class="fa-regular fa-pen-to-square"></i>
+												</a>
+												<a href="{site_url(['master/package', 'update_product_pricing', $product.id])}"
+													class="btn btn-sm btn-outline-info">
+													<i class="fas fa-tag"></i>
+												</a>
+												{/if}
+												{if $allowed.delete}
+												{$url = site_url(['master/package', 'delete_product', $product.id])}
+												<a href="{$url}" class="btn btn-sm btn-outline-danger"
+													onclick="confirm_delete('{$url}', event)">
+													<i class="fa-solid fa-trash"></i>
+												</a>
+												{/if}
+											</td>
+										</tr>
+										{/foreach}
+									</tbody>
+								</table>
+							</div>
+							{/if}
+						</div>
+					</div>
+					{/foreach}
+					{/if}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{literal}
+<script>
+	// Function to confirm delete operations
+	function confirm_delete(url, event) {
+		event.preventDefault();
+		Swal.fire({
+			title: 'Apakah Anda yakin?',
+			text: "Data yang dihapus tidak dapat dikembalikan!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Ya, hapus!',
+			cancelButtonText: 'Batal'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				window.location.href = url;
+			}
+		});
+	}
+
+	// Function to refresh page when needed
+	document.addEventListener('DOMContentLoaded', function () {
+		// Check for low stock products
+		const lowStockThreshold = 5;
+		let lowStockItems = [];
+
+		// Collect low stock items
+		document.querySelectorAll('.stock-value').forEach(stockElement => {
+			const stock = parseInt(stockElement.textContent.trim());
+			const productRow = stockElement.closest('tr');
+			const productName = productRow.querySelector('.fw-bold').textContent;
+
+			if (stock <= lowStockThreshold && stock > 0) {
+				lowStockItems.push({ name: productName, stock: stock });
+			}
+		});
+
+		// Show alert if there are low stock items
+		if (lowStockItems.length > 0) {
+			let message = `<p>Produk berikut memiliki stok rendah (≤ ${lowStockThreshold}):</p><ul>`;
+			lowStockItems.forEach(item => {
+				message += `<li>${item.name}: ${item.stock} tersisa</li>`;
+			});
+			message += `</ul><p>Silakan perbarui stok produk segera.</p>`;
+
+			Swal.fire({
+				title: 'Peringatan Stok Rendah!',
+				html: message,
+				icon: 'warning',
+				confirmButtonText: 'Kelola Stok',
+				showCancelButton: true,
+				cancelButtonText: 'Tutup'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					window.location.href = '{$smarty.const.SITE_URL}/master/package/manage_stock/{$detail.id}';
+				}
+			});
+		}
+
+		// Check for out of stock products
+		let outOfStockItems = [];
+		document.querySelectorAll('.stock-value').forEach(stockElement => {
+			const stock = parseInt(stockElement.textContent.trim());
+			const productRow = stockElement.closest('tr');
+			const productName = productRow.querySelector('.fw-bold').textContent;
+
+			if (stock === 0) {
+				outOfStockItems.push({ name: productName });
+			}
+		});
+
+		// Show alert if there are out of stock items
+		if (outOfStockItems.length > 0) {
+			let message = `<p>Produk berikut tidak memiliki stok:</p><ul>`;
+			outOfStockItems.forEach(item => {
+				message += `<li>${item.name}</li>`;
+			});
+			message += `</ul><p>Produk-produk ini tidak akan tersedia untuk dipilih dalam paket. Silakan perbarui stok produk segera.</p>`;
+
+			Swal.fire({
+				title: 'Produk Habis Stok!',
+				html: message,
+				icon: 'error',
+				confirmButtonText: 'Kelola Stok',
+				showCancelButton: true,
+				cancelButtonText: 'Tutup'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					window.location.href = '{$smarty.const.SITE_URL}/master/package/manage_stock/{$detail.id}';
+				}
+			});
+		}
+	});
+</script>
+{/literal}

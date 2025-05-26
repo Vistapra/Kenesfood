@@ -1,0 +1,1189 @@
+<link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/Promo/test.css">
+
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h4 class="card-title mb-0">
+					<i class="fas fa-calculator text-primary me-2"></i> Uji Kalkulasi Promo
+				</h4>
+			</div>
+
+			<p class="card-description">
+				Gunakan halaman ini untuk menguji perhitungan diskon atau kelayakan promo yang tersedia.
+			</p>
+
+			<!-- Tabs Utama untuk Memilih Jenis Promo -->
+			<ul class="nav nav-tabs mb-4" id="promoTypeTestTabs" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="discount-test-tab" data-bs-toggle="tab"
+						data-bs-target="#discount-test-content" type="button" role="tab"
+						aria-controls="discount-test-content" aria-selected="true">
+						<i class="fas fa-percentage me-1"></i> Uji Promo Diskon
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="bundling-test-tab" data-bs-toggle="tab"
+						data-bs-target="#bundling-test-content" type="button" role="tab"
+						aria-controls="bundling-test-content" aria-selected="false">
+						<i class="fas fa-gift me-1"></i> Uji Promo Bundling
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="bogo-test-tab" data-bs-toggle="tab" data-bs-target="#bogo-test-content"
+						type="button" role="tab" aria-controls="bogo-test-content" aria-selected="false">
+						<i class="fas fa-tags me-1"></i> Uji Promo BOGO
+					</button>
+				</li>
+			</ul>
+
+			<div class="tab-content" id="promoTypeTestContent">
+				<!-- Tab Pengujian Promo Diskon -->
+				<div class="tab-pane fade show active" id="discount-test-content" role="tabpanel"
+					aria-labelledby="discount-test-tab">
+					<div class="row">
+						<div class="col-md-7">
+							<!-- Test Form -->
+							<div class="card mb-4">
+								<div class="card-header bg-light">
+									<h5 class="mb-0"><i class="fas fa-tag me-2"></i>Pilih Promo Diskon</h5>
+								</div>
+								<div class="card-body">
+									<form action="{site_url('promo/MasterPromo/testPromo')}" method="post"
+										id="testForm">
+										<input type="hidden" name="promo_type" value="discount">
+										<div class="mb-3">
+											<label for="brand" class="form-label">Brand</label>
+											<select class="form-select" id="brand" name="brand" required
+												onchange="filterPromoByBrand()">
+												<option value="">Pilih Brand</option>
+												<option value="bakery" {if isset($post_data.brand) &&
+													$post_data.brand=='bakery' }selected{/if}>Bakery</option>
+												<option value="resto" {if isset($post_data.brand) &&
+													$post_data.brand=='resto' }selected{/if}>Resto</option>
+												<option value="kopitiam" {if isset($post_data.brand) &&
+													$post_data.brand=='kopitiam' }selected{/if}>Kopitiam</option>
+											</select>
+										</div>
+
+										<div class="mb-3">
+											<label for="promo_code" class="form-label">Kode Promo</label>
+											<select class="form-select" id="promo_code" name="promo_code" required>
+												<option value="">Pilih Kode Promo</option>
+												<optgroup label="Bakery" id="bakery_promos"
+													style="{if isset($post_data.brand) && $post_data.brand != 'bakery'}display:none{/if}">
+													{foreach from=$bakery_promos item=promo}
+													{if $promo.promo_type != 'bundling' && $promo.promo_type != 'bogo'}
+													<option value="{$promo.promo_code}" data-brand="bakery"
+														data-info='{$promo|json_encode}' {if
+														isset($post_data.promo_code) &&
+														$post_data.promo_code==$promo.promo_code}selected{/if}>
+														{$promo.promo_code} - {$promo.promo_name}
+													</option>
+													{/if}
+													{/foreach}
+												</optgroup>
+												<optgroup label="Resto" id="resto_promos"
+													style="{if isset($post_data.brand) && $post_data.brand != 'resto'}display:none{/if}">
+													{foreach from=$resto_promos item=promo}
+													{if $promo.promo_type != 'bundling' && $promo.promo_type != 'bogo'}
+													<option value="{$promo.promo_code}" data-brand="resto"
+														data-info='{$promo|json_encode}' {if
+														isset($post_data.promo_code) &&
+														$post_data.promo_code==$promo.promo_code}selected{/if}>
+														{$promo.promo_code} - {$promo.promo_name}
+													</option>
+													{/if}
+													{/foreach}
+												</optgroup>
+												<optgroup label="Kopitiam" id="kopitiam_promos"
+													style="{if isset($post_data.brand) && $post_data.brand != 'kopitiam'}display:none{/if}">
+													{foreach from=$kopitiam_promos item=promo}
+													{if $promo.promo_type != 'bundling' && $promo.promo_type != 'bogo'}
+													<option value="{$promo.promo_code}" data-brand="kopitiam"
+														data-info='{$promo|json_encode}' {if
+														isset($post_data.promo_code) &&
+														$post_data.promo_code==$promo.promo_code}selected{/if}>
+														{$promo.promo_code} - {$promo.promo_name}
+													</option>
+													{/if}
+													{/foreach}
+												</optgroup>
+											</select>
+										</div>
+
+										<div class="mb-4">
+											<label for="order_total" class="form-label">Total Pembelian (Rp)</label>
+											<div class="input-group">
+												<span class="input-group-text">Rp</span>
+												<input type="number" class="form-control" id="order_total"
+													name="order_total" placeholder="Masukkan total pembelian" min="1000"
+													step="1000" value="{$post_data.order_total|default:'100000'}"
+													required>
+											</div>
+										</div>
+
+										<div class="promo-details mb-4 p-3 rounded bg-light" id="promo_details"
+											style="display: none;">
+											<h6 class="mb-3 border-bottom pb-2">Detail Promo</h6>
+											<div class="row">
+												<div class="col-md-6">
+													<div class="mb-2">
+														<span class="text-muted">Tipe Diskon:</span>
+														<span class="fw-medium" id="detail_type"></span>
+													</div>
+													<div class="mb-2">
+														<span class="text-muted">Nilai Diskon:</span>
+														<span class="fw-medium" id="detail_value"></span>
+													</div>
+													<div class="mb-2">
+														<span class="text-muted">Min. Pembelian:</span>
+														<span class="fw-medium" id="detail_minimum"></span>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="mb-2">
+														<span class="text-muted">Maks. Diskon:</span>
+														<span class="fw-medium" id="detail_maximum"></span>
+													</div>
+													<div class="mb-2">
+														<span class="text-muted">Periode:</span>
+														<span class="fw-medium" id="detail_period"></span>
+													</div>
+													<div class="mb-2">
+														<span class="text-muted">Status:</span>
+														<span class="fw-medium" id="detail_status"></span>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="d-grid">
+											<button type="submit" class="btn btn-primary">
+												<i class="fas fa-calculator me-2"></i> Hitung Diskon
+											</button>
+										</div>
+									</form>
+								</div>
+							</div>
+
+							<!-- Manual Test Form -->
+							<div class="card">
+								<div class="card-header bg-light">
+									<h5 class="mb-0"><i class="fas fa-keyboard me-2"></i>Uji Kode Promo Manual</h5>
+								</div>
+								<div class="card-body">
+									<div class="manual-test-form">
+										<div class="mb-3">
+											<label for="manual_brand" class="form-label">Brand</label>
+											<select class="form-select" id="manual_brand" name="manual_brand">
+												<option value="bakery">Bakery</option>
+												<option value="resto">Resto</option>
+												<option value="kopitiam">Kopitiam</option>
+											</select>
+										</div>
+										<div class="mb-3">
+											<label for="manual_code" class="form-label">Kode Promo</label>
+											<input type="text" class="form-control" id="manual_code"
+												placeholder="Masukkan kode promo">
+										</div>
+										<div class="mb-3">
+											<label for="manual_total" class="form-label">Total Pembelian</label>
+											<div class="input-group">
+												<span class="input-group-text">Rp</span>
+												<input type="number" class="form-control" id="manual_total"
+													value="100000" min="1000" step="1000">
+											</div>
+										</div>
+										<div class="d-grid">
+											<button type="button" class="btn btn-outline-primary"
+												onclick="validateManualCode()">
+												<i class="fas fa-paper-plane me-1"></i> Validasi Kode
+											</button>
+										</div>
+										<div id="manual_result" class="mt-3" style="display: none;"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-5">
+							<!-- Result Card -->
+							{if isset($result) && $post_data.promo_type == 'discount'}
+							<div class="card mb-4">
+								<div class="card-header bg-{if $result.success}success{else}danger{/if} text-white">
+									<h5 class="mb-0">
+										<i
+											class="fas fa-{if $result.success}check-circle{else}exclamation-circle{/if} me-2"></i>
+										{if $result.success}Promo Berhasil Diterapkan{else}Promo Gagal Diterapkan{/if}
+									</h5>
+								</div>
+								<div class="card-body">
+									<div class="promo-result-summary">
+										<div
+											class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+											<span class="fw-medium">Kode Promo:</span>
+											<span class="badge bg-primary">{$result.promo_code}</span>
+										</div>
+
+										<div class="calculation-breakdown bg-light p-3 rounded mb-3">
+											<div class="d-flex justify-content-between mb-2">
+												<span>Total Belanja:</span>
+												<span>Rp {number_format($result.original_amount, 0, ',', '.')}</span>
+											</div>
+											<div
+												class="d-flex justify-content-between mb-2 {if $result.success}text-success{else}text-muted{/if}">
+												<span>Diskon {if $result.success}({$result.discount_label}){/if}:</span>
+												<span>{if $result.success}- Rp {number_format($result.discount_amount,
+													0, ',',
+													'.')}{else}-{/if}</span>
+											</div>
+											<div class="d-flex justify-content-between fw-bold">
+												<span>Total Setelah Diskon:</span>
+												<span>Rp {number_format($result.final_amount, 0, ',', '.')}</span>
+											</div>
+										</div>
+
+										{if !$result.success}
+										<div class="alert alert-danger">
+											<i class="fas fa-exclamation-triangle me-2"></i>
+											<strong>Alasan Gagal:</strong> {$result.message}
+										</div>
+										{else}
+										<div class="alert alert-success">
+											<i class="fas fa-info-circle me-2"></i>
+											{$result.message}
+										</div>
+										{/if}
+
+										<div class="d-grid mt-3">
+											<button type="button" class="btn btn-outline-secondary"
+												onclick="window.location.reload()">
+												<i class="fas fa-redo me-2"></i> Uji Promo Lain
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							{/if}
+
+							<!-- Promo List -->
+							<div class="card">
+								<div class="card-header bg-light">
+									<h5 class="mb-0"><i class="fas fa-list me-2"></i>Promo Diskon Aktif</h5>
+								</div>
+								<div class="card-body p-0">
+									<div class="nav nav-tabs nav-fill" id="promo-tabs" role="tablist">
+										<button class="nav-link active" id="bakery-tab" data-bs-toggle="tab"
+											data-bs-target="#bakery-content" type="button" role="tab"
+											aria-controls="bakery-content" aria-selected="true">
+											Bakery <span
+												class="badge rounded-pill bg-primary ms-1">{$bakery_promos|@count}</span>
+										</button>
+										<button class="nav-link" id="resto-tab" data-bs-toggle="tab"
+											data-bs-target="#resto-content" type="button" role="tab"
+											aria-controls="resto-content" aria-selected="false">
+											Resto <span
+												class="badge rounded-pill bg-primary ms-1">{$resto_promos|@count}</span>
+										</button>
+										<button class="nav-link" id="kopitiam-tab" data-bs-toggle="tab"
+											data-bs-target="#kopitiam-content" type="button" role="tab"
+											aria-controls="kopitiam-content" aria-selected="false">
+											Kopitiam <span
+												class="badge rounded-pill bg-primary ms-1">{$kopitiam_promos|@count}</span>
+										</button>
+									</div>
+
+									<div class="tab-content" id="promo-tab-content">
+										<div class="tab-pane fade show active" id="bakery-content" role="tabpanel"
+											aria-labelledby="bakery-tab">
+											<div class="promo-list bakery-list"
+												style="max-height: 400px; overflow-y: auto;">
+												{if $bakery_promos|@count > 0}
+												{foreach from=$bakery_promos item=promo name=bakery_loop}
+												{if $promo.promo_type != 'bundling' && $promo.promo_type != 'bogo'}
+												<div class="promo-item p-3 border-bottom"
+													onclick="selectPromo('{$promo.promo_code}', 'bakery')">
+													<div class="d-flex justify-content-between align-items-start">
+														<div>
+															<h6 class="mb-1">{$promo.promo_name}</h6>
+															<div class="promo-code-badge mb-2">{$promo.promo_code}</div>
+															<div class="small text-muted">
+																{if $promo.promo_type == 'percentage'}
+																Diskon {$promo.promo_value}%
+																{if $promo.maximum_discount}
+																(Maks: Rp {number_format($promo.maximum_discount, 0,
+																',', '.')})
+																{/if}
+																{else}
+																Diskon Rp {number_format($promo.promo_value, 0, ',',
+																'.')}
+																{/if}
+															</div>
+														</div>
+														<div class="text-center">
+															<span class="badge bg-success mb-1">Aktif</span>
+															<div class="small text-muted">Min: Rp
+																{number_format($promo.minimum_order, 0, ',', '.')}</div>
+														</div>
+													</div>
+												</div>
+												{/if}
+												{/foreach}
+												{if !$bakery_discount_count}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo diskon aktif untuk Bakery</p>
+												</div>
+												{/if}
+												{else}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo aktif untuk Bakery</p>
+												</div>
+												{/if}
+											</div>
+										</div>
+
+										<div class="tab-pane fade" id="resto-content" role="tabpanel"
+											aria-labelledby="resto-tab">
+											<div class="promo-list resto-list"
+												style="max-height: 400px; overflow-y: auto;">
+												{if $resto_promos|@count > 0}
+												{foreach from=$resto_promos item=promo name=resto_loop}
+												{if $promo.promo_type != 'bundling' && $promo.promo_type != 'bogo'}
+												<div class="promo-item p-3 border-bottom"
+													onclick="selectPromo('{$promo.promo_code}', 'resto')">
+													<div class="d-flex justify-content-between align-items-start">
+														<div>
+															<h6 class="mb-1">{$promo.promo_name}</h6>
+															<div class="promo-code-badge mb-2">{$promo.promo_code}</div>
+															<div class="small text-muted">
+																{if $promo.promo_type == 'percentage'}
+																Diskon {$promo.promo_value}%
+																{if $promo.maximum_discount}
+																(Maks: Rp {number_format($promo.maximum_discount, 0,
+																',', '.')})
+																{/if}
+																{else}
+																Diskon Rp {number_format($promo.promo_value, 0, ',',
+																'.')}
+																{/if}
+															</div>
+														</div>
+														<div class="text-center">
+															<span class="badge bg-success mb-1">Aktif</span>
+															<div class="small text-muted">Min: Rp
+																{number_format($promo.minimum_order, 0, ',', '.')}</div>
+														</div>
+													</div>
+												</div>
+												{/if}
+												{/foreach}
+												{if !$resto_discount_count}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo diskon aktif untuk Resto</p>
+												</div>
+												{/if}
+												{else}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo aktif untuk Resto</p>
+												</div>
+												{/if}
+											</div>
+										</div>
+
+										<div class="tab-pane fade" id="kopitiam-content" role="tabpanel"
+											aria-labelledby="kopitiam-tab">
+											<div class="promo-list kopitiam-list"
+												style="max-height: 400px; overflow-y: auto;">
+												{if $kopitiam_promos|@count > 0}
+												{foreach from=$kopitiam_promos item=promo name=kopitiam_loop}
+												{if $promo.promo_type != 'bundling' && $promo.promo_type != 'bogo'}
+												<div class="promo-item p-3 border-bottom"
+													onclick="selectPromo('{$promo.promo_code}', 'kopitiam')">
+													<div class="d-flex justify-content-between align-items-start">
+														<div>
+															<h6 class="mb-1">{$promo.promo_name}</h6>
+															<div class="promo-code-badge mb-2">{$promo.promo_code}</div>
+															<div class="small text-muted">
+																{if $promo.promo_type == 'percentage'}
+																Diskon {$promo.promo_value}%
+																{if $promo.maximum_discount}
+																(Maks: Rp {number_format($promo.maximum_discount, 0,
+																',', '.')})
+																{/if}
+																{else}
+																Diskon Rp {number_format($promo.promo_value, 0, ',',
+																'.')}
+																{/if}
+															</div>
+														</div>
+														<div class="text-center">
+															<span class="badge bg-success mb-1">Aktif</span>
+															<div class="small text-muted">Min: Rp
+																{number_format($promo.minimum_order, 0, ',', '.')}</div>
+														</div>
+													</div>
+												</div>
+												{/if}
+												{/foreach}
+												{if !$kopitiam_discount_count}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo diskon aktif untuk Kopitiam</p>
+												</div>
+												{/if}
+												{else}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo aktif untuk Kopitiam</p>
+												</div>
+												{/if}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Tab Pengujian Promo Bundling -->
+				<div class="tab-pane fade" id="bundling-test-content" role="tabpanel"
+					aria-labelledby="bundling-test-tab">
+					<div class="row">
+						<div class="col-md-7">
+							<!-- Test Form Bundling -->
+							<div class="card mb-4">
+								<div class="card-header bg-light">
+									<h5 class="mb-0"><i class="fas fa-gift me-2"></i>Pilih Promo Bundling</h5>
+								</div>
+								<div class="card-body">
+									<form action="{site_url('promo/MasterPromo/testPromo')}" method="post"
+										id="bundlingForm">
+										<input type="hidden" name="promo_type" value="bundling">
+										<div class="mb-3">
+											<label for="bundling_brand" class="form-label">Brand</label>
+											<select class="form-select" id="bundling_brand" name="brand" required
+												onchange="filterBundlingPromoByBrand()">
+												<option value="">Pilih Brand</option>
+												<option value="bakery" {if isset($post_data.brand) &&
+													$post_data.brand=='bakery' && $post_data.promo_type=='bundling'
+													}selected{/if}>Bakery</option>
+												<option value="resto" {if isset($post_data.brand) &&
+													$post_data.brand=='resto' && $post_data.promo_type=='bundling'
+													}selected{/if}>Resto</option>
+												<option value="kopitiam" {if isset($post_data.brand) &&
+													$post_data.brand=='kopitiam' && $post_data.promo_type=='bundling'
+													}selected{/if}>Kopitiam</option>
+											</select>
+										</div>
+
+										<div class="mb-3">
+											<label for="bundling_promo_code" class="form-label">Kode Promo</label>
+											<select class="form-select" id="bundling_promo_code" name="promo_code"
+												required onchange="loadBundlingDetails()">
+												<option value="">Pilih Kode Promo</option>
+												<optgroup label="Bakery" id="bakery_bundling_promos"
+													style="{if isset($post_data.brand) && $post_data.brand != 'bakery' || !isset($post_data.brand)}display:none{/if}">
+													{foreach from=$bakery_promos item=promo}
+													{if $promo.promo_type == 'bundling'}
+													<option value="{$promo.promo_code}" data-brand="bakery"
+														data-id="{$promo.promo_id}" data-info='{$promo|json_encode}' {if
+														isset($post_data.promo_code) &&
+														$post_data.promo_code==$promo.promo_code &&
+														$post_data.promo_type=='bundling' }selected{/if}>
+														{$promo.promo_code} - {$promo.promo_name}
+													</option>
+													{/if}
+													{/foreach}
+												</optgroup>
+												<optgroup label="Resto" id="resto_bundling_promos"
+													style="{if isset($post_data.brand) && $post_data.brand != 'resto' || !isset($post_data.brand)}display:none{/if}">
+													{foreach from=$resto_promos item=promo}
+													{if $promo.promo_type == 'bundling'}
+													<option value="{$promo.promo_code}" data-brand="resto"
+														data-id="{$promo.promo_id}" data-info='{$promo|json_encode}' {if
+														isset($post_data.promo_code) &&
+														$post_data.promo_code==$promo.promo_code &&
+														$post_data.promo_type=='bundling' }selected{/if}>
+														{$promo.promo_code} - {$promo.promo_name}
+													</option>
+													{/if}
+													{/foreach}
+												</optgroup>
+												<optgroup label="Kopitiam" id="kopitiam_bundling_promos"
+													style="{if isset($post_data.brand) && $post_data.brand != 'kopitiam' || !isset($post_data.brand)}display:none{/if}">
+													{foreach from=$kopitiam_promos item=promo}
+													{if $promo.promo_type == 'bundling'}
+													<option value="{$promo.promo_code}" data-brand="kopitiam"
+														data-id="{$promo.promo_id}" data-info='{$promo|json_encode}' {if
+														isset($post_data.promo_code) &&
+														$post_data.promo_code==$promo.promo_code &&
+														$post_data.promo_type=='bundling' }selected{/if}>
+														{$promo.promo_code} - {$promo.promo_name}
+													</option>
+													{/if}
+													{/foreach}
+												</optgroup>
+											</select>
+										</div>
+
+										<!-- Detail Bundling akan dimuat secara dinamis -->
+										<div id="bundling_details" class="mb-4 p-3 rounded bg-light"
+											style="display: none;">
+											<h6 class="mb-3 border-bottom pb-2">Rule Bundling</h6>
+											<div id="bundling_rules">
+												<div class="text-center py-2">
+													<i class="fas fa-spinner fa-spin me-2"></i> Memuat detail
+													bundling...
+												</div>
+											</div>
+										</div>
+
+										<!-- Keranjang Produk untuk Simulasi -->
+										<div class="mb-4">
+											<h6 class="mb-3 border-bottom pb-2">Simulasi Keranjang Belanja</h6>
+											<div id="cart_simulator" class="mb-3">
+												<div id="cart_items">
+													<!-- Template item keranjang -->
+													<div class="cart-item mb-2 p-2 border rounded" data-index="0">
+														<div class="row g-2">
+															<div class="col-md-6">
+																<select class="form-select cart-product"
+																	name="cart_items[0][product_id]" required>
+																	<option value="">Pilih Produk</option>
+																	<optgroup label="Bakery" class="bakery-products">
+																		{foreach from=$bakery_products item=product}
+																		<option value="{$product.product_id}"
+																			data-brand="bakery">
+																			{$product.product_name}
+																		</option>
+																		{/foreach}
+																	</optgroup>
+																	<optgroup label="Resto" class="resto-products">
+																		{foreach from=$resto_products item=product}
+																		<option value="{$product.product_id}"
+																			data-brand="resto">
+																			{$product.product_name}
+																		</option>
+																		{/foreach}
+																	</optgroup>
+																	<optgroup label="Kopitiam"
+																		class="kopitiam-products">
+																		{foreach from=$kopitiam_products item=product}
+																		<option value="{$product.product_id}"
+																			data-brand="kopitiam">
+																			{$product.product_name}
+																		</option>
+																		{/foreach}
+																	</optgroup>
+																</select>
+															</div>
+															<div class="col-md-4">
+																<div class="input-group">
+																	<span class="input-group-text">Qty</span>
+																	<input type="number"
+																		class="form-control cart-quantity"
+																		name="cart_items[0][quantity]" min="1" value="1"
+																		required>
+																</div>
+															</div>
+															<div class="col-md-2">
+																<button type="button"
+																	class="btn btn-outline-danger btn-sm w-100 remove-item"
+																	onclick="removeCartItem(this)">
+																	<i class="fas fa-trash"></i>
+																</button>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="text-center mt-3">
+													<button type="button" class="btn btn-outline-primary btn-sm"
+														onclick="addCartItem()">
+														<i class="fas fa-plus me-1"></i> Tambah Produk
+													</button>
+												</div>
+											</div>
+										</div>
+
+										<div class="d-grid">
+											<button type="submit" class="btn btn-primary">
+												<i class="fas fa-calculator me-2"></i> Cek Kelayakan Bundling
+											</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-5">
+							<!-- Result Card untuk Bundling -->
+							{if isset($result) && $post_data.promo_type == 'bundling'}
+							<div class="card mb-4">
+								<div class="card-header bg-{if $result.eligible}success{else}danger{/if} text-white">
+									<h5 class="mb-0">
+										<i
+											class="fas fa-{if $result.eligible}check-circle{else}exclamation-circle{/if} me-2"></i>
+										{if $result.eligible}Keranjang Memenuhi Syarat Bundling{else}Keranjang Tidak
+										Memenuhi Syarat{/if}
+									</h5>
+								</div>
+								<div class="card-body">
+									<div class="promo-result-summary">
+										<div
+											class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+											<span class="fw-medium">Kode Promo:</span>
+											<span class="badge bg-primary">{$result.promo_code}</span>
+										</div>
+
+										{if !$result.eligible}
+										<div class="alert alert-danger">
+											<i class="fas fa-exclamation-triangle me-2"></i>
+											<strong>Alasan Gagal:</strong> {$result.message}
+										</div>
+										{else}
+										<div class="alert alert-success mb-3">
+											<i class="fas fa-info-circle me-2"></i>
+											{$result.message}
+										</div>
+
+										<div class="bg-light p-3 rounded mb-3">
+											<h6 class="border-bottom pb-2 mb-3">Detail Bundle yang Memenuhi Syarat</h6>
+											{foreach from=$result.bundles item=bundle}
+											<div class="bundle-eligibility-item mb-2 pb-2 border-bottom">
+												<div class="d-flex justify-content-between">
+													<div>
+														<div class="fw-medium">{$bundle.bundle.required_product_name1}
+															(x{$bundle.bundle.min_quantity1})</div>
+														<div class="text-muted small">+</div>
+														<div class="fw-medium">{$bundle.bundle.required_product_name2}
+															(x{$bundle.bundle.min_quantity2})</div>
+													</div>
+													<div class="text-success">
+														<i class="fas fa-gift me-1"></i> Gratis {$bundle.free_quantity}x
+														{$bundle.free_product_name}
+													</div>
+												</div>
+											</div>
+											{/foreach}
+										</div>
+										{/if}
+
+										<div class="d-grid mt-3">
+											<button type="button" class="btn btn-outline-secondary"
+												onclick="window.location.reload()">
+												<i class="fas fa-redo me-2"></i> Uji Promo Lain
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							{/if}
+
+							<!-- Promo Bundling List -->
+							<div class="card">
+								<div class="card-header bg-light">
+									<h5 class="mb-0"><i class="fas fa-list me-2"></i>Promo Bundling Aktif</h5>
+								</div>
+								<div class="card-body p-0">
+									<div class="nav nav-tabs nav-fill" id="bundling-tabs" role="tablist">
+										<button class="nav-link active" id="bakery-bundling-tab" data-bs-toggle="tab"
+											data-bs-target="#bakery-bundling-content" type="button" role="tab"
+											aria-controls="bakery-bundling-content" aria-selected="true">
+											Bakery <span
+												class="badge rounded-pill bg-primary ms-1">{$bakery_bundling_count}</span>
+										</button>
+										<button class="nav-link" id="resto-bundling-tab" data-bs-toggle="tab"
+											data-bs-target="#resto-bundling-content" type="button" role="tab"
+											aria-controls="resto-bundling-content" aria-selected="false">
+											Resto <span
+												class="badge rounded-pill bg-primary ms-1">{$resto_bundling_count}</span>
+										</button>
+										<button class="nav-link" id="kopitiam-bundling-tab" data-bs-toggle="tab"
+											data-bs-target="#kopitiam-bundling-content" type="button" role="tab"
+											aria-controls="kopitiam-bundling-content" aria-selected="false">
+											Kopitiam <span
+												class="badge rounded-pill bg-primary ms-1">{$kopitiam_bundling_count}</span>
+										</button>
+									</div>
+
+									<div class="tab-content" id="bundling-tab-content">
+										<div class="tab-pane fade show active" id="bakery-bundling-content"
+											role="tabpanel" aria-labelledby="bakery-bundling-tab">
+											<div class="promo-list" style="max-height: 400px; overflow-y: auto;">
+												{assign var=found value=false}
+												{foreach from=$bakery_promos item=promo}
+												{if $promo.promo_type == 'bundling'}
+												{assign var=found value=true}
+												<div class="promo-item p-3 border-bottom"
+													onclick="selectBundlingPromo('{$promo.promo_code}', 'bakery')">
+													<div class="d-flex justify-content-between align-items-start">
+														<div>
+															<h6 class="mb-1">{$promo.promo_name}</h6>
+															<div class="promo-code-badge mb-2">{$promo.promo_code}</div>
+															<div class="small text-muted">
+																<i class="fas fa-gift me-1"></i> Bundling: Beli A & B,
+																gratis C
+															</div>
+														</div>
+														<div class="text-center">
+															<span class="badge bg-success mb-1">Aktif</span>
+														</div>
+													</div>
+												</div>
+												{/if}
+												{/foreach}
+												{if !$found}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo bundling aktif untuk Bakery</p>
+												</div>
+												{/if}
+											</div>
+										</div>
+
+										<div class="tab-pane fade" id="resto-bundling-content" role="tabpanel"
+											aria-labelledby="resto-bundling-tab">
+											<div class="promo-list" style="max-height: 400px; overflow-y: auto;">
+												{assign var=found value=false}
+												{foreach from=$resto_promos item=promo}
+												{if $promo.promo_type == 'bundling'}
+												{assign var=found value=true}
+												<div class="promo-item p-3 border-bottom"
+													onclick="selectBundlingPromo('{$promo.promo_code}', 'resto')">
+													<div class="d-flex justify-content-between align-items-start">
+														<div>
+															<h6 class="mb-1">{$promo.promo_name}</h6>
+															<div class="promo-code-badge mb-2">{$promo.promo_code}</div>
+															<div class="small text-muted">
+																<i class="fas fa-gift me-1"></i> Bundling: Beli A & B,
+																gratis C
+															</div>
+														</div>
+														<div class="text-center">
+															<span class="badge bg-success mb-1">Aktif</span>
+														</div>
+													</div>
+												</div>
+												{/if}
+												{/foreach}
+												{if !$found}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo bundling aktif untuk Resto</p>
+												</div>
+												{/if}
+											</div>
+										</div>
+
+										<div class="tab-pane fade" id="kopitiam-bundling-content" role="tabpanel"
+											aria-labelledby="kopitiam-bundling-tab">
+											<div class="promo-list" style="max-height: 400px; overflow-y: auto;">
+												{assign var=found value=false}
+												{foreach from=$kopitiam_promos item=promo}
+												{if $promo.promo_type == 'bundling'}
+												{assign var=found value=true}
+												<div class="promo-item p-3 border-bottom"
+													onclick="selectBundlingPromo('{$promo.promo_code}', 'kopitiam')">
+													<div class="d-flex justify-content-between align-items-start">
+														<div>
+															<h6 class="mb-1">{$promo.promo_name}</h6>
+															<div class="promo-code-badge mb-2">{$promo.promo_code}</div>
+															<div class="small text-muted">
+																<i class="fas fa-gift me-1"></i> Bundling: Beli A & B,
+																gratis C
+															</div>
+														</div>
+														<div class="text-center">
+															<span class="badge bg-success mb-1">Aktif</span>
+														</div>
+													</div>
+												</div>
+												{/if}
+												{/foreach}
+												{if !$found}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo bundling aktif untuk Kopitiam</p>
+												</div>
+												{/if}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Tab Pengujian Promo BOGO -->
+				<div class="tab-pane fade" id="bogo-test-content" role="tabpanel" aria-labelledby="bogo-test-tab">
+					<div class="row">
+						<div class="col-md-7">
+							<!-- Test Form BOGO -->
+							<div class="card mb-4">
+								<div class="card-header bg-light">
+									<h5 class="mb-0"><i class="fas fa-tags me-2"></i>Pilih Promo BOGO</h5>
+								</div>
+								<div class="card-body">
+									<form action="{site_url('promo/MasterPromo/testPromo')}" method="post"
+										id="bogoForm">
+										<input type="hidden" name="promo_type" value="bogo">
+										<div class="mb-3">
+											<label for="bogo_brand" class="form-label">Brand</label>
+											<select class="form-select" id="bogo_brand" name="brand" required
+												onchange="filterBogoPromoByBrand()">
+												<option value="">Pilih Brand</option>
+												<option value="bakery" {if isset($post_data.brand) &&
+													$post_data.brand=='bakery' && $post_data.promo_type=='bogo'
+													}selected{/if}>Bakery</option>
+												<option value="resto" {if isset($post_data.brand) &&
+													$post_data.brand=='resto' && $post_data.promo_type=='bogo'
+													}selected{/if}>Resto</option>
+												<option value="kopitiam" {if isset($post_data.brand) &&
+													$post_data.brand=='kopitiam' && $post_data.promo_type=='bogo'
+													}selected{/if}>Kopitiam</option>
+											</select>
+										</div>
+
+										<div class="mb-3">
+											<label for="bogo_promo_code" class="form-label">Kode Promo</label>
+											<select class="form-select" id="bogo_promo_code" name="promo_code" required
+												onchange="loadBogoDetails()">
+												<option value="">Pilih Kode Promo</option>
+												<optgroup label="Bakery" id="bakery_bogo_promos"
+													style="{if isset($post_data.brand) && $post_data.brand != 'bakery' || !isset($post_data.brand)}display:none{/if}">
+													{foreach from=$bakery_promos item=promo}
+													{if $promo.promo_type == 'bogo'}
+													<option value="{$promo.promo_code}" data-brand="bakery"
+														data-id="{$promo.promo_id}" data-info='{$promo|json_encode}' {if
+														isset($post_data.promo_code) &&
+														$post_data.promo_code==$promo.promo_code &&
+														$post_data.promo_type=='bogo' }selected{/if}>
+														{$promo.promo_code} - {$promo.promo_name}
+													</option>
+													{/if}
+													{/foreach}
+												</optgroup>
+												<optgroup label="Resto" id="resto_bogo_promos"
+													style="{if isset($post_data.brand) && $post_data.brand != 'resto' || !isset($post_data.brand)}display:none{/if}">
+													{foreach from=$resto_promos item=promo}
+													{if $promo.promo_type == 'bogo'}
+													<option value="{$promo.promo_code}" data-brand="resto"
+														data-id="{$promo.promo_id}" data-info='{$promo|json_encode}' {if
+														isset($post_data.promo_code) &&
+														$post_data.promo_code==$promo.promo_code &&
+														$post_data.promo_type=='bogo' }selected{/if}>
+														{$promo.promo_code} - {$promo.promo_name}
+													</option>
+													{/if}
+													{/foreach}
+												</optgroup>
+												<optgroup label="Kopitiam" id="kopitiam_bogo_promos"
+													style="{if isset($post_data.brand) && $post_data.brand != 'kopitiam' || !isset($post_data.brand)}display:none{/if}">
+													{foreach from=$kopitiam_promos item=promo}
+													{if $promo.promo_type == 'bogo'}
+													<option value="{$promo.promo_code}" data-brand="kopitiam"
+														data-id="{$promo.promo_id}" data-info='{$promo|json_encode}' {if
+														isset($post_data.promo_code) &&
+														$post_data.promo_code==$promo.promo_code &&
+														$post_data.promo_type=='bogo' }selected{/if}>
+														{$promo.promo_code} - {$promo.promo_name}
+													</option>
+													{/if}
+													{/foreach}
+												</optgroup>
+											</select>
+										</div>
+
+										<!-- Detail BOGO akan dimuat secara dinamis -->
+										<div id="bogo_details" class="mb-4 p-3 rounded bg-light" style="display: none;">
+											<h6 class="mb-3 border-bottom pb-2">Rule BOGO</h6>
+											<div id="bogo_rules">
+												<div class="text-center py-2">
+													<i class="fas fa-spinner fa-spin me-2"></i> Memuat detail BOGO...
+												</div>
+											</div>
+										</div>
+
+										<!-- Keranjang Produk untuk Simulasi BOGO -->
+										<div class="mb-4">
+											<h6 class="mb-3 border-bottom pb-2">Simulasi Keranjang Belanja</h6>
+											<div id="bogo_cart_simulator" class="mb-3">
+												<div id="bogo_cart_items">
+													<!-- Template item keranjang BOGO -->
+													<div class="bogo-cart-item mb-2 p-2 border rounded" data-index="0">
+														<div class="row g-2">
+															<div class="col-md-6">
+																<select class="form-select bogo-cart-product"
+																	name="bogo_cart_items[0][product_id]" required>
+																	<option value="">Pilih Produk</option>
+																	<optgroup label="Bakery" class="bakery-products">
+																		{foreach from=$bakery_products item=product}
+																		<option value="{$product.product_id}"
+																			data-brand="bakery">
+																			{$product.product_name}
+																		</option>
+																		{/foreach}
+																	</optgroup>
+																	<optgroup label="Resto" class="resto-products">
+																		{foreach from=$resto_products item=product}
+																		<option value="{$product.product_id}"
+																			data-brand="resto">
+																			{$product.product_name}
+																		</option>
+																		{/foreach}
+																	</optgroup>
+																	<optgroup label="Kopitiam"
+																		class="kopitiam-products">
+																		{foreach from=$kopitiam_products item=product}
+																		<option value="{$product.product_id}"
+																			data-brand="kopitiam">
+																			{$product.product_name}
+																		</option>
+																		{/foreach}
+																	</optgroup>
+																</select>
+															</div>
+															<div class="col-md-4">
+																<div class="input-group">
+																	<span class="input-group-text">Qty</span>
+																	<input type="number"
+																		class="form-control bogo-cart-quantity"
+																		name="bogo_cart_items[0][quantity]" min="1"
+																		value="1" required>
+																</div>
+															</div>
+															<div class="col-md-2">
+																<button type="button"
+																	class="btn btn-outline-danger btn-sm w-100 remove-bogo-item"
+																	onclick="removeBogoCartItem(this)">
+																	<i class="fas fa-trash"></i>
+																</button>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="text-center mt-3">
+													<button type="button" class="btn btn-outline-primary btn-sm"
+														onclick="addBogoCartItem()">
+														<i class="fas fa-plus me-1"></i> Tambah Produk
+													</button>
+												</div>
+											</div>
+										</div>
+
+										<div class="d-grid">
+											<button type="submit" class="btn btn-primary">
+												<i class="fas fa-calculator me-2"></i> Cek Kelayakan BOGO
+											</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-5">
+							<!-- Result Card untuk BOGO -->
+							{if isset($result) && $post_data.promo_type == 'bogo'}
+							<div class="card mb-4">
+								<div class="card-header bg-{if $result.eligible}success{else}danger{/if} text-white">
+									<h5 class="mb-0">
+										<i
+											class="fas fa-{if $result.eligible}check-circle{else}exclamation-circle{/if} me-2"></i>
+										{if $result.eligible}Keranjang Memenuhi Syarat BOGO{else}Keranjang Tidak
+										Memenuhi Syarat{/if}
+									</h5>
+								</div>
+								<div class="card-body">
+									<div class="promo-result-summary">
+										<div
+											class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+											<span class="fw-medium">Kode Promo:</span>
+											<span class="badge bg-primary">{$result.promo_code}</span>
+										</div>
+
+										{if !$result.eligible}
+										<div class="alert alert-danger">
+											<i class="fas fa-exclamation-triangle me-2"></i>
+											<strong>Alasan Gagal:</strong> {$result.message}
+										</div>
+										{else}
+										<div class="alert alert-success mb-3">
+											<i class="fas fa-info-circle me-2"></i>
+											{$result.message}
+										</div>
+
+										<div class="bg-light p-3 rounded mb-3">
+											<h6 class="border-bottom pb-2 mb-3">Produk Gratis yang Didapatkan</h6>
+											{foreach from=$result.bogos item=bogo}
+											<div class="bogo-eligibility-item mb-2 pb-2 border-bottom">
+												<div class="d-flex justify-content-between">
+													<div>
+														<div class="fw-medium">Beli {$bogo.apply_count}x
+															{$bogo.bogo.buy_quantity} {$bogo.product_name}</div>
+													</div>
+													<div class="text-success">
+														<i class="fas fa-gift me-1"></i> Gratis {$bogo.total_free}x
+														{$bogo.free_product_name}
+													</div>
+												</div>
+											</div>
+											{/foreach}
+										</div>
+										{/if}
+
+										<div class="d-grid mt-3">
+											<button type="button" class="btn btn-outline-secondary"
+												onclick="window.location.reload()">
+												<i class="fas fa-redo me-2"></i> Uji Promo Lain
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							{/if}
+
+							<!-- Promo BOGO List -->
+							<div class="card">
+								<div class="card-header bg-light">
+									<h5 class="mb-0"><i class="fas fa-list me-2"></i>Promo BOGO Aktif</h5>
+								</div>
+								<div class="card-body p-0">
+									<div class="nav nav-tabs nav-fill" id="bogo-tabs" role="tablist">
+										<button class="nav-link active" id="bakery-bogo-tab" data-bs-toggle="tab"
+											data-bs-target="#bakery-bogo-content" type="button" role="tab"
+											aria-controls="bakery-bogo-content" aria-selected="true">
+											Bakery <span
+												class="badge rounded-pill bg-primary ms-1">{$bakery_bogo_count}</span>
+										</button>
+										<button class="nav-link" id="resto-bogo-tab" data-bs-toggle="tab"
+											data-bs-target="#resto-bogo-content" type="button" role="tab"
+											aria-controls="resto-bogo-content" aria-selected="false">
+											Resto <span
+												class="badge rounded-pill bg-primary ms-1">{$resto_bogo_count}</span>
+										</button>
+										<button class="nav-link" id="kopitiam-bogo-tab" data-bs-toggle="tab"
+											data-bs-target="#kopitiam-bogo-content" type="button" role="tab"
+											aria-controls="kopitiam-bogo-content" aria-selected="false">
+											Kopitiam <span
+												class="badge rounded-pill bg-primary ms-1">{$kopitiam_bogo_count}</span>
+										</button>
+									</div>
+
+									<div class="tab-content" id="bogo-tab-content">
+										<div class="tab-pane fade show active" id="bakery-bogo-content" role="tabpanel"
+											aria-labelledby="bakery-bogo-tab">
+											<div class="promo-list" style="max-height: 400px; overflow-y: auto;">
+												{assign var=found value=false}
+												{foreach from=$bakery_promos item=promo}
+												{if $promo.promo_type == 'bogo'}
+												{assign var=found value=true}
+												<div class="promo-item p-3 border-bottom"
+													onclick="selectBogoPromo('{$promo.promo_code}', 'bakery')">
+													<div class="d-flex justify-content-between align-items-start">
+														<div>
+															<h6 class="mb-1">{$promo.promo_name}</h6>
+															<div class="promo-code-badge mb-2">{$promo.promo_code}</div>
+															<div class="small text-muted">
+																<i class="fas fa-tags me-1"></i> BOGO: Beli X, Gratis Y
+															</div>
+														</div>
+														<div class="text-center">
+															<span class="badge bg-success mb-1">Aktif</span>
+														</div>
+													</div>
+												</div>
+												{/if}
+												{/foreach}
+												{if !$found}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo BOGO aktif untuk Bakery</p>
+												</div>
+												{/if}
+											</div>
+										</div>
+
+										<div class="tab-pane fade" id="resto-bogo-content" role="tabpanel"
+											aria-labelledby="resto-bogo-tab">
+											<div class="promo-list" style="max-height: 400px; overflow-y: auto;">
+												{assign var=found value=false}
+												{foreach from=$resto_promos item=promo}
+												{if $promo.promo_type == 'bogo'}
+												{assign var=found value=true}
+												<div class="promo-item p-3 border-bottom"
+													onclick="selectBogoPromo('{$promo.promo_code}', 'resto')">
+													<div class="d-flex justify-content-between align-items-start">
+														<div>
+															<h6 class="mb-1">{$promo.promo_name}</h6>
+															<div class="promo-code-badge mb-2">{$promo.promo_code}</div>
+															<div class="small text-muted">
+																<i class="fas fa-tags me-1"></i> BOGO: Beli X, Gratis Y
+															</div>
+														</div>
+														<div class="text-center">
+															<span class="badge bg-success mb-1">Aktif</span>
+														</div>
+													</div>
+												</div>
+												{/if}
+												{/foreach}
+												{if !$found}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo BOGO aktif untuk Resto</p>
+												</div>
+												{/if}
+											</div>
+										</div>
+
+										<div class="tab-pane fade" id="kopitiam-bogo-content" role="tabpanel"
+											aria-labelledby="kopitiam-bogo-tab">
+											<div class="promo-list" style="max-height: 400px; overflow-y: auto;">
+												{assign var=found value=false}
+												{foreach from=$kopitiam_promos item=promo}
+												{if $promo.promo_type == 'bogo'}
+												{assign var=found value=true}
+												<div class="promo-item p-3 border-bottom"
+													onclick="selectBogoPromo('{$promo.promo_code}', 'kopitiam')">
+													<div class="d-flex justify-content-between align-items-start">
+														<div>
+															<h6 class="mb-1">{$promo.promo_name}</h6>
+															<div class="promo-code-badge mb-2">{$promo.promo_code}</div>
+															<div class="small text-muted">
+																<i class="fas fa-tags me-1"></i> BOGO: Beli X, Gratis Y
+															</div>
+														</div>
+														<div class="text-center">
+															<span class="badge bg-success mb-1">Aktif</span>
+														</div>
+													</div>
+												</div>
+												{/if}
+												{/foreach}
+												{if !$found}
+												<div class="p-4 text-center text-muted">
+													<i class="fas fa-info-circle mb-2"></i>
+													<p class="mb-0">Tidak ada promo BOGO aktif untuk Kopitiam</p>
+												</div>
+												{/if}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="{$BASEURL}resource/assets-frontend/js/Promo/test.js"></script>

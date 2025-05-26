@@ -1,0 +1,437 @@
+/* Animasi pulse untuk menarik perhatian */
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: rgba(40, 167, 69, 0.1);
+  }
+
+  50% {
+    background-color: rgba(40, 167, 69, 0.3);
+  }
+
+  100% {
+    background-color: rgba(40, 167, 69, 0.1);
+  }
+}
+
+/* Badge untuk order baru */
+.new-order-badge {
+  background-color: #dc3545;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 10px;
+  font-size: 10px;
+  margin-left: 5px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Badge untuk customer baru */
+.new-customer-badge {
+  background-color: #007bff;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 10px;
+  font-size: 10px;
+  margin-left: 5px;
+  animation: blink 1s infinite;
+}
+
+/* Toast notification */
+.notification-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  min-width: 300px;
+  max-width: 350px;
+}
+
+/* Activity indicator */
+.activity-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activity-indicator .pulse-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #00ff00;
+  border-radius: 50%;
+  animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+/* Hover effects untuk baris tabel */
+.table-record {
+  transition: all 0.2s ease;
+}
+
+.table-record:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-record.has-order {
+  border-left: 4px solid #28a745;
+}
+
+.table-record.has-customer {
+  border-left: 4px solid #007bff;
+}
+
+/* Detail order popup styling */
+#detailOrder .modal-content {
+  border-radius: 0.5rem;
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+#detailOrder .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+#detailOrder .modal-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+#detailProduct {
+  border-collapse: collapse;
+}
+
+#detailProduct th {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+#detailProduct td {
+  padding: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+#detailProduct tr:last-child td {
+  border-bottom: none;
+}
+
+/* Notes styling */
+.item-notes {
+  font-size: 0.85rem;
+  color: #6c757d;
+  padding-left: 10px;
+  border-left: 2px solid #007bff;
+  margin-top: 5px;
+}
+
+/* Order summary styling */
+.order-summary {
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.order-summary .summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.order-summary .total-amount {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #28a745;
+}
+
+/* Tambahkan ke file CSS yang sudah ada */
+.badge-processing {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.badge-served {
+  background-color: #28a745;
+  color: white;
+}
+
+.badge-completed {
+  background-color: #6c757d;
+  color: white;
+}
+
+.badge-cancelled {
+  background-color: #dc3545;
+  color: white;
+}
+
+.status-dropdown {
+  min-width: 10rem;
+}
+
+/* Warna untuk status meja */
+tr.has-processing {
+  background-color: rgba(23, 162, 184, 0.1);
+}
+
+tr.has-processing:hover {
+  background-color: rgba(23, 162, 184, 0.2);
+}
+
+tr.has-served {
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+tr.has-served:hover {
+  background-color: rgba(40, 167, 69, 0.2);
+}
+
+tr.has-completed {
+  background-color: rgba(108, 117, 125, 0.1);
+}
+
+tr.has-completed:hover {
+  background-color: rgba(108, 117, 125, 0.2);
+}
+
+tr.has-cancelled {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+tr.has-cancelled:hover {
+  background-color: rgba(220, 53, 69, 0.2);
+}
+
+/* Status badges */
+.badge-info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.badge-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.badge-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.badge-processing {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.badge-served {
+  background-color: #28a745;
+  color: white;
+}
+
+.badge-completed {
+  background-color: #6c757d;
+  color: white;
+}
+
+.badge-cancelled {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Status update buttons */
+.status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.update-status-btn {
+  white-space: nowrap;
+  margin-bottom: 5px;
+}
+
+/* Styles untuk update status dialog */
+.status-update-modal .swal2-popup {
+  padding: 2rem;
+}
+
+.status-update-modal .swal2-title {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.status-update-modal .status-option {
+  transition: all 0.2s ease;
+}
+
+.status-update-modal .status-option:hover {
+  transform: translateY(-2px);
+}
+
+.status-update-modal .status-option button {
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.status-update-modal .status-option button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Styles untuk status badges */
+.badge-processing {
+  background-color: #17a2b8 !important;
+  color: white !important;
+}
+
+.badge-served {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+.badge-completed {
+  background-color: #6c757d !important;
+  color: white !important;
+}
+
+.badge-cancelled {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+/* Animation untuk update status */
+@keyframes pulse-update {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.status-updated {
+  animation: pulse-update 0.5s ease;
+}
+
+/* Tombol konfirmasi besar dan jelas */
+.swal2-confirm {
+  font-weight: 600 !important;
+  padding: 0.75rem 1.5rem !important;
+}
+
+/* Gaya khusus untuk tombol batalkan pesanan */
+.status-option[data-status='5'] button {
+  border: 2px solid #dc3545;
+}
+
+.status-option[data-status='5'] button:hover {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+/* Status filter for tables */
+.has-processing {
+  background-color: rgba(23, 162, 184, 0.1);
+}
+
+.has-served {
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+.has-completed {
+  background-color: rgba(108, 117, 125, 0.1);
+}
+
+.has-cancelled {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Visual feedback when status changes */
+tr.status-changing td {
+  background-color: rgba(255, 193, 7, 0.2);
+  transition: background-color 0.5s ease;
+}
+
+/* Timer Styles */
+.timer-container {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}

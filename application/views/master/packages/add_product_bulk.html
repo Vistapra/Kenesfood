@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Tambah Produk Massal ke Kategori</h4>
+                <p class="card-description">
+                    Paket: <strong>{$detail.product_name}</strong> | 
+                    Kategori: <strong>{$category.name}</strong>
+                </p>
+            </div>
+            <div class="card-body">
+                <div class="clearfix">
+                    <form action="{site_url(['master/package', 'add_product_bulk', $category.id])}" method="post">
+                        <div class="form-group text-start">
+                            <label>Pilih Produk <span class="text-danger">*</span></label>
+                            <select name="product_ids[]" class="form-control select2" multiple required style="width: 100%;">
+                                {foreach from=$products item=product}
+                                    <option value="{$product.product_id}">
+                                        {$product.product_name} ({$product.product_code}) - Rp {number_format($product.product_price, 0, ',', '.')}
+                                    </option>
+                                {/foreach}
+                            </select>
+                            <small class="text-muted">Tahan Ctrl untuk memilih banyak produk sekaligus</small>
+                        </div>
+                        
+                        <div class="form-check form-switch mt-3">
+                            <input class="form-check-input" type="checkbox" id="use_default_price" name="use_default_price" value="1" checked>
+                            <label class="form-check-label" for="use_default_price">Gunakan harga default produk</label>
+                            <small class="d-block text-muted">Centang ini jika Anda ingin menggunakan harga asli dari produk</small>
+                        </div>
+                        
+                        <div class="text-center my-4"> 
+                            <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah Massal</button>
+                            <a href="{site_url('master/package/detail/')}{$detail.id}" class="btn btn-secondary me-2">
+                                <i class="fa fa-times"></i> Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "Pilih produk yang akan ditambahkan",
+            allowClear: true
+        });
+    });
+</script>

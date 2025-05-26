@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="{$BASEURL}/resource/assets-frontend/dist/logo/logo.png" type="image/png">
+        <link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/node_modules/bootstrap/dist/css/bootstrap.css">
+        <link rel="stylesheet"
+            href="{$BASEURL}/resource/assets-frontend/node_modules/@fancyapps/ui/dist/fancybox/fancybox.css">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+        <link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/style.css">
+        <link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/fontawesome-free-6.4.0-web/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+        <link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/jquery/css/alertify.min.css" />
+        <link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/jquery/css/themes/default.min.css" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        
+        <title>Kenes Resto & Bakery</title>
+    </head>
+
+    <body>
+        <header>
+            
+            <div class="container-fluid p-3 navbar-main fixed-top shadow">
+                <div class="row">
+                    <div class="col">
+                        <nav class="navbar navbar-expand-xl">
+                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03"
+                                aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href="{site_url('/')}">Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{site_url('/products')}">Produk</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{site_url('/outlet')}">Outlet</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{site_url('/career')}">Karir</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-uppercase" href="{site_url('/promo')}"><span
+                                                class="badge navlink-promo fs-6">promo</span></a>
+                                    </li>
+                                    <li class="nav-item d-none">
+                                        <a class="nav-link" href="#about-section">About</a>
+                                    </li>
+                                    <li class="nav-item d-none">
+                                        <a class="nav-link" href="#feedback-section">Testimoni</a>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        </nav>
+                    </div>
+                    
+                    <div class="col ">
+                        <a class="navbar-brand" href="{site_url('/')}"><img
+                                src="{$BASEURL}/resource/assets-frontend/dist/logo/logo.png"
+                                alt="kenes-bakery" class="img-fluid logo-img mx-auto d-block"></a>
+                    </div>
+                    <div class="col">
+                        <div class="navbar-icons d-flex justify-content-lg-center justify-content-end">
+                            <div class="location">
+                                <a href="#" role="button" class="btn text-nowrap dropdown-toggle"
+                                    data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                                    style="color: #662A0C; ; font-size: 14px; font-weight: 600;"><i
+                                        class="fa-solid fa-location-dot"></i> <small class="textFind">Outlet Terdekat</small></a>
+                                <div class="dropdown-menu p-2" style="max-width:200px;">
+                                    <div class="d-flex">
+                                        <span class="d-inline-block text-capitalize" id="my-location"><small>Menampilkan
+                                                3
+                                                Outlet Terdekat: </small> <br></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="icon">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{site_url('/cart')}">
+                                        {if !isset($member)}
+                                        <span class="badge rounded-circle cart-counter" data-member-id=""
+                                            id="cart-badge"></span>
+
+                                        {else}
+                                        <span class="badge rounded-circle cart-counter"
+                                            data-member-id="{$member.user_id}" id="cart-badge"></span>
+                                        {/if}
+                                        <i class="fa-solid fa-shopping-cart fa-md addToCartButtons"
+                                            style="color: #662A0C;"></i>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{site_url('/favorite')}"><span
+                                            class="badge rounded-circle love-counter"></span><i
+                                            class="fa-solid fa-heart fa-md" style="color: #662A0C;"></i></a>
+                                </li>
+
+                                <li class="nav-item">
+
+
+                                    <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false" data-bs-auto-close="outside"><i
+                                            class="fa-solid fa-user fa-md" style="color: #662A0C;"></i> </a>
+                                    <div class="dropdown-menu">
+                                        {if !isset($member)}
+                                        <div class="d-flex flex-column p-2">
+                                            <button class="btn" type="button" data-bs-toggle="modal"
+                                                data-bs-target="#exampleModal"
+                                                style="background-color: #662A0C; color: #fff;">Register</button>
+                                            <small class="text-nowrap mt-2">Already have an account? <a
+                                                    href="{site_url('/login')}"
+                                                    class="link-underline link-underline-opacity-0"><small
+                                                        class="fw-bold" style="color: #662A0C;">Login</small></a>
+                                            </small>
+                                        </div>
+
+                                        {else}
+
+                                        <div class="d-flex">
+                                            <div class="foto-profile p-2">
+                                                {if $member.user_photo}
+                                                <img src="{$BASEURL}/resource/assets-frontend/dist/account/{$member.user_photo}"
+                                                    class="rounded-circle" width="50" height="50" alt=""
+                                                    style="object-fit: cover;">
+                                                {else}
+
+                                                {/if}
+                                            </div>
+                                            <div class="p-2">
+                                                <h5>{$member.user_name|default:''}</h5>
+                                                <h5 class="text-body-secondary text-wrap">
+                                                    <small>{$member.user_email|default:''}</small>
+                                                </h5>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex flex-column p-2">
+                                            <a class="btn" href="{site_url('account')}" role="button"
+                                                style="background-color: #662A0C; color: #fff;">Account</a>
+                                            <a class="btn mt-2" href="{site_url('/logout')}" role="button"
+                                                style="background-color: #662A0C; color: #fff;">Logout</a>
+
+                                        </div>
+                                        {/if}
+                                    </div>
+
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- modal register -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content p-4">
+                        <div class="modal-header border-0">
+                            <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel">Sign Up</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{site_url('/register')}" method="post">
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">Name</label>
+                                    <input name="fullname" type="text" class="form-control" id="fullName"
+                                        placeholder="Enter Your Name" required="">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email address</label>
+                                    <input type="email" name="email" class="form-control" id="email"
+                                        placeholder="Enter Email address" required="">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="text" name="phone" class="form-control" id="phone"
+                                        placeholder="Enter Phone Number" required="">
+                                </div>
+
+                                <div class="mb-5">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input name="password" type="password" class="form-control" id="password"
+                                        placeholder="Enter Password" required="">
+                                    <small class="form-text">By Signup, you agree to our <a href="#!">Terms of
+                                            Service</a> &amp; <a href="#!">Privacy Policy</a></small>
+                                </div>
+
+                                <button type="submit" class="btn" style="background-color: #662A0C; color: #fff;">Sign
+                                    Up</button>
+                            </form>
+                        </div>
+                        <div class="modal-footer border-0 justify-content-center">
+                            <small class="text-nowrap mt-2">Already have an account? <a href="{site_url('/login')}"
+                                    class="link-underline link-underline-opacity-0"><small class="fw-bold"
+                                        style="color: #662A0C;">Login</small></a> </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- modal register -->
+        </header>
+        {include file="$template_content"}
+        <footer>
+            <div class="container-fluid mt-1 mt-md-5 p-2">
+                <div class="row row-cols-1 row-cols-md-3 text-center">
+                    <div class="col">
+                        <div class="contact-footer">
+                            <div class="d-flex flex-column px-0 px-lg-4">
+                                <div class="brand-footer">
+                                    <a class="" href="{site_url('/')}">
+                                        <img src="{$BASEURL}/resource/assets-frontend/dist/logo/logo.png"
+                                            alt="kenes-bakery" class="img-fluid">
+                                    </a>
+                                </div>
+                                <div class="deskripsi-brand p-2">
+                                    <p>Salah satu toko roti pertama di Yogyakarta dengan kualitas roti premium. Kenes
+                                        akan
+                                        selalu konsisten dengan menjaga kualitas produk-produknya sampai ditangan
+                                        konsumen.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h2 class="text-uppercase fw-medium">Menu</h2>
+                        <div class="menu-footer mt-4 d-flex flex-row flex-wrap justify-content-evenly">
+                            <ul class="d-flex flex-column">
+                                <li class="nav-item">
+                                    <a href="{site_url('/')}" class="nav-link">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{site_url('/products')}" class="nav-link">Produk</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{site_url('/outlet')}" class="nav-link">Outlet</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{site_url('/career')}" class="nav-link">Karir</a>
+                                </li>
+                            </ul>
+                            <ul class="d-flex flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link text-uppercase" href="{site_url('/promo')}">
+                                        <span class="badge navlink-promo fs-6">promo</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <!-- <a href="{site_url('/faq')}" class="nav-link">FAQ</a> -->
+                                    <a href="#" class="nav-link">FAQ</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">Location</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">Privacy Policy</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h2 class="text-uppercase fw-medium">Social Media</h2>
+                        <div class="social-media mt-4">
+                            <ul class="d-flex flex-row justify-content-center">
+                                <li class="nav-item">
+                                    <a href="https://www.instagram.com/kenesfood/" class="nav-link"
+                                        data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Instagram"><i
+                                            class="fa-brands fa-instagram fa-lg"></i></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="https://www.facebook.com/kenesfood" class="nav-link"
+                                        data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Facebook"><i
+                                            class="fa-brands fa-facebook fa-lg"></i></a>
+
+                                </li>
+
+
+                                <!-- <li class="nav-item">
+                                <a href="https://wa.me/6287839295999?text=Silahkan Tanyakan Ke Admin Seputar Produk Kenes & Bakery ya." class="nav-link" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Whatsapp"><i class="fa-brands fa-whatsapp fa-lg"></i></a>
+                            </li> -->
+                            </ul>
+                        </div>
+                        <h2 class="text-uppercase">Online Shop</h2>
+                        <div class="payment mt-4">
+                            <ul class="d-flex flex-row justify-content-center">
+                                <li class="nav-item">
+                                    <a href="https://shope.ee/5APP5CVUEz" class="nav-link" data-bs-toggle="tooltip"
+                                        data-bs-placement="left" data-bs-title="Shoppe"><i class="fa-brandsfa-lg"></i>
+                                        <img src="{$BASEURL}/resource/assets-frontend/dist/payment/shoppepay.png" alt=""
+                                            data-bs-toggle="tooltip" data-bs-placement="left"
+                                            data-bs-title="Shoppe"></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="https://www.tokopedia.com/kenesbakpia" class="nav-link"
+                                        data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Tokopedia"><i
+                                            class="fa-brandsfa-lg"></i>
+                                        <img src="{$BASEURL}/resource/assets-frontend/dist/payment/tokopedia.png" alt=""
+                                            data-bs-toggle="tooltip" data-bs-placement="left"
+                                            data-bs-title="Tokopedia"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <hr class="opacity-50" style="border-color: black; border: solid 1px;">
+                <div class="row text-center">
+                    <p class="copyright" style="color: #fff;">
+                        <b> &copy; 2023 KenesBakery</b>. <b> Hak Cipta Dilindungi.</b>
+                    </p>
+                </div>
+            </div>
+        </footer>
+        <script src="{$BASEURL}/resource/assets-frontend/jquery/jquery-3.7.0.min.js"></script>
+        <script src="{$BASEURL}/resource/assets-frontend/js/main.js"></script>
+
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+        <script
+            src="{$BASEURL}/resource/assets-frontend/node_modules/@fancyapps/ui/dist/fancybox/fancybox.umd.js"></script>
+        <script src="{$BASEURL}/resource/assets-frontend/jquery/popper.min.js"></script>
+        <script src="{$BASEURL}/resource/assets-frontend/node_modules/bootstrap/dist/js/bootstrap.js"></script>
+        <!-- include the script -->
+        <script src="{$BASEURL}/resource/assets-frontend/jquery/alertify.min.js"></script>
+        <!-- <script src="{$BASEURL}/resource/assets-frontend/jquery/pagination.min.js"></script> -->
+
+        <script>
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        </script>
+        <script type="module">
+            import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.esm.browser.min.js'
+
+            var swiper = new Swiper('.swiper-feedback', {
+                effect: 'coverflow',
+                //centeredSlides:true,
+                coverflowEffect: {
+                    rotate: 30,
+                    slideShadows: false,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 1,
+                },
+
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                },
+
+
+                breakpoints: {
+
+                    320: {
+                        slidesPerView: 1,
+                        spaceBetween: 10,
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                    },
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 40,
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                    },
+                    800: {
+                        slidesPerView: 3,
+                        spaceBetween: 40,
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+
+                    }
+
+                }
+            })
+            var swiper = new Swiper('.swiper-prelaunch', {
+                effect: 'cube',
+                pagination: {
+                    el: '.swiper-pagination',
+                    type: 'bullets',
+                },
+                loop: true,
+            })
+
+            var swiper = new Swiper(".swiper-opsi", {
+                grabCursor: true,
+                effect: "creative",
+                creativeEffect: {
+                    prev: {
+                        shadow: true,
+                        translate: ["-20%", 0, -1],
+                    },
+                    next: {
+                        translate: ["100%", 0, 0],
+                    },
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    type: 'bullets',
+                },
+                loop: true,
+            });
+            var swiper = new Swiper(".promo-slide", {
+                effect: "flip",
+                grabCursor: true,
+                pagination: {
+                    el: '.swiper-pagination',
+                    type: 'bullets',
+                },
+                loop: true,
+                autoplay: {
+                    delay: 1500,
+                },
+            });
+
+
+        </script>
+        <script>
+            new DataTable('#datatable');
+        </script>
+    </body>
+
+</html>

@@ -1,0 +1,86 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2">
+                <div class="col-md-4">  
+                    <div class="form-group">
+                        <label>Foto Outlet</label>
+                        <div class="form-group position-relative product-pict text-center">
+                            <img src="{$BASEURL}resource/assets-frontend/dist/outlet/{$outlet.outlet_img}">
+                        </div>
+                    </div>
+                </div>     
+                <div class="col-md-8">  
+                    <div class="row my-2">
+                        <div class="col-md-6">  
+                            <div class="form-group">
+                                <label>Nama Outlet</label>
+                                <p class="form-label"><small>{$outlet.outlet_code}</small><br/><b>{$outlet.outlet_name}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">  
+                            <div class="form-group">
+                                <label>Telepon</label>
+                                <p class="form-label"><b>{$outlet.outlet_phone}</b></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-6">  
+                            <div class="form-group">
+                                <label>Status</label>
+                                <p class="form-label">
+                                    {if $outlet.outlet_status == 0}
+                                        <span class="badge badge-pill badge-sm badge-success">Aktif</span>
+                                    {else}
+                                        <span class="badge badge-pill badge-sm badge-danger">Non-aktif</span>
+                                    {/if}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">  
+                            <div class="form-group">
+                                <label>Highlight</label>
+                                <p class="form-label">
+                                    {if $outlet.outlet_highlight == 0}
+                                        <span class="badge badge-pill badge-sm badge-danger">Sembunyikan</span>
+                                    {else}
+                                        <span class="badge badge-pill badge-sm badge-success">Tampilkan</span>
+                                    {/if}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-12">  
+                            <div class="form-group">
+                                <label>Alamat</label>
+                                <p class="form-label">{$outlet.outlet_address|default:'-'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="col-md-4">  
+                        <div class="form-group">
+                            <label>Latitude</label>
+                            <p class="form-label">{$outlet.latitude|default:'-'}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">  
+                        <div class="form-group">
+                            <label>Longitude</label>
+                            <p class="form-label">{$outlet.longitude|default:'-'}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">  
+                        <div class="form-group">
+                            <label>Google Maps Link</label>
+                            <p class="form-label">{$outlet.maps|default:'-'}</p>
+                        </div>
+                    </div>
+                </div>  
+            </div>    
+        </div>
+    </div>
+</div>

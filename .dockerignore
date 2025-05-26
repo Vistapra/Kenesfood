@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+vendor/
+node_modules/
+docker-compose.yml
+README.md
+.dockerignore
+Dockerfile
+*.log
+application/cache/*
+!application/cache/index.html
+application/logs/*
+!application/logs/index.html

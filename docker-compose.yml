@@ -1,0 +1,109 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kenesfood_app
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    volumes:
+      - ./:/var/www/html:cached
+      - /var/www/html/vendor
+      - php_sessions:/var/www/html/application/sessions
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini:ro
+    depends_on:
+      - db
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_HOST=db
+      - MYSQL_USER=kenesfood
+      - MYSQL_PASSWORD=kenesfood
+      - MYSQL_DATABASE=kenesfood
+    networks:
+      - kenesfood-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:80" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  db:
+    image: mariadb:10.4
+    container_name: kenesfood_db
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: kenesfood
+      MYSQL_USER: kenesfood
+      MYSQL_PASSWORD: kenesfood
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_CHARSET: latin1
+      MYSQL_COLLATION: latin1_swedish_ci
+    command:
+      - --character-set-server=latin1
+      - --collation-server=latin1_swedish_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mariadb/my.cnf:/etc/mysql/my.cnf:ro
+      - ./docker/mariadb/init:/docker-entrypoint-initdb.d
+    networks:
+      - kenesfood-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    container_name: kenesfood_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8086:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - MYSQL_ROOT_PASSWORD=root
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+      - PMA_ABSOLUTE_URI=http://localhost:8081/
+      - UPLOAD_LIMIT=300M
+      - MAX_EXECUTION_TIME=600
+      - MEMORY_LIMIT=1G
+    depends_on:
+      - db
+    networks:
+      - kenesfood-network
+
+networks:
+  kenesfood-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+
+  php_sessions:
+    driver: local

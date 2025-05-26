@@ -1,0 +1,126 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Duplikat Paket Produk</h4>
+                <p class="card-description">Membuat salinan dari paket: <strong>{$detail.product_name}</strong></p>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Duplikat paket akan menyalin seluruh struktur paket termasuk kategori dan produk di dalamnya.
+                </div>
+                
+                <div class="clearfix">
+                    <form action="{site_url(['master/package', 'clone_package', $detail.id])}" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-4 align-self-center center">
+                                        <div class="form-group">
+                                            <img id="preview" src="{$BASEURL}resource/assets-frontend/dist/product/{$detail.product_pict|default:''}" alt="foto-produk" class="img-preview"/><br/>
+                                            <label class="mt-2 pt-2 text-small">Preview</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Foto Produk (Opsional)</label>
+                                            <input type="file" name="product_pict" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                            <div class="input-group col-xs-12">
+                                                <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Foto">
+                                                <span class="input-group-append">
+                                                    <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                                </span>
+                                            </div>
+                                            <small class="text-muted">Kosongkan untuk menggunakan foto dari paket asli</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Informasi Dasar</h5>
+                                <div class="form-group text-start">
+                                    <label>Kode Produk <span class="text-danger">*</span></label>
+                                    <input type="text" name="product_code" class="form-control" required>
+                                    <small class="text-muted">Harus berbeda dari kode produk lainnya</small>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Nama Produk <span class="text-danger">*</span></label>
+                                    <input type="text" name="product_name" class="form-control" value="{$detail.product_name|default:''} (Copy)" required>
+                                    <small class="text-muted">Harus berbeda dari nama produk lainnya</small>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Kategori Produk</label>
+                                    <select name="cat_id" class="form-control select2">
+                                        <option value="">-- Gunakan Kategori Asli --</option>
+                                        {foreach from=$categories item=cat}
+                                            <option value="{$cat.cat_id}" {if $detail.cat_id|default:'' == {$cat.cat_id}}selected{/if}>{$cat.cat_name|default:''}</option>
+                                        {/foreach}
+                                    </select>
+                                    <small class="text-muted">Kategori produk baru (opsional)</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Detail Paket</h5>
+                                <div class="form-group text-start">
+                                    <label>Harga Produk</label>
+                                    <input type="number" name="product_price" class="form-control" value="{$detail.product_price|default:''}">
+                                    <small class="text-muted">Kosongkan untuk menggunakan harga dari paket asli</small>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Jenis Promosi</label>
+                                    <select name="product_promote" class="form-control select2">
+                                        <option value="">-- Gunakan Promosi Asli --</option>
+                                        <option value="none">Tidak Ada</option>
+                                        <option value="arrival">Arrival</option>
+                                        <option value="prelaunch">Prelaunch</option>
+                                        <option value="seasonal">Seasonal Collection</option>
+                                    </select>
+                                    <small class="text-muted">Jenis promosi baru (opsional)</small>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Status Produk <span class="text-danger">*</span></label>
+                                    <select name="product_st" class="form-control select2" required>
+                                        <option value="0">Aktif</option>
+                                        <option value="1">Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group text-start">
+                                    <label>Deskripsi Produk</label>
+                                    <textarea rows="4" name="product_desc" class="form-control">{$detail.product_desc|default:''}</textarea>
+                                    <small class="text-muted">Kosongkan untuk menggunakan deskripsi dari paket asli</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-4"> 
+                            <button type="submit" class="btn btn-primary me-2"><i class="fa fa-copy"></i> Duplikat</button>
+                            <a href="{site_url('master/package')}" class="btn btn-secondary me-2">
+                                <i class="fa fa-times"></i> Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+            URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>

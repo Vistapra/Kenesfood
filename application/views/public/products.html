@@ -1,0 +1,183 @@
+
+        <main>
+            <div class="container products-container mb-5">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="heading-page p-2 mt-4">
+                        <h2 class="text-uppercase fw-medium text-center"><b style="color:#662A0C">Our Products</b></h2>
+                    </div>
+                    <div class="breadcrumb p-2">
+                        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{site_url('/')}">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Products</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+                <div class="filter-product d-flex flex-wrap justify-content-evenly">
+                    <div class="form-floating p-1 m-2 d-none">
+                        <select class="form-select" id="selectOutlet" aria-label="Floating label select example"  style="border: solid 1px; border-color: #662A0C;">
+                            <option value="">--Pilihan--</option>
+                            <option value="Travel Spot">Travel Spot</option>
+                            <option value="Kenes Bakery Wijayakusuma">Kenes Bakery Wijayakusuma</option>
+                            <option value="Kenes Bakery Kabupaten">Kenes Bakery Kabupaten</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                        <label for="selectOutlet">Pilihan Outlet</label>
+                    </div>
+    
+                    <div class="form-floating p-1 m-2">
+                        <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                            <option>--Pilihan Popular--</option>
+                            <option value="hargaMin">Harga Terendah Ke Tertinggi</option>
+                            <option value="hargaMax">Harga Tertinggi Ke Terendah</option>
+                        </select>
+                        <label for="floatingSelect">Popular</label>
+                    </div>
+                            <script>
+                                const selectElement = document.getElementById('floatingSelect');
+                                    // Set nilai terpilih jika tersedia di localStorage
+                                    const selectedOption = localStorage.getItem('selectedOption');
+                                    if (selectedOption) {
+                                        selectElement.value = selectedOption;
+                                    }
+                                    
+                                    selectElement.addEventListener('change', function() {
+                                        const selectedOption = selectElement.value;
+                                        localStorage.setItem('selectedOption', selectedOption); // Simpan nilai terpilih di localStorage
+                                        window.location.href = '?sort=' + selectedOption;
+                                    });
+                            </script>
+
+                      
+                            <div class="input-group p-1 search-product m-2 d-none">
+                                <input type="text" class="form-control" placeholder="Search For Other Product..." aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                <a href="#" class="btn btn-outline-secondary" type="button" id="button-addon2" style="display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-magnifying-glass"></i></a>
+                            </div> 
+                            <div class="dropdown text-center p-1 m-2">
+                                <button class="btn dropdown-toggle" type="button" id="dropdown-list" data-bs-toggle="dropdown" aria-expanded="false" style="border: solid 1px; border-color: #662A0C;">
+                                Semua Kategor
+                                </button>
+                                <ul class="dropdown-menu dropdown-category-product-list">
+                                </ul>
+                            </div>
+                        </div>
+
+                        {function name="renderCategories" categories=$categories}
+                            <ul>
+                                {foreach from=$categories item=category}
+                                    <li>
+                                        <a href="category/{$category.cat_id}">{$category.cat_name}</a>
+                                        {if isset($category.child) && count($category.child) > 0}
+                                            {call name="renderCategories" categories=$category.child}
+                                        {/if}
+                                    </li>
+                                {/foreach}
+                            </ul>
+                        {/function}
+
+                        <!-- product berdasarkan categories -->
+                        <div class="alert-outlet"></div>
+                        <div class="row row-cols-md-2 mb-4">
+                            <div class="col-md-3 col-lg-2 mt-3 mt-lg-5">
+                                {call name="renderCategories" categories=$categories}
+                                <!-- <div class="list-group category-group" id="list-tab" role="tablist">
+                                    <a class="list-group-item list-group-item-action active" id="list-product-category" data-bs-toggle="list" href="#list-semua-category" role="tab" aria-controls="list-semua-category" onclick="changeDropdownText('Semua Kategori')">Semua Kategori</a>
+                                    {foreach from=$categories key=key item=kategori}
+                                    <a class="list-group-item list-group-item-action" id="list-{str_replace(' ','-',$key)}-product" data-bs-toggle="list" href="#list-{str_replace(' ','-',$key)}" role="tab"  aria-controls="list-{str_replace(' ','-',$key)}-product" onclick="changeDropdownText('{str_replace(' ','-',$key)}')">{$kategori.cat_name}</a>
+                                    {/foreach}
+                                </div>  -->
+                            </div>
+                            <!-- SEMUA PRODUCT -->
+                            <div class="col-md-9 col-lg-10">
+                                <div class="tab-content" id="nav-tabContent">
+                                    <div class="tab-pane fade show active" id="list-semua-category" role="tabpanel" aria-labelledby="list-product-category">
+                                        <div class="row g-4">
+                                            {foreach from=$products key=key item=product}
+                                            <div class="col-6 col-lg-4 text-center">
+                                                <div class="image-product shadow rounded">
+                                                    <a data-fancybox target="_blank" href="{$BASEURL}/resource/assets-frontend/dist/product/{$product->product_pict}">
+                                                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$product->product_pict}" alt="product-kenes" class="img-fluid rounded-2 product-kenes">
+                                                        <span class="best-seller badge rounded bg-warning position-absolute top-0 start-0">
+                                                            <small>Best Seller</small> </span>
+                                                        <!-- <span class="visually-hidden">unread messages</span> -->
+                                                    </a>
+                                                    <span class="best-favorite rounded btn position-absolute top-0 end-0" id="best-favorite" data-product-id="{$product->product_id}">
+                                                        <i class="fa-solid fa-heart fa-xl"></i>
+                                                        <!-- <input type="hidden" value="{$product->product_id}" id="product_id"> -->
+                                                    </span>
+                                                    <div class="desc-product d-flex flex-column p-2">
+                                                        <div class="product-name">
+                                                            <span class="fw-medium text-capitalize">{$product->product_name}</span>                                          
+                                                        </div>
+                                                        <div class="price">
+                                                            <span class="fw-medium">Rp {$product->product_price|number_format}</span>
+                                                        </div>
+                                                        <div class="popularity">
+                                                            <span class="fa fa-star custom-checked-star-popularity"></span> {$product->product_popularity}
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex flex-row justify-content-center info-product gap-2">
+                                                        <a href="{site_url(['products/detail_produk'])}?id={$product->product_id}" type="button" class="btn  btn-secondary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Detail"><i class="fa-regular fa-note-sticky"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/foreach}
+                                        </div>
+                                    </div>
+                                    <!-- BERDASARKAN CATEGORIES -->
+                                    {foreach from=$productCategories key=key item=kategories}
+                                    <div class="tab-pane fade" id="list-{str_replace(' ','-',$key)}" role="tabpanel" aria-labelledby="list-{str_replace(' ','-',$key)}-product">
+                                        <div class="row g-4">
+                                            {foreach from=$kategories['products'] key=key1 item=product}
+                                            {if {$product['product_st'] == 0}}
+                                            <div class="col-6 col-lg-4 text-center">
+                                                <div class="image-product shadow rounded">
+                                                    <a target="_blank" href="">
+                                                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$product['product_pict']}" alt="product-kenes" class="img-fluid rounded-2 product-kenes">
+                                                        <span class="best-seller badge rounded bg-warning position-absolute top-0 start-0">
+                                                            <small>Best Seller</small> </span>
+                                                        <!-- <span class="visually-hidden">unread messages</span> -->
+                                                    </a>
+                                                    <span class="best-favorite rounded btn position-absolute top-0 end-0" id="best-favorite" data-product-id="{($key1)}">
+                                                        <i class="fa-solid fa-heart fa-xl"></i>
+                                                    </span>
+                                                    <div class="desc-product d-flex flex-column p-2">
+                                                        <div class="product-name">
+                                                            <span class="fw-medium text-capitalize">{$product['product_name']}</span>                                          
+                                                        </div>
+                                                        <div class="price">
+                                                            <span class="fw-medium">Rp {$product['product_price']|number_format}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex flex-row justify-content-center info-product gap-2">
+                                                        <a href="{site_url(['products/detail_produk'])}?id={($key1)}" type="button" class="btn  btn-secondary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Detail"><i class="fa-regular fa-note-sticky"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/if}
+                                            {/foreach}
+                                        </div>
+                                    </div>
+                                    {/foreach}
+                                </div>
+                            </div>
+                        <input type="hidden" value="{($id_member)}" id="id_member">
+                        </div>
+                        <!-- <nav class="d-flex justify-content-end " aria-label="Page navigation example">
+                            <div class="pagination">          
+                                {{$pagination}}    
+                            </div> 
+                        </nav>   -->
+              
+                    </div>
+                    <div class="d-flex justify-content-end section-cs">
+                        <span class="customer-service p-3">
+                        <a href="https://wa.me/6287839295999?text=Silahkan Tanyakan Ke Admin Seputar Produk Kenes & Bakery ya." class="" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Whatsapp"><i class="fa-brands fa-whatsapp fa-lg"></i></a>
+                    </span>
+                </div>
+            </main>
+            
+        

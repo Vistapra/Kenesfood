@@ -1,0 +1,46 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2">
+                <div class="col-md-4">  
+                    <div class="form-group">
+                        <label>Foto Pamflet</label>
+                        <div class="form-group position-relative product-pict text-center">
+                            <img src="{$BASEURL}resource/assets-frontend/dist/loker/{$job.job_img}" alt="pamflet">
+                        </div>
+                    </div>
+                </div>     
+                <div class="col-md-8">  
+                    <div class="row my-2">
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Pekerjaan</label>
+                                <p class="form-label"><b>{$job.job_name}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Tanggal Akhir Lowongan</label>
+                                <p class="form-label"><b>{$tdtm->get_date_only($job.job_date)}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="form-group">
+                                <label>Tanggal Test</label>
+                                <p class="form-label"><b>{$tdtm->get_date_only($job.job_date_test)}</b></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-md-12">  
+                            <div class="form-group">
+                                <label>Deskripsi</label>
+                                <p class="form-label">{$job.job_description|default:'-'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+    </div>
+</div>

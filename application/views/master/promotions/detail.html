@@ -1,0 +1,57 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2">
+                <div class="col-md-6">  
+                    <div class="form-group">
+                        <label>Foto Pamflet Portrait</label>
+                        <div class="form-group position-relative product-pict text-center">
+                            {if !empty($detail.promotion_photo_portrait)}
+                            <img src="{$BASEURL}/resource/assets-frontend/dist/promotion/{$detail.promotion_photo_portrait}">
+                            {/if}
+                        </div>
+                    </div>
+                </div>   
+                <div class="col-md-6">  
+                    <div class="form-group">
+                        <label>Foto Pamflet Landscape</label>
+                        <div class="form-group position-relative product-pict text-center">
+                            {if !empty($detail.promotion_photo_landscape)}
+                            <img src="{$BASEURL}/resource/assets-frontend/dist/promotion/{$detail.promotion_photo_landscape}">
+                            {/if}
+                        </div>
+                    </div>
+                </div>     
+            </div>
+            <div class="row my-2">
+                <div class="col-md-6">  
+                    <div class="form-group">
+                        <label>Promosi</label>
+                        <p class="form-label"><small>{strtoupper($detail.promotion_code)}</small><br/><b>{$detail.promotion_name}</b></p>
+                    </div>
+                </div>
+                <div class="col-md-6">  
+                    <div class="form-group">
+                        <label>Tanggal Promo</label>
+                        <p class="form-label">
+                            {if $detail.promotion_st == 0}
+                                <span class="badge badge-pill badge-sm badge-success">Aktif</span>
+                            {else}
+                                <span class="badge badge-pill badge-sm badge-danger">Non-aktif</span>
+                            {/if}<br/>
+                            <b>{$tdtm->get_date_only($detail.promotion_date_start)} - {if !empty($detail.promotion_date_end) && $detail.promotion_date_end != '0000-00-00'}{$tdtm->get_date_only($detail.promotion_date_end)}{else}sekarang (tidak ada batas waktu){/if}</b>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row my-2">
+                <div class="col-md-12">  
+                    <div class="form-group">
+                        <label>Deskripsi</label>
+                        <p class="form-label"><b>{$detail.promotion_desc|default:'-'}</b></p>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>

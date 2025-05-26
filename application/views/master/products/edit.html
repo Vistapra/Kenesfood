@@ -1,0 +1,554 @@
+<div class="row">
+	<div class="col-md-12 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<h4 class="card-title">Edit Produk</h4>
+				{if isset($is_legacy_product) && $is_legacy_product}
+				<p class="card-description">Produk ini belum terhubung dengan API MRP. Pilih produk dari API untuk
+					menghubungkannya.</p>
+				{else}
+				<p class="card-description">Data utama produk hanya dapat diperbarui dari API MRP</p>
+				{/if}
+
+				{if isset($flash_message)}
+				<div class="alert alert-{$flash_message.status} alert-dismissible fade show" role="alert">
+					{$flash_message.msg}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+				{/if}
+
+				<!-- Main Form Container -->
+				<div class="row">
+					<!-- Product Selection Column -->
+					<div class="col-md-5">
+						<div class="card mb-4">
+							<div class="card-header bg-light d-flex justify-content-between align-items-center">
+								<h6 class="mb-0">Informasi Produk</h6>
+								<div class="d-flex gap-2">
+									{if $api_id}
+									{if isset($api_id_valid) && $api_id_valid}
+									<span class="badge bg-success">API ID: {$api_id} ✓</span>
+									<small class="text-muted">Product API</small>
+									{else}
+									<span class="badge bg-danger">API ID: {$api_id} ✗</span>
+									<small class="text-muted">Invalid</small>
+									{/if}
+									{else}
+									<span class="badge bg-warning">Produk Lama</span>
+									<small class="text-muted">No API Link</small>
+									{/if}
+								</div>
+							</div>
+
+							<!-- Bagian Body - Status Info yang lebih detail -->
+							<div class="card-body">
+								<div class="text-center mb-3">
+									<img id="preview"
+										src="{$BASEURL}resource/assets-frontend/dist/product/{$detail.product_pict|default:'default-product.jpg'}"
+										alt="foto-produk" class="img-fluid rounded shadow-sm"
+										style="max-height: 180px;" />
+								</div>
+
+								<div id="current-product-info">
+									<div
+										class="alert {if $api_id && isset($api_id_valid) && $api_id_valid}alert-light{elseif $api_id && isset($api_id_valid) && !$api_id_valid}alert-danger{else}alert-warning{/if}">
+										<h6 class="mb-1">{$detail.product_name}</h6>
+										<div class="small">
+											Kode: {$detail.product_code} | Kategori: {$detail.cat_name}
+											{if isset($detail.category_api_id) && $detail.category_api_id}
+											<span class="badge bg-info ms-1" title="Category API ID">Cat-API:
+												{$detail.category_api_id}</span>
+											{/if}
+										</div>
+										<div class="fw-bold mt-1">Rp {number_format($detail.product_price|default:0, 0,
+											',', '.')}</div>
+
+										<div class="mt-2 small">
+											{if !$api_id}
+											<i class="fas fa-exclamation-circle me-1 text-warning"></i>
+											<span class="text-muted">Produk ini belum terhubung dengan API. Pilih produk
+												dari daftar API di bawah untuk menghubungkannya.</span>
+											{elseif isset($api_id_valid) && $api_id_valid}
+											<i class="fas fa-check-circle me-1 text-success"></i>
+											<span class="text-muted">Produk terhubung dengan API (ID: {$api_id}). Data
+												utama hanya dapat diperbarui dari API.</span>
+											{else}
+											<i class="fas fa-exclamation-triangle me-1 text-danger"></i>
+											<span class="text-danger">API ID ({$api_id}) tidak valid! Produk mungkin
+												sudah dihapus dari API.</span>
+											{/if}
+										</div>
+
+										{* Tombol Unlink API *}
+										{if $api_id}
+										<div class="mt-3 pt-2 border-top">
+											<button type="button" class="btn btn-sm btn-outline-danger"
+												id="unlinkApiBtn">
+												<i class="fas fa-unlink me-1"></i> Putus Hubungan dari API
+											</button>
+											<div class="small text-muted mt-1">
+												Memutus hubungan akan memungkinkan Anda mengedit data produk secara
+												manual
+											</div>
+										</div>
+										{/if}
+									</div>
+								</div>
+
+								<div class="form-group mt-3">
+									<label for="product_pict" class="form-label">Upload Foto Produk</label>
+									<input type="file" name="product_pict" id="product_pict" class="form-control"
+										form="productForm" onchange="loadPreview(event)"
+										accept="image/png, image/jpg, image/gif, image/svg+xml">
+								</div>
+							</div>
+						</div>
+
+						{* Modal Konfirmasi Unlink *}
+						<div class="modal fade" id="unlinkApiModal" tabindex="-1" aria-labelledby="unlinkApiModalLabel"
+							aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header bg-danger text-white">
+										<h5 class="modal-title" id="unlinkApiModalLabel">
+											<i class="fas fa-exclamation-triangle me-2"></i>
+											Konfirmasi Putus Hubungan API
+										</h5>
+										<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+											aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<div class="alert alert-warning">
+											<strong>Peringatan:</strong> Tindakan ini akan memutus
+											hubungan produk dengan API MRP. Setelah diputus:
+										</div>
+										<ul class="text-muted mb-3">
+											<li>Anda dapat mengedit semua data produk secara manual</li>
+											<li>Data tidak akan tersinkronisasi dengan API</li>
+											<li>Anda harus memperbarui data produk secara manual</li>
+											<li>Tindakan ini dapat dibatalkan dengan menghubungkan kembali ke API
+											</li>
+										</ul>
+										<p class="mb-0">
+											<strong>Apakah Anda yakin ingin memutus hubungan produk ini dari
+												API?</strong>
+										</p>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+											<i class="fas fa-times me-1"></i> Batal
+										</button>
+										<button type="button" class="btn btn-danger" id="confirmUnlinkBtn">
+											<i class="fas fa-unlink me-1"></i> Ya, Putus Hubungan
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Card produk API (untuk produk dengan brand) -->
+						{if isset($product_brand) && $product_brand != '' && isset($has_api_products) &&
+						$has_api_products}
+						<div class="card mb-4">
+							<div class="card-header bg-light d-flex justify-content-between align-items-center">
+								<h6 class="mb-0">{if !$api_id}Pilih Produk API{else}Update dari API{/if}</h6>
+								<div class="input-group input-group-sm" style="width: 250px;">
+									<input type="text" id="search-products" class="form-control"
+										placeholder="Cari produk...">
+									<button class="btn btn-outline-secondary" type="button" id="search-button">
+										<i class="fas fa-search"></i>
+									</button>
+								</div>
+							</div>
+
+							<!-- Info Filter Duplikat -->
+							<div class="card-body pb-0">
+								<div class="alert alert-info small mb-3">
+									<i class="fas fa-info-circle me-1"></i>
+									<strong>Filter Duplikat Aktif:</strong> Produk yang sudah terhubung dengan API tidak
+									akan ditampilkan untuk mencegah duplikasi.
+									{if $api_id}Produk yang sedang diedit akan tetap ditampilkan dengan badge <span
+										class="badge bg-info">EDITING</span>.{/if}
+								</div>
+							</div>
+
+							<!-- Tampilkan saran produk serupa jika ini produk lama -->
+							{if !$api_id && isset($similar_api_products) && $similar_api_products|@count > 0}
+							<div class="card-body pb-0">
+								<p class="text-muted small">Berikut beberapa produk API yang mungkin cocok dan belum
+									digunakan:</p>
+								<div class="list-group list-group-flush mb-3">
+									{foreach from=$similar_api_products item=product}
+									<button type="button"
+										class="list-group-item list-group-item-action quick-select-product"
+										data-product='{$product|json_encode}'>
+										<div class="d-flex justify-content-between align-items-center">
+											<div>
+												<strong>{$product.product_name}</strong>
+												<div class="small text-muted">Kode: {$product.product_code} | Kategori:
+													{$product.category_name|default:'N/A'}</div>
+											</div>
+											<div class="text-end">
+												<span class="badge bg-secondary">Rp
+													{number_format($product.product_price|default:0, 0, ',',
+													'.')}</span>
+												<span class="badge bg-success ms-1">Available</span>
+											</div>
+										</div>
+									</button>
+									{/foreach}
+								</div>
+								<div class="alert alert-info small mb-3">
+									<i class="fas fa-info-circle me-1"></i> Memilih produk API akan menghubungkan produk
+									lama ini dengan data dari API.
+									{if !$api_id}<strong>Perhatian: Tindakan ini tidak dapat dibatalkan.</strong>{/if}
+								</div>
+							</div>
+							{/if}
+
+							<div
+								class="card-body p-0 {if !$api_id && isset($similar_api_products) && $similar_api_products|@count > 0}pt-0{/if}">
+								<div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+									<table class="table table-hover table-sm mb-0">
+										<thead class="sticky-top bg-light">
+											<tr>
+												<th>Kode</th>
+												<th>Nama Produk</th>
+												<th>Kategori</th>
+												<th>Harga</th>
+												<th style="width: 70px">Pilih</th>
+											</tr>
+										</thead>
+										<tbody id="product-list">
+											<!-- Produk dari API akan dimuat di sini via AJAX -->
+											<tr id="loading-row">
+												<td colspan="5" class="text-center p-3">
+													<div class="spinner-border spinner-border-sm text-primary"
+														role="status">
+														<span class="visually-hidden">Loading...</span>
+													</div>
+													<span class="ms-2">Memuat produk...</span>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- Pagination untuk produk API -->
+								<div class="card-footer bg-light" id="product-pagination">
+									<div class="d-flex justify-content-between align-items-center">
+										<small class="text-muted">
+											Halaman <span id="current-page">1</span> dari <span
+												id="total-pages">1</span>
+											<span id="filter-info" class="ms-2"></span>
+										</small>
+										<div>
+											<button class="btn btn-sm btn-outline-primary" id="prev-page" disabled>
+												<i class="fas fa-chevron-left"></i>
+											</button>
+											<button class="btn btn-sm btn-outline-primary ms-1" id="next-page" disabled>
+												<i class="fas fa-chevron-right"></i>
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						{/if}
+
+						<!-- Show Last Sync Info if Available -->
+						{if isset($current_api_product)}
+						<div class="card mb-3">
+							<div class="card-header bg-light">
+								<h6 class="mb-0">Data Terbaru dari API</h6>
+							</div>
+							<div class="card-body">
+								<div class="alert alert-info mb-0">
+									<div class="d-flex justify-content-between align-items-center mb-2">
+										<span>Nama: {$current_api_product.product_name}</span>
+										<button type="button" class="btn btn-sm btn-primary sync-all-btn"
+											id="sync-api-btn">
+											<i class="fas fa-sync"></i> Update Semua Data
+										</button>
+									</div>
+									<div class="d-flex justify-content-between align-items-center mb-2">
+										<span>Kode: {$current_api_product.product_code}</span>
+									</div>
+									<div class="d-flex justify-content-between align-items-center mb-2">
+										<span>Kategori API:
+											{$current_api_product.category_name|default:'N/A'}</span>
+									</div>
+									<div class="d-flex justify-content-between align-items-center">
+										<span>Harga: Rp {number_format($current_api_product.product_price|default:0,
+											0,
+											',', '.')}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						{/if}
+					</div>
+
+					<!-- Product Form Column -->
+					<div class="col-md-7">
+						<form
+							action="{site_url($current_page.nav_url)|cat:'/'|cat:$action|cat:'/'|cat:$detail.product_id}"
+							method="post" enctype="multipart/form-data" id="productForm">
+							<input type="hidden" name="product_id" value="{$detail.product_id}">
+							<input type="hidden" name="api_id" id="api_id" value="{$api_id|default:''}">
+
+							<div class="card mb-4">
+								<div class="card-header bg-light">
+									<h6 class="mb-0">Informasi Dasar Produk</h6>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label">Kode Produk <span
+														class="text-danger">*</span></label>
+												<input type="text" name="product_code" id="product_code"
+													class="form-control {if $api_id}bg-light{/if}"
+													value="{$detail.product_code|default:''}" required {if
+													$api_id}readonly{/if}>
+												{if $api_id}
+												<small class="text-muted">Data hanya dapat diperbarui dari
+													API</small>
+												{/if}
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label">Brand Produk <span
+														class="text-danger">*</span></label>
+												<input type="text" class="form-control bg-light"
+													value="{foreach from=$brands item=brand}{if $detail.product_brand|default:'' == $brand.brand_type}{$brand.brand_name}{/if}{/foreach}"
+													readonly>
+												<input type="hidden" name="product_brand"
+													value="{$detail.product_brand|default:''}">
+												<small class="text-muted">Data hanya dapat diperbarui dari
+													API</small>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group mb-3">
+												<label class="form-label">Nama Produk <span
+														class="text-danger">*</span></label>
+												<input type="text" name="product_name" id="product_name"
+													class="form-control {if $api_id}bg-light{/if}"
+													value="{$detail.product_name|default:''}" required {if
+													$api_id}readonly{/if}>
+												{if $api_id}
+												<small class="text-muted">Data hanya dapat diperbarui dari
+													API</small>
+												{/if}
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group mb-3">
+												<label class="form-label">Kategori <span
+														class="text-danger">*</span></label>
+												<select name="cat_id" id="cat_id" class="form-control select2" required>
+													<option value="">-- Pilih Kategori --</option>
+													{foreach from=$categories item=category}
+													<option value="{$category.cat_id}" {if
+														$detail.cat_id|default:''==$category.cat_id}selected{/if}>
+														{$category.cat_name}</option>
+													{/foreach}
+												</select>
+												<small class="text-muted">Pilih dari kategori lokal yang
+													tersedia</small>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label">Harga (Rp) <span
+														class="text-danger">*</span></label>
+												<input type="number" name="product_price" id="product_price"
+													class="form-control {if $api_id}bg-light{/if}"
+													value="{$detail.product_price|default:''}" required {if
+													$api_id}readonly{/if}>
+												{if $api_id}
+												<small class="text-muted">Data hanya dapat diperbarui dari
+													API</small>
+												{/if}
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label">Urutan Tampil</label>
+												<input type="number" name="product_no" id="product_no"
+													class="form-control" value="{$detail.product_no|default:1}">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="card mb-4">
+								<div class="card-header bg-light">
+									<h6 class="mb-0">Status & Promosi</h6>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label">Status Produk</label>
+												<select name="product_st" class="form-control select2">
+													<option value="0" {if $detail.product_st|default:''=='0'
+														}selected{/if}>Aktif</option>
+													<option value="1" {if $detail.product_st|default:''=='1'
+														}selected{/if}>Non-aktif</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label">Jenis Promosi</label>
+												<select name="product_promote" class="form-control select2">
+													<option value="none" {if $detail.product_promote|default:''=='none'
+														}selected{/if}>
+														Tidak Ada</option>
+													<option value="arrival" {if
+														$detail.product_promote|default:''=='arrival' }selected{/if}>
+														Arrival</option>
+													<option value="prelaunch" {if
+														$detail.product_promote|default:''=='prelaunch' }selected{/if}>
+														Prelaunch</option>
+													<option value="seasonal" {if
+														$detail.product_promote|default:''=='seasonal' }selected{/if}>
+														Seasonal Collection</option>
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-group mb-3">
+												<label class="form-label">Status Marketing</label>
+												<select name="ek_marketing" class="form-control select2">
+													<option value="0" {if $detail.ek_marketing|default:''=='0'
+														}selected{/if}>Aktif</option>
+													<option value="1" {if $detail.ek_marketing|default:''=='1'
+														}selected{/if}>Non-aktif</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group mb-3">
+												<label class="form-label">Status Customer</label>
+												<select name="ek_customer" class="form-control select2">
+													<option value="0" {if $detail.ek_customer|default:''=='0'
+														}selected{/if}>Aktif</option>
+													<option value="1" {if $detail.ek_customer|default:''=='1'
+														}selected{/if}>Non-aktif</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group mb-3">
+												<label class="form-label">Status Outlet</label>
+												<select name="ek_outlet" class="form-control select2">
+													<option value="0" {if $detail.ek_outlet|default:''=='0'
+														}selected{/if}>Aktif</option>
+													<option value="1" {if $detail.ek_outlet|default:''=='1'
+														}selected{/if}>Non-aktif</option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="card mb-4">
+								<div class="card-header bg-light">
+									<h6 class="mb-0">Detail Produk</h6>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-md-12 mb-3">
+											<div class="form-group">
+												<label class="form-label">Deskripsi Produk</label>
+												<textarea rows="3" name="product_desc" id="product_desc"
+													class="form-control">{$detail.product_desc|default:''}</textarea>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-12 mb-3">
+											<div class="form-group">
+												<label class="form-label">Komposisi Product <span
+														class="text-danger">*</span></label>
+												<textarea rows="2" name="product_komposisi" id="product_komposisi"
+													class="form-control"
+													required>{$detail.product_komposisi|default:'-'}</textarea>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label">Durability (Hari) <span
+														class="text-danger">*</span></label>
+												<div class="input-group">
+													<input type="number" name="expired_date" id="expired_date"
+														class="form-control" value="{$detail.expired_date|default:'30'}"
+														required>
+													<span class="input-group-text">Hari</span>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group mb-3">
+												<label class="form-label">Netto Product <span
+														class="text-danger">*</span></label>
+												<div class="input-group">
+													<input type="number" name="product_netto" id="product_netto"
+														class="form-control" value="{$detail.product_netto|default:'0'}"
+														required>
+													<span class="input-group-text">gram</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="text-center my-4">
+								<button type="submit" id="submitButton"
+									class="btn {if isset($is_legacy_product) && $is_legacy_product}btn-warning{else}btn-primary{/if} px-4 py-2"
+									{if isset($is_legacy_product) && $is_legacy_product}disabled{/if}>
+									{if isset($is_legacy_product) && $is_legacy_product}
+									<i class="fas fa-link me-2"></i> Hubungkan & Simpan
+									{else}
+									<i class="fas fa-save me-2"></i> Simpan Perubahan
+									{/if}
+								</button>
+								<a href="{site_url('master/products')}" class="btn btn-secondary px-4 py-2 ms-2">
+									<i class="fa fa-arrow-left me-2"></i> Kembali
+								</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	window.apiSearchUrl = "{site_url('master/products/apiSearchProducts')}";
+</script>
+<script src="{$BASEURL}resource/assets-frontend/js/Master-Products/edit.js"></script>

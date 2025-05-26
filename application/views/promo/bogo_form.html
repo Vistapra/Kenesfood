@@ -1,0 +1,495 @@
+<link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/Promo/bogo-form.css">
+
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h4 class="card-title mb-0">
+					<i class="fas fa-tags text-primary me-2"></i> Konfigurasi BOGO Promo
+				</h4>
+			</div>
+
+			<!-- Flash Messages -->
+			{if isset($smarty.session.success)}
+			<div class="alert alert-success alert-dismissible fade show" role="alert">
+				<i class="fas fa-check-circle me-2"></i> {$smarty.session.success}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			{if isset($smarty.session.error)}
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				<i class="fas fa-exclamation-circle me-2"></i> {$smarty.session.error}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			<!-- Promo Info Card -->
+			<div class="card mb-4">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-6">
+							<h5 class="card-title">Detail Promo</h5>
+							<div class="mb-3">
+								<label class="text-muted">Kode Promo:</label>
+								<div class="fw-bold">{$promo.promo_code}</div>
+							</div>
+							<div class="mb-3">
+								<label class="text-muted">Nama Promo:</label>
+								<div class="fw-bold">{$promo.promo_name}</div>
+							</div>
+							<div class="mb-0">
+								<label class="text-muted">Brand:</label>
+								<div>
+									<span
+										class="badge brand-badge brand-{$promo.promo_brand}">{strtoupper($promo.promo_brand)}</span>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<h5 class="card-title">Periode Promo</h5>
+							<div class="mb-3">
+								<label class="text-muted">Tanggal Mulai:</label>
+								<div class="fw-bold">{$promo.start_date|date_format:"%d %b %Y %H:%M"}</div>
+							</div>
+							<div class="mb-3">
+								<label class="text-muted">Tanggal Selesai:</label>
+								<div class="fw-bold">{$promo.end_date|date_format:"%d %b %Y %H:%M"}</div>
+							</div>
+							<div class="mb-0">
+								<label class="text-muted">Status:</label>
+								<div>
+									{if $promo.promo_status == 'active'}
+									<span class="badge bg-success">Aktif</span>
+									{else}
+									<span class="badge bg-danger">Non-aktif</span>
+									{/if}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Penjelasan BOGO -->
+			<div class="alert alert-info mb-4">
+				<div class="d-flex">
+					<div class="me-3">
+						<i class="fas fa-info-circle fa-2x"></i>
+					</div>
+					<div>
+						<h5 class="alert-heading">Tentang Promo BOGO</h5>
+						<p class="mb-0">BOGO (Buy One Get One) adalah promo di mana pelanggan membeli sejumlah tertentu
+							produk dan mendapatkan produk gratis. Anda dapat menambahkan beberapa konfigurasi BOGO untuk
+							satu promo. Setiap konfigurasi BOGO menentukan:</p>
+						<ul class="mb-0 mt-2">
+							<li>Produk yang harus dibeli (dan jumlah minimum yang harus dibeli)</li>
+							<li>Jumlah produk gratis yang akan diberikan</li>
+							<li>Produk yang akan diberikan gratis (bisa sama dengan produk yang dibeli atau berbeda)
+							</li>
+							<li>Batasan jumlah kali promo dapat diterapkan dalam satu pesanan (opsional)</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- Form BOGO -->
+			<form action="{$form_action}" method="post" id="bogoForm">
+				<div class="card mb-4">
+					<div class="card-header bg-light">
+						<div class="d-flex justify-content-between align-items-center">
+							<h5 class="mb-0"><i class="fas fa-list me-2"></i>BOGO Rules</h5>
+							<button type="button" class="btn btn-sm btn-success" id="addBogoBtn">
+								<i class="fas fa-plus me-1"></i> Tambah BOGO
+							</button>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="bogo-container">
+							{if !empty($bogos)}
+							{foreach from=$bogos key=index item=bogo}
+							<div class="bogo-item card mb-3">
+								<div class="card-header bg-light d-flex justify-content-between align-items-center">
+									<h6 class="mb-0">BOGO #{$index+1}</h6>
+									<button type="button" class="btn btn-sm btn-danger remove-bogo-btn">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk yang Dibeli <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="product_id[]" required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}" {if
+															$bogo.product_id==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}" {if
+															$bogo.product_id==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}" {if
+															$bogo.product_id==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Jumlah yang Dibeli</label>
+												<input type="number" class="form-control" name="buy_quantity[]" min="1"
+													value="{$bogo.buy_quantity|default:1}">
+												<small class="text-muted">Jumlah minimum produk yang harus dibeli untuk
+													mendapatkan produk gratis</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk Gratis <span
+														class="text-danger">*</span></label>
+												<div class="d-flex mb-2 align-items-center">
+													<div class="form-check form-switch me-2">
+														<input class="form-check-input use-same-product" type="checkbox"
+															{if $bogo.product_id==$bogo.free_product_id}checked{/if}
+															onchange="toggleFreeProductField(this)">
+														<label class="form-check-label">Sama dengan produk yang
+															dibeli</label>
+													</div>
+												</div>
+												<select class="form-select free-product-select" name="free_product_id[]"
+													{if $bogo.product_id==$bogo.free_product_id}disabled{/if} required>
+													<option value="">Pilih Produk Gratis</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}" {if
+															$bogo.free_product_id==$product.product_id &&
+															$bogo.product_id !=$bogo.free_product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}" {if
+															$bogo.free_product_id==$product.product_id &&
+															$bogo.product_id !=$bogo.free_product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}" {if
+															$bogo.free_product_id==$product.product_id &&
+															$bogo.product_id !=$bogo.free_product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Jumlah Gratis</label>
+												<input type="number" class="form-control" name="free_quantity[]" min="1"
+													value="{$bogo.free_quantity|default:1}">
+												<small class="text-muted">Jumlah produk gratis yang akan
+													diberikan</small>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-0">
+												<label class="form-label">Maksimal Berlaku (Opsional)</label>
+												<input type="number" class="form-control" name="max_apply_count[]"
+													min="1" value="{$bogo.max_apply_count|default:''}">
+												<small class="text-muted">Batasan maksimal berapa kali promo ini dapat
+													diterapkan dalam satu pesanan. Kosongkan jika tidak ada
+													batasan.</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="promo-preview mt-4">
+												<span class="preview-label text-muted">Preview: </span>
+												<span class="preview-text">
+													Beli <span
+														class="fw-bold buy-qty">{$bogo.buy_quantity|default:1}</span>
+													<span class="buy-product fw-bold">{$bogo.product_name}</span>,
+													gratis <span
+														class="fw-bold free-qty">{$bogo.free_quantity|default:1}</span>
+													<span class="free-product fw-bold">{if $bogo.product_id ==
+														$bogo.free_product_id}{$bogo.product_name}{else}{$bogo.free_product_name}{/if}</span>
+												</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							{/foreach}
+							{else}
+							<!-- Template BOGO Default -->
+							<div class="bogo-item card mb-3">
+								<div class="card-header bg-light d-flex justify-content-between align-items-center">
+									<h6 class="mb-0">BOGO #1</h6>
+									<button type="button" class="btn btn-sm btn-danger remove-bogo-btn">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk yang Dibeli <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="product_id[]" required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Jumlah yang Dibeli</label>
+												<input type="number" class="form-control" name="buy_quantity[]" min="1"
+													value="1">
+												<small class="text-muted">Jumlah minimum produk yang harus dibeli untuk
+													mendapatkan produk gratis</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk Gratis <span
+														class="text-danger">*</span></label>
+												<div class="d-flex mb-2 align-items-center">
+													<div class="form-check form-switch me-2">
+														<input class="form-check-input use-same-product" type="checkbox"
+															checked onchange="toggleFreeProductField(this)">
+														<label class="form-check-label">Sama dengan produk yang
+															dibeli</label>
+													</div>
+												</div>
+												<select class="form-select free-product-select" name="free_product_id[]"
+													disabled required>
+													<option value="">Pilih Produk Gratis</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Jumlah Gratis</label>
+												<input type="number" class="form-control" name="free_quantity[]" min="1"
+													value="1">
+												<small class="text-muted">Jumlah produk gratis yang akan
+													diberikan</small>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-0">
+												<label class="form-label">Maksimal Berlaku (Opsional)</label>
+												<input type="number" class="form-control" name="max_apply_count[]"
+													min="1" placeholder="Tidak terbatas">
+												<small class="text-muted">Batasan maksimal berapa kali promo ini dapat
+													diterapkan dalam satu pesanan. Kosongkan jika tidak ada
+													batasan.</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="promo-preview mt-4">
+												<span class="preview-label text-muted">Preview: </span>
+												<span class="preview-text">
+													Beli <span class="fw-bold buy-qty">1</span> <span
+														class="buy-product fw-bold">produk</span>,
+													gratis <span class="fw-bold free-qty">1</span> <span
+														class="free-product fw-bold">produk yang sama</span>
+												</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							{/if}
+						</div>
+
+						<!-- Template BOGO untuk Javascript -->
+						<template id="bogo-template">
+							<div class="bogo-item card mb-3">
+								<div class="card-header bg-light d-flex justify-content-between align-items-center">
+									<h6 class="mb-0">BOGO New</h6>
+									<button type="button" class="btn btn-sm btn-danger remove-bogo-btn">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk yang Dibeli <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="product_id[]" required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Jumlah yang Dibeli</label>
+												<input type="number" class="form-control" name="buy_quantity[]" min="1"
+													value="1">
+												<small class="text-muted">Jumlah minimum produk yang harus dibeli untuk
+													mendapatkan produk gratis</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk Gratis <span
+														class="text-danger">*</span></label>
+												<div class="d-flex mb-2 align-items-center">
+													<div class="form-check form-switch me-2">
+														<input class="form-check-input use-same-product" type="checkbox"
+															checked onchange="toggleFreeProductField(this)">
+														<label class="form-check-label">Sama dengan produk yang
+															dibeli</label>
+													</div>
+												</div>
+												<select class="form-select free-product-select" name="free_product_id[]"
+													disabled required>
+													<option value="">Pilih Produk Gratis</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Jumlah Gratis</label>
+												<input type="number" class="form-control" name="free_quantity[]" min="1"
+													value="1">
+												<small class="text-muted">Jumlah produk gratis yang akan
+													diberikan</small>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-0">
+												<label class="form-label">Maksimal Berlaku (Opsional)</label>
+												<input type="number" class="form-control" name="max_apply_count[]"
+													min="1" placeholder="Tidak terbatas">
+												<small class="text-muted">Batasan maksimal berapa kali promo ini dapat
+													diterapkan dalam satu pesanan. Kosongkan jika tidak ada
+													batasan.</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="promo-preview mt-4">
+												<span class="preview-label text-muted">Preview: </span>
+												<span class="preview-text">
+													Beli <span class="fw-bold buy-qty">1</span> <span
+														class="buy-product fw-bold">produk</span>,
+													gratis <span class="fw-bold free-qty">1</span> <span
+														class="free-product fw-bold">produk yang sama</span>
+												</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</template>
+
+						<div class="text-center empty-bogo-message mt-3"
+							style="{if !empty($bogos) || empty($bogos) && $smarty.server.REQUEST_METHOD != 'POST'}display:none;{/if}">
+							<div class="p-4 text-muted">
+								<i class="fas fa-tags fa-3x mb-3"></i>
+								<h5>Belum Ada BOGO</h5>
+								<p>Tambahkan konfigurasi BOGO dengan klik tombol "Tambah BOGO" di atas</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Form Submit Buttons -->
+				<div class="d-flex justify-content-center mt-4 mb-2">
+					<button type="submit" class="btn btn-primary px-4 py-2 me-2">
+						<i class="fas fa-save me-2"></i> Simpan BOGO
+					</button>
+					<a href="{site_url('promo/MasterPromo')}" class="btn btn-outline-secondary px-4 py-2">
+						<i class="fas fa-times me-2"></i> Batal
+					</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script src="{$BASEURL}resource/assets-frontend/js/Promo/bogo-form.js"></script>

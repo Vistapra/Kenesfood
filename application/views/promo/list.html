@@ -1,0 +1,1734 @@
+<link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/Promo/list.css">
+
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+				<h4 class="card-title mb-md-0">
+					<i class="fas fa-tags text-primary me-2"></i> Daftar Promo
+				</h4>
+				<div class="d-flex">
+					<a href="{site_url('promo/MasterPromo/create')}" class="btn btn-primary">
+						<i class="fas fa-plus me-1"></i> Tambah Promo
+					</a>
+					<a href="{site_url('promo/MasterPromo/export')}" class="btn btn-outline-secondary ms-2">
+						<i class="fas fa-file-export me-1"></i> Export CSV
+					</a>
+					<button type="button" class="btn btn-outline-info ms-2" data-bs-toggle="modal"
+						data-bs-target="#filterModal">
+						<i class="fas fa-filter me-1"></i> Filter
+					</button>
+				</div>
+			</div>
+
+			<!-- Filter Summary -->
+			{if $filter_brand != 'all' || $filter_status != 'all' || $search || $filter_product_id ||
+			$filter_category_id || (isset($filter_promo_type) && $filter_promo_type != 'all')}
+			<div class="filter-summary mb-4 p-3 rounded bg-light">
+				<div class="d-flex align-items-center flex-wrap">
+					<span class="me-2 mb-2"><i class="fas fa-filter me-1"></i> Filter aktif:</span>
+
+					{if $filter_brand != 'all'}
+					<span class="badge bg-primary text-white rounded-pill py-2 px-3 me-2 mb-2">
+						Brand: {strtoupper($filter_brand)}
+						<a href="{site_url('promo/MasterPromo')}?brand=all&status={$filter_status}&search={$search}&product_id={$filter_product_id}&category_id={$filter_category_id}&promo_type={$filter_promo_type|default:'all'}"
+							class="text-white ms-1">
+							<i class="fas fa-times-circle"></i>
+						</a>
+					</span>
+					{/if}
+
+					{if $filter_status != 'all'}
+					<span class="badge bg-primary text-white rounded-pill py-2 px-3 me-2 mb-2">
+						Status: {if $filter_status == 'active'}AKTIF{else}NON-AKTIF{/if}
+						<a href="{site_url('promo/MasterPromo')}?brand={$filter_brand}&status=all&search={$search}&product_id={$filter_product_id}&category_id={$filter_category_id}&promo_type={$filter_promo_type|default:'all'}"
+							class="text-white ms-1">
+							<i class="fas fa-times-circle"></i>
+						</a>
+					</span>
+					{/if}
+
+					{if isset($filter_promo_type) && $filter_promo_type != 'all'}
+					<span class="badge bg-primary text-white rounded-pill py-2 px-3 me-2 mb-2">
+						Tipe:
+						{if $filter_promo_type == 'percentage' || $filter_promo_type == 'nominal'}DISKON
+						{elseif $filter_promo_type == 'bundling'}BUNDLING
+						{elseif $filter_promo_type == 'bogo'}BOGO
+						{/if}
+						<!-- Pada bagian URL saat mengklik filter lain -->
+						<a href="{site_url('promo/MasterPromo')}?brand={$filter_brand}&status={$filter_status}&search={$search}&product_id={$filter_product_id}&category_id={$filter_category_id}&promo_type={$filter_promo_type|default:'all'}"
+							class="text-white ms-1">
+							<i class="fas fa-times-circle"></i>
+						</a>
+					</span>
+					{/if}
+
+					{if $search}
+					<span class="badge bg-primary text-white rounded-pill py-2 px-3 me-2 mb-2">
+						Pencarian: "{$search}"
+						<a href="{site_url('promo/MasterPromo')}?brand={$filter_brand}&status={$filter_status}&product_id={$filter_product_id}&category_id={$filter_category_id}&promo_type={$filter_promo_type}"
+							class="text-white ms-1">
+							<i class="fas fa-times-circle"></i>
+						</a>
+					</span>
+					{/if}
+
+					{if $filter_product_id}
+					{foreach from=$bakery_products item=product}
+					{if $product.product_id == $filter_product_id}
+					<span class="badge bg-primary text-white rounded-pill py-2 px-3 me-2 mb-2">
+						Produk: {$product.product_name}
+						<a href="{site_url('promo/MasterPromo')}?brand={$filter_brand}&status={$filter_status}&search={$search}&category_id={$filter_category_id}&promo_type={$filter_promo_type}"
+							class="text-white ms-1">
+							<i class="fas fa-times-circle"></i>
+						</a>
+					</span>
+					{/if}
+					{/foreach}
+					{foreach from=$resto_products item=product}
+					{if $product.product_id == $filter_product_id}
+					<span class="badge bg-primary text-white rounded-pill py-2 px-3 me-2 mb-2">
+						Produk: {$product.product_name}
+						<a href="{site_url('promo/MasterPromo')}?brand={$filter_brand}&status={$filter_status}&search={$search}&category_id={$filter_category_id}&promo_type={$filter_promo_type}"
+							class="text-white ms-1">
+							<i class="fas fa-times-circle"></i>
+						</a>
+					</span>
+					{/if}
+					{/foreach}
+					{foreach from=$kopitiam_products item=product}
+					{if $product.product_id == $filter_product_id}
+					<span class="badge bg-primary text-white rounded-pill py-2 px-3 me-2 mb-2">
+						Produk: {$product.product_name}
+						<a href="{site_url('promo/MasterPromo')}?brand={$filter_brand}&status={$filter_status}&search={$search}&category_id={$filter_category_id}&promo_type={$filter_promo_type}"
+							class="text-white ms-1">
+							<i class="fas fa-times-circle"></i>
+						</a>
+					</span>
+					{/if}
+					{/foreach}
+					{/if}
+
+					{if $filter_category_id}
+					{foreach from=$bakery_categories item=category}
+					{if $category.cat_id == $filter_category_id}
+					<span class="badge bg-primary text-white rounded-pill py-2 px-3 me-2 mb-2">
+						Kategori: {$category.cat_name}
+						<a href="{site_url('promo/MasterPromo')}?brand={$filter_brand}&status={$filter_status}&search={$search}&product_id={$filter_product_id}&promo_type={$filter_promo_type}"
+							class="text-white ms-1">
+							<i class="fas fa-times-circle"></i>
+						</a>
+					</span>
+					{/if}
+					{/foreach}
+					{foreach from=$resto_categories item=category}
+					{if $category.cat_id == $filter_category_id}
+					<span class="badge bg-primary text-white rounded-pill py-2 px-3 me-2 mb-2">
+						Kategori: {$category.cat_name}
+						<a href="{site_url('promo/MasterPromo')}?brand={$filter_brand}&status={$filter_status}&search={$search}&product_id={$filter_product_id}&promo_type={$filter_promo_type}"
+							class="text-white ms-1">
+							<i class="fas fa-times-circle"></i>
+						</a>
+					</span>
+					{/if}
+					{/foreach}
+					{foreach from=$kopitiam_categories item=category}
+					{if $category.cat_id == $filter_category_id}
+					<span class="badge bg-primary text-white rounded-pill py-2 px-3 me-2 mb-2">
+						Kategori: {$category.cat_name}
+						<a href="{site_url('promo/MasterPromo')}?brand={$filter_brand}&status={$filter_status}&search={$search}&product_id={$filter_product_id}&promo_type={$filter_promo_type}"
+							class="text-white ms-1">
+							<i class="fas fa-times-circle"></i>
+						</a>
+					</span>
+					{/if}
+					{/foreach}
+					{/if}
+
+					<a href="{site_url('promo/MasterPromo/index')}" class="btn btn-sm btn-outline-secondary mb-2">
+						<i class="fas fa-times me-1"></i> Reset Filter
+					</a>
+				</div>
+			</div>
+			{/if}
+
+			<!-- Flash Messages -->
+			{if isset($smarty.session.success)}
+			<div class="alert alert-success alert-dismissible fade show" role="alert">
+				<i class="fas fa-check-circle me-2"></i> {$smarty.session.success}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			{if isset($smarty.session.error)}
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				<i class="fas fa-exclamation-circle me-2"></i> {$smarty.session.error}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			<!-- Quick Stats Cards -->
+			<div class="row mb-4">
+				<div class="col-md-3 col-sm-6 mb-3">
+					<div class="card bg-light h-100">
+						<div class="card-body text-center">
+							<div class="d-flex justify-content-center mb-2">
+								<div class="stats-icon bg-primary text-white rounded-circle p-3">
+									<i class="fas fa-tags"></i>
+								</div>
+							</div>
+							<h4 class="mt-2 mb-0">{$total_promos}</h4>
+							<p class="text-muted">Total Promo</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-6 mb-3">
+					<div class="card bg-light h-100">
+						<div class="card-body text-center">
+							<div class="d-flex justify-content-center mb-2">
+								<div class="stats-icon bg-success text-white rounded-circle p-3">
+									<i class="fas fa-check-circle"></i>
+								</div>
+							</div>
+							<h4 class="mt-2 mb-0">{$active_count|default:0}</h4>
+							<p class="text-muted">Promo Aktif</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-6 mb-3">
+					<div class="card bg-light h-100">
+						<div class="card-body text-center">
+							<div class="d-flex justify-content-center mb-2">
+								<div class="stats-icon bg-warning text-white rounded-circle p-3">
+									<i class="fas fa-clock"></i>
+								</div>
+							</div>
+							<h4 class="mt-2 mb-0">{$upcoming_count|default:0}</h4>
+							<p class="text-muted">Promo Upcoming</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-6 mb-3">
+					<div class="card bg-light h-100">
+						<div class="card-body text-center">
+							<div class="d-flex justify-content-center mb-2">
+								<div class="stats-icon bg-danger text-white rounded-circle p-3">
+									<i class="fas fa-times-circle"></i>
+								</div>
+							</div>
+							<h4 class="mt-2 mb-0">{$expired_count|default:0}</h4>
+							<p class="text-muted">Promo Expired</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Tabs untuk tipe promo -->
+			<ul class="nav nav-tabs nav-fill mb-4" id="promoTypeTabs" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="all-promos-tab" data-bs-toggle="tab"
+						data-bs-target="#all-promos" type="button" role="tab" aria-controls="all-promos"
+						aria-selected="true">
+						<i class="fas fa-list me-1"></i> Semua Promo <span
+							class="badge rounded-pill bg-primary ms-1">{$total_promos}</span>
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="discount-promos-tab" data-bs-toggle="tab"
+						data-bs-target="#discount-promos" type="button" role="tab" aria-controls="discount-promos"
+						aria-selected="false">
+						<i class="fas fa-percent me-1"></i> Promo Diskon <span
+							class="badge rounded-pill bg-primary ms-1">{$discount_count|default:0}</span>
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="mrp-vouchers-tab" data-bs-toggle="tab" data-bs-target="#mrp-vouchers"
+						type="button" role="tab" aria-controls="mrp-vouchers" aria-selected="false">
+						<i class="fas fa-ticket-alt me-1"></i> Voucher MRP <span
+							class="badge rounded-pill bg-primary ms-1">{$mrp_voucher_count}</span>
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="bundling-promos-tab" data-bs-toggle="tab"
+						data-bs-target="#bundling-promos" type="button" role="tab" aria-controls="bundling-promos"
+						aria-selected="false">
+						<i class="fas fa-gift me-1"></i> Bundling <span
+							class="badge rounded-pill bg-primary ms-1">{$bundling_count|default:0}</span>
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="bogo-promos-tab" data-bs-toggle="tab" data-bs-target="#bogo-promos"
+						type="button" role="tab" aria-controls="bogo-promos" aria-selected="false">
+						<i class="fas fa-tag me-1"></i> BOGO <span
+							class="badge rounded-pill bg-primary ms-1">{$bogo_count|default:0}</span>
+					</button>
+				</li>
+			</ul>
+
+			<div class="tab-content" id="promoTypeTabContent">
+				<!-- Tab Semua Promo -->
+				<div class="tab-pane fade show active" id="all-promos" role="tabpanel" aria-labelledby="all-promos-tab">
+					<!-- Search and filter bar -->
+					<div class="card mb-4">
+						<div class="card-body">
+							<form action="{site_url('promo/MasterPromo/index')}" method="get" class="row g-3">
+								<input type="hidden" name="tab" value="all">
+
+								<div class="col-md-6">
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-search"></i></span>
+										<input type="text" class="form-control" name="search"
+											placeholder="Cari promo..." value="{$search}">
+										<button type="submit" class="btn btn-primary">Cari</button>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<select class="form-select" name="brand">
+										<option value="all" {if $filter_brand=='all' }selected{/if}>Semua Brand</option>
+										<option value="bakery" {if $filter_brand=='bakery' }selected{/if}>Bakery
+										</option>
+										<option value="resto" {if $filter_brand=='resto' }selected{/if}>Resto</option>
+										<option value="kopitiam" {if $filter_brand=='kopitiam' }selected{/if}>Kopitiam
+										</option>
+									</select>
+								</div>
+
+								<div class="col-md-3">
+									<select class="form-select" name="status">
+										<option value="all" {if $filter_status=='all' }selected{/if}>Semua Status
+										</option>
+										<option value="active" {if $filter_status=='active' }selected{/if}>Aktif
+										</option>
+										<option value="inactive" {if $filter_status=='inactive' }selected{/if}>Non-aktif
+										</option>
+									</select>
+								</div>
+							</form>
+						</div>
+					</div>
+					<!-- Promo Table with Modern Design -->
+					{if $internal_promos|@count > 0}
+					<div class="table-responsive">
+						<table class="table align-middle promo-table">
+							<thead>
+								<tr>
+									<th class="text-center" width="60">No</th>
+									<th>Informasi Promo</th>
+									<th class="text-center">Brand</th>
+									<th class="text-center">Tipe</th>
+									<th class="text-center">Periode</th>
+									<th class="text-center">Kuota</th>
+									<th class="text-center">Status</th>
+									<th class="text-center" width="130">Aksi</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$internal_promos key=key item=promo name=promolist}
+								<tr class="{if $promo.overall_status != 'active'}inactive-promo{/if}">
+									<td class="text-center fw-bold">{$key+1}</td>
+									<td>
+										<div class="promo-info">
+											<div class="d-flex align-items-center mb-1">
+												<h6 class="mb-0">{$promo.promo_name}</h6>
+												{if $promo.promo_type == 'bundling'}
+												<span class="badge bg-indigo ms-2">Bundling</span>
+												{elseif $promo.promo_type == 'bogo'}
+												<span class="badge bg-pink ms-2">BOGO</span>
+												{/if}
+											</div>
+											<div class="d-flex align-items-center mt-1">
+												<span class="promo-code me-2">{$promo.promo_code}</span>
+												{if $promo.minimum_order > 0 && ($promo.promo_type == 'percentage' ||
+												$promo.promo_type == 'nominal')}
+												<span class="promo-minimum">Min: Rp {number_format($promo.minimum_order,
+													0, ',', '.')}</span>
+												{/if}
+											</div>
+											{if !empty($promo.description)}
+											<div class="mt-1">
+												<small
+													class="text-muted promo-description">{$promo.description|truncate:60}</small>
+											</div>
+											{/if}
+
+											<!-- Detail khusus berdasarkan tipe promo -->
+											{if $promo.promo_type == 'percentage' || $promo.promo_type == 'nominal'}
+											<div class="promo-value-display mt-1">
+												{if $promo.promo_type == 'percentage'}
+												<span class="badge bg-warning text-dark">Diskon
+													{$promo.promo_value}%</span>
+												{if $promo.maximum_discount}
+												<small class="text-muted ms-1">Maks: Rp
+													{number_format($promo.maximum_discount, 0, ',', '.')}</small>
+												{/if}
+												{else}
+												<span class="badge bg-info text-white">Diskon Rp
+													{number_format($promo.promo_value, 0, ',', '.')}</span>
+												{/if}
+											</div>
+											{elseif $promo.promo_type == 'bundling'}
+											<!-- Info bundling -->
+											<div class="mt-2 d-flex flex-wrap gap-1">
+												<span class="bundling-badge" data-bs-toggle="tooltip"
+													title="Promo bundling: beli produk A & produk B, gratis produk C">
+													<i class="fas fa-gift me-1"></i> Bundling
+													{if isset($promo.bundle_count) && $promo.bundle_count > 0}
+													<span class="badge bg-light text-dark">{$promo.bundle_count}
+														rule</span>
+													{/if}
+												</span>
+											</div>
+											{elseif $promo.promo_type == 'bogo'}
+											<!-- Info BOGO -->
+											<div class="mt-2 d-flex flex-wrap gap-1">
+												<span class="bogo-badge" data-bs-toggle="tooltip"
+													title="Promo BOGO: beli X produk, gratis Y produk">
+													<i class="fas fa-tag me-1"></i> Bogo
+													{if isset($promo.bogo_count) && $promo.bogo_count > 0}
+													<span class="badge bg-light text-dark">{$promo.bogo_count}
+														rule</span>
+													{/if}
+												</span>
+											</div>
+											{/if}
+
+											<!-- Tampilkan badge khusus jika promo terbatas produk atau kategori tertentu -->
+											<div class="mt-2 d-flex flex-wrap gap-1">
+												{if $promo.has_product_specific}
+												<span class="specificity-badge product-specific"
+													data-bs-toggle="tooltip"
+													title="Hanya berlaku untuk {$promo.product_count} produk tertentu">
+													<i class="fas fa-box-open me-1"></i> {$promo.product_count} Produk
+												</span>
+												{/if}
+
+												{if $promo.has_category_specific}
+												<span class="specificity-badge category-specific"
+													data-bs-toggle="tooltip"
+													title="Hanya berlaku untuk {$promo.category_count} kategori tertentu">
+													<i class="fas fa-folder me-1"></i> {$promo.category_count} Kategori
+												</span>
+												{/if}
+											</div>
+										</div>
+									</td>
+									<td class="text-center">
+										{if $promo.is_mrp_voucher_display == 1}
+										<div class="supported-brands">
+											{if !empty($promo.supported_brands)}
+											{assign var=brands value=","|explode:$promo.supported_brands}
+											{foreach from=$brands item=brand name=brand_loop}
+											<span
+												class="brand-badge brand-{$brand|lower|trim}">{strtoupper($brand|trim)}</span>
+											{/foreach}
+											{else}
+											<span
+												class="brand-badge brand-{$promo.promo_brand}">{strtoupper($promo.promo_brand)}</span>
+											{/if}
+										</div>
+										{else}
+										<span
+											class="brand-badge brand-{$promo.promo_brand}">{strtoupper($promo.promo_brand)}</span>
+										{/if}
+									</td>
+									<td class="text-center">
+										{if $promo.promo_type == 'percentage'}
+										<span class="promo-type-badge type-percentage">
+											<i class="fas fa-percent"></i>
+											<span class="d-none d-md-inline ms-1">Persentase</span>
+										</span>
+										{elseif $promo.promo_type == 'nominal'}
+										<span class="promo-type-badge type-nominal">
+											<i class="fas fa-money-bill-wave"></i>
+											<span class="d-none d-md-inline ms-1">Nominal</span>
+										</span>
+										{elseif $promo.promo_type == 'bundling'}
+										<span class="promo-type-badge type-bundling">
+											<i class="fas fa-gift"></i>
+											<span class="d-none d-md-inline ms-1">Bundling</span>
+										</span>
+										{elseif $promo.promo_type == 'bogo'}
+										<span class="promo-type-badge type-bogo">
+											<i class="fas fa-tag"></i>
+											<span class="d-none d-md-inline ms-1">BOGO</span>
+										</span>
+										{/if}
+									</td>
+									<td class="text-center">
+										<div class="period-info">
+											<div class="start-date mb-1 small">{$promo.formatted_start_date}</div>
+											<div class="period-separator"><i class="fas fa-arrow-down"></i></div>
+											<div class="end-date mt-1 small">{$promo.formatted_end_date}</div>
+											<span class="period-badge period-{$promo.date_status}">
+												{if $promo.date_status == 'upcoming'}
+												<i class="fas fa-hourglass-start"></i> Upcoming
+												{elseif $promo.date_status == 'active'}
+												<i class="fas fa-clock"></i> Berlangsung
+												{else}
+												<i class="fas fa-hourglass-end"></i> Berakhir
+												{/if}
+											</span>
+										</div>
+									</td>
+									<td class="text-center">
+										<div class="quota-info">
+											{if $promo.quota !== null}
+											<div class="quota-progress position-relative">
+												{assign var=percentUsed value=($promo.quota > 0) ? ($promo.usage_count /
+												$promo.quota * 100) : 0}
+												<div class="progress" style="height: 8px;">
+													<div class="progress-bar {if $percentUsed >= 80}bg-danger{elseif $percentUsed >= 50}bg-warning{else}bg-success{/if}"
+														role="progressbar" style="width: {$percentUsed}%;"
+														aria-valuenow="{$percentUsed}" aria-valuemin="0"
+														aria-valuemax="100">
+													</div>
+												</div>
+											</div>
+											<div class="quota-numbers mt-1">
+												<small>{$promo.usage_count} / {$promo.quota}</small>
+											</div>
+											{if $promo.quota_status == 'exhausted'}
+											<span class="quota-exhausted">
+												<i class="fas fa-times-circle"></i> Habis
+											</span>
+											{/if}
+											{else}
+											<span class="unlimited-badge">
+												<i class="fas fa-infinity"></i> Unlimited
+											</span>
+											<div class="usage-count mt-1">
+												<small>{$promo.usage_count} kali digunakan</small>
+											</div>
+											{/if}
+										</div>
+									</td>
+									<td class="text-center">
+										{if $promo.overall_status == 'active'}
+										<span class="status-badge status-active">
+											<i class="fas fa-check-circle me-1"></i> Aktif
+										</span>
+										{else}
+										<span class="status-badge status-inactive">
+											<i class="fas fa-times-circle me-1"></i> Non-aktif
+										</span>
+										<div class="status-reason mt-1">
+											<small>
+												{if $promo.promo_status != 'active'}
+												<span class="text-muted">Dinonaktifkan</span>
+												{elseif $promo.date_status != 'active'}
+												<span class="text-muted">{if $promo.date_status == 'upcoming'}Belum
+													dimulai{else}Sudah berakhir{/if}</span>
+												{elseif $promo.quota_status != 'available'}
+												<span class="text-muted">Kuota habis</span>
+												{/if}
+											</small>
+										</div>
+										{/if}
+									</td>
+									<td class="text-center">
+										<div class="action-buttons">
+											<a href="{site_url('promo/MasterPromo/edit/')}{$promo.promo_id}"
+												class="btn btn-sm btn-primary action-btn" data-bs-toggle="tooltip"
+												title="Edit">
+												<i class="fas fa-edit"></i>
+											</a>
+											<a href="{site_url('promo/MasterPromo/usage/')}{$promo.promo_id}"
+												class="btn btn-sm btn-info action-btn" data-bs-toggle="tooltip"
+												title="History">
+												<i class="fas fa-history"></i>
+											</a>
+											{if $promo.promo_type == 'bundling'}
+											<a href="{site_url('promo/MasterPromo/bundling/')}{$promo.promo_id}"
+												class="btn btn-sm btn-success action-btn" data-bs-toggle="tooltip"
+												title="Edit Bundling">
+												<i class="fas fa-gift"></i>
+											</a>
+											{elseif $promo.promo_type == 'bogo'}
+											<a href="{site_url('promo/MasterPromo/bogo/')}{$promo.promo_id}"
+												class="btn btn-sm btn-success action-btn" data-bs-toggle="tooltip"
+												title="Edit BOGO">
+												<i class="fas fa-tag"></i>
+											</a>
+											{/if}
+											<a href="javascript:void(0)"
+												onclick="confirmDelete('{site_url('promo/MasterPromo/delete/')}{$promo.promo_id}')"
+												class="btn btn-sm btn-danger action-btn" data-bs-toggle="tooltip"
+												title="Hapus">
+												<i class="fas fa-trash"></i>
+											</a>
+										</div>
+									</td>
+								</tr>
+								{/foreach}
+							</tbody>
+						</table>
+					</div>
+
+
+					<!-- Pagination -->
+					<div class="d-flex justify-content-between align-items-center mt-4">
+						<div class="text-muted">
+							Menampilkan {$pagination_info.start|default:0} - {$pagination_info.end|default:0} dari
+							{$total_internal|default:0} data
+						</div>
+						<nav aria-label="Promo pagination">
+							<ul class="pagination pagination-sm mb-0">
+								{$pagination|default:''}
+							</ul>
+						</nav>
+					</div>
+					{else}
+					<!-- Empty State -->
+					<div class="text-center py-5">
+						<div class="empty-state">
+							<i class="fas fa-tags fa-4x text-muted mb-4"></i>
+							<h4>Belum ada promo</h4>
+							<p class="text-muted mb-4">Saat ini belum ada promo internal yang ditambahkan</p>
+							<a href="{site_url('promo/MasterPromo/create')}" class="btn btn-primary">
+								<i class="fas fa-plus me-2"></i> Tambah Promo Baru
+							</a>
+						</div>
+					</div>
+					{/if}
+				</div>
+
+				<!-- Tambahkan bagian tab content untuk voucher MRP -->
+				<div class="tab-pane fade" id="mrp-vouchers" role="tabpanel" aria-labelledby="mrp-vouchers-tab">
+
+					<div class="card mb-4">
+						<div class="card-body">
+							<form action="{site_url('promo/MasterPromo/index')}" method="get" class="row g-3">
+								<input type="hidden" name="tab" value="mrp">
+
+								<div class="col-md-6">
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-search"></i></span>
+										<input type="text" class="form-control" name="search"
+											placeholder="Cari voucher MRP..." value="{$search}">
+										<button type="submit" class="btn btn-primary">Cari</button>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<select class="form-select" name="status">
+										<option value="all" {if $filter_status=='all' }selected{/if}>Semua Status
+										</option>
+										<option value="active" {if $filter_status=='active' }selected{/if}>Aktif
+										</option>
+										<option value="inactive" {if $filter_status=='inactive' }selected{/if}>Non-aktif
+										</option>
+									</select>
+								</div>
+
+								<div class="col-md-3">
+									<select class="form-select" name="voucher_type">
+										<option value="all" {if $filter_voucher_type=='all' }selected{/if}>Semua Tipe
+										</option>
+										<option value="percentage" {if $filter_voucher_type=='percentage'
+											}selected{/if}>Persentase</option>
+										<option value="nominal" {if $filter_voucher_type=='nominal' }selected{/if}>
+											Nominal</option>
+									</select>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					<div class="card mb-4">
+						<div class="card-body bg-light">
+							<div class="d-flex justify-content-between align-items-center">
+								<div>
+									<h5 class="mb-0">Sinkronisasi Voucher MRP</h5>
+									<p class="text-muted mb-0 small">Sinkronisasi terakhir: {if
+										$last_mrp_sync}{$last_mrp_sync|date_format:"%d %b %Y %H:%M"}{else}Belum
+										pernah{/if}</p>
+								</div>
+								<div>
+									<button type="button" class="btn btn-primary" onclick="syncAllVouchers()">
+										<i class="fas fa-sync-alt me-1"></i> Sinkronisasi Sekarang
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{if $mrp_vouchers|@count > 0}
+					<div class="table-responsive">
+						<table class="table align-middle promo-table">
+							<thead>
+								<tr>
+									<th class="text-center" width="60">No</th>
+									<th>Informasi Voucher</th>
+									<th class="text-center">Brand</th>
+									<th class="text-center">Tipe</th>
+									<th class="text-center">Periode</th>
+									<th class="text-center">Kuota</th>
+									<th class="text-center">Status</th>
+									<th class="text-center" width="130">Aksi</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$mrp_vouchers key=key item=promo name=mrpvoucherlist}
+								<tr class="{if $promo.overall_status != 'active'}inactive-promo{/if}">
+									<td class="text-center fw-bold">{$key+1}</td>
+									<td>
+										<div class="promo-info">
+											<div class="d-flex align-items-center mb-1">
+												<h6 class="mb-0">{$promo.promo_name}</h6>
+												<span class="badge bg-info ms-2">MRP</span>
+											</div>
+											<div class="d-flex align-items-center mt-1">
+												<span class="promo-code me-2">{$promo.promo_code}</span>
+												{if $promo.minimum_order > 0}
+												<span class="promo-minimum">Min: Rp {number_format($promo.minimum_order,
+													0, ',', '.')}</span>
+												{/if}
+											</div>
+											{if !empty($promo.description)}
+											<div class="mt-1">
+												<small
+													class="text-muted promo-description">{$promo.description|truncate:60}</small>
+											</div>
+											{/if}
+
+											<!-- Detail khusus berdasarkan tipe promo -->
+											{if $promo.promo_type == 'percentage' || $promo.promo_type == 'nominal'}
+											<div class="promo-value-display mt-1">
+												{if $promo.promo_type == 'percentage'}
+												<span class="badge bg-warning text-dark">Diskon
+													{$promo.promo_value}%</span>
+												{if $promo.maximum_discount}
+												<small class="text-muted ms-1">Maks: Rp
+													{number_format($promo.maximum_discount, 0, ',', '.')}</small>
+												{/if}
+												{else}
+												<span class="badge bg-info text-white">Diskon Rp
+													{number_format($promo.promo_value, 0, ',', '.')}</span>
+												{/if}
+											</div>
+											{/if}
+
+											<!-- Badge sinkronisasi MRP -->
+											<div class="mt-2">
+												<span class="badge bg-primary text-white">
+													<i class="fas fa-sync-alt me-1"></i> Sinkron
+													{$promo.last_sync|date_format:"%d/%m/%Y %H:%M"}
+												</span>
+											</div>
+										</div>
+									</td>
+									<td class="text-center">
+										{if $promo.is_mrp_voucher_display == 1}
+										<div class="supported-brands">
+											{if !empty($promo.supported_brands)}
+											{assign var=brands value=","|explode:$promo.supported_brands}
+											{foreach from=$brands item=brand name=brand_loop}
+											<span
+												class="brand-badge brand-{$brand|lower|trim}">{strtoupper($brand|trim)}</span>
+											{/foreach}
+											{else}
+											<span
+												class="brand-badge brand-{$promo.promo_brand}">{strtoupper($promo.promo_brand)}</span>
+											{/if}
+										</div>
+										{else}
+										<span
+											class="brand-badge brand-{$promo.promo_brand}">{strtoupper($promo.promo_brand)}</span>
+										{/if}
+									</td>
+									<td class="text-center">
+										{if $promo.promo_type == 'percentage'}
+										<span class="promo-type-badge type-percentage">
+											<i class="fas fa-percent"></i>
+											<span class="d-none d-md-inline ms-1">Persentase</span>
+										</span>
+										{elseif $promo.promo_type == 'nominal'}
+										<span class="promo-type-badge type-nominal">
+											<i class="fas fa-money-bill-wave"></i>
+											<span class="d-none d-md-inline ms-1">Nominal</span>
+										</span>
+										{/if}
+									</td>
+									<td class="text-center">
+										<div class="period-info">
+											<div class="start-date mb-1 small">{$promo.formatted_start_date}</div>
+											<div class="period-separator"><i class="fas fa-arrow-down"></i></div>
+											<div class="end-date mt-1 small">{$promo.formatted_end_date}</div>
+											<span class="period-badge period-{$promo.date_status}">
+												{if $promo.date_status == 'upcoming'}
+												<i class="fas fa-hourglass-start"></i> Upcoming
+												{elseif $promo.date_status == 'active'}
+												<i class="fas fa-clock"></i> Berlangsung
+												{else}
+												<i class="fas fa-hourglass-end"></i> Berakhir
+												{/if}
+											</span>
+										</div>
+									</td>
+									<td class="text-center">
+										<div class="quota-info">
+											{if $promo.quota !== null}
+											<div class="quota-progress position-relative">
+												{assign var=percentUsed value=($promo.quota > 0) ? ($promo.usage_count /
+												$promo.quota * 100) : 0}
+												<div class="progress" style="height: 8px;">
+													<div class="progress-bar {if $percentUsed >= 80}bg-danger{elseif $percentUsed >= 50}bg-warning{else}bg-success{/if}"
+														role="progressbar" style="width: {$percentUsed}%;"
+														aria-valuenow="{$percentUsed}" aria-valuemin="0"
+														aria-valuemax="100">
+													</div>
+												</div>
+											</div>
+											<div class="quota-numbers mt-1">
+												<small>{$promo.usage_count} / {$promo.quota}</small>
+											</div>
+											{if $promo.quota_status == 'exhausted'}
+											<span class="quota-exhausted">
+												<i class="fas fa-times-circle"></i> Habis
+											</span>
+											{/if}
+											{else}
+											<span class="unlimited-badge">
+												<i class="fas fa-infinity"></i> Unlimited
+											</span>
+											<div class="usage-count mt-1">
+												<small>{$promo.usage_count} kali digunakan</small>
+											</div>
+											{/if}
+										</div>
+									</td>
+									<td class="text-center">
+										{if $promo.overall_status == 'active'}
+										<span class="status-badge status-active">
+											<i class="fas fa-check-circle me-1"></i> Aktif
+										</span>
+										{else}
+										<span class="status-badge status-inactive">
+											<i class="fas fa-times-circle me-1"></i> Non-aktif
+										</span>
+										<div class="status-reason mt-1">
+											<small>
+												{if $promo.promo_status != 'active'}
+												<span class="text-muted">Dinonaktifkan</span>
+												{elseif $promo.date_status != 'active'}
+												<span class="text-muted">{if $promo.date_status == 'upcoming'}Belum
+													dimulai{else}Sudah berakhir{/if}</span>
+												{elseif $promo.quota_status != 'available'}
+												<span class="text-muted">Kuota habis</span>
+												{/if}
+											</small>
+										</div>
+										{/if}
+									</td>
+									<td class="text-center">
+										<div class="action-buttons">
+											<a href="{site_url('promo/MasterPromo/usage/')}{$promo.promo_id}"
+												class="btn btn-sm btn-info action-btn" data-bs-toggle="tooltip"
+												title="History">
+												<i class="fas fa-history"></i>
+											</a>
+											<button type="button" class="btn btn-sm btn-primary action-btn"
+												onclick="syncVoucher('{$promo.promo_code}')" data-bs-toggle="tooltip"
+												title="Sinkronisasi">
+												<i class="fas fa-sync-alt"></i>
+											</button>
+											<button type="button" class="btn btn-sm btn-secondary action-btn"
+												onclick="toggleVoucherStatus('{$promo.promo_id}', '{$promo.promo_status}')"
+												data-bs-toggle="tooltip"
+												title="{if $promo.promo_status == 'active'}Nonaktifkan{else}Aktifkan{/if} voucher">
+												<i class="fas fa-power-off"></i>
+											</button>
+										</div>
+									</td>
+								</tr>
+								{/foreach}
+							</tbody>
+						</table>
+					</div>
+
+					<!-- Pagination -->
+					<div class="d-flex justify-content-between align-items-center mt-4">
+						<div class="text-muted">
+							Menampilkan {$pagination_info.start|default:0} - {$pagination_info.end|default:0} dari
+							{$total_mrp|default:0} data
+						</div>
+						<nav aria-label="Promo pagination">
+							<ul class="pagination pagination-sm mb-0">
+								{$pagination|default:''}
+							</ul>
+						</nav>
+					</div>
+					{else}
+					<!-- Empty State -->
+					<div class="text-center py-5">
+						<div class="empty-state">
+							<i class="fas fa-ticket-alt fa-4x text-muted mb-4"></i>
+							<h4>Belum ada voucher MRP</h4>
+							<p class="text-muted mb-4">Saat ini belum ada voucher dari MRP yang tersinkronisasi</p>
+							<button type="button" class="btn btn-primary" onclick="syncAllVouchers()">
+								<i class="fas fa-sync-alt me-2"></i> Sinkronisasi Voucher MRP
+							</button>
+						</div>
+					</div>
+					{/if}
+				</div>
+
+				<!-- Tab Promo Diskon -->
+				<div class="tab-pane fade" id="discount-promos" role="tabpanel" aria-labelledby="discount-promos-tab">
+					<div class="card mb-4">
+						<div class="card-body">
+							<form action="{site_url('promo/MasterPromo/index')}" method="get" class="row g-3">
+								<input type="hidden" name="tab" value="discount">
+								<input type="hidden" name="promo_type" value="discount">
+
+								<div class="col-md-6">
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-search"></i></span>
+										<input type="text" class="form-control" name="search"
+											placeholder="Cari promo diskon..." value="{$search}">
+										<button type="submit" class="btn btn-primary">Cari</button>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<select class="form-select" name="brand">
+										<option value="all" {if $filter_brand=='all' }selected{/if}>Semua Brand</option>
+										<option value="bakery" {if $filter_brand=='bakery' }selected{/if}>Bakery
+										</option>
+										<option value="resto" {if $filter_brand=='resto' }selected{/if}>Resto</option>
+										<option value="kopitiam" {if $filter_brand=='kopitiam' }selected{/if}>Kopitiam
+										</option>
+									</select>
+								</div>
+
+								<div class="col-md-3">
+									<select class="form-select" name="status">
+										<option value="all" {if $filter_status=='all' }selected{/if}>Semua Status
+										</option>
+										<option value="active" {if $filter_status=='active' }selected{/if}>Aktif
+										</option>
+										<option value="inactive" {if $filter_status=='inactive' }selected{/if}>Non-aktif
+										</option>
+									</select>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					{assign var=filteredDiscountPromos value=[]}
+					{foreach from=$internal_promos item=promo}
+					{if $promo.promo_type == 'percentage' || $promo.promo_type == 'nominal'}
+					{append var=filteredDiscountPromos value=$promo}
+					{/if}
+					{/foreach}
+
+					{if $filteredDiscountPromos|@count > 0}
+					<div class="table-responsive">
+						<table class="table align-middle promo-table">
+							<thead>
+								<tr>
+									<th class="text-center" width="60">No</th>
+									<th>Informasi Promo</th>
+									<th class="text-center">Brand</th>
+									<th class="text-center">Diskon</th>
+									<th class="text-center">Periode</th>
+									<th class="text-center">Kuota</th>
+									<th class="text-center">Status</th>
+									<th class="text-center" width="120">Aksi</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$filteredDiscountPromos key=key item=promo name=discountpromolist}
+								<tr class="{if $promo.overall_status != 'active'}inactive-promo{/if}">
+									<td class="text-center fw-bold">{$key+1}</td>
+									<td>
+										<div class="promo-info">
+											<h6 class="mb-0">{$promo.promo_name}</h6>
+											<div class="d-flex align-items-center mt-1">
+												<span class="promo-code me-2">{$promo.promo_code}</span>
+												{if $promo.minimum_order > 0}
+												<span class="promo-minimum">Min: Rp {number_format($promo.minimum_order,
+													0, ',', '.')}</span>
+												{/if}
+											</div>
+											{if !empty($promo.description)}
+											<div class="mt-1">
+												<small
+													class="text-muted promo-description">{$promo.description|truncate:60}</small>
+											</div>
+											{/if}
+
+											<!-- Tampilkan badge khusus jika promo terbatas produk atau kategori tertentu -->
+											<div class="mt-2 d-flex flex-wrap gap-1">
+												{if $promo.has_product_specific}
+												<span class="specificity-badge product-specific"
+													data-bs-toggle="tooltip"
+													title="Hanya berlaku untuk {$promo.product_count} produk tertentu">
+													<i class="fas fa-box-open me-1"></i> {$promo.product_count} Produk
+												</span>
+												{/if}
+
+												{if $promo.has_category_specific}
+												<span class="specificity-badge category-specific"
+													data-bs-toggle="tooltip"
+													title="Hanya berlaku untuk {$promo.category_count} kategori tertentu">
+													<i class="fas fa-folder me-1"></i> {$promo.category_count} Kategori
+												</span>
+												{/if}
+											</div>
+										</div>
+									</td>
+									<td class="text-center">
+										<span class="brand-badge brand-{$promo.promo_brand}">
+											{strtoupper($promo.promo_brand)}
+										</span>
+									</td>
+									<td class="text-center">
+										<div
+											class="discount-badge {if $promo.promo_type == 'percentage'}discount-percentage{else}discount-nominal{/if}">
+											{if $promo.promo_type == 'percentage'}
+											{$promo.promo_value}%
+											{if $promo.maximum_discount}
+											<small>Max: Rp {number_format($promo.maximum_discount, 0, ',', '.')}</small>
+											{/if}
+											{else}
+											Rp {number_format($promo.promo_value, 0, ',', '.')}
+											{/if}
+										</div>
+									</td>
+									<td class="text-center">
+										<div class="period-info">
+											<div class="start-date mb-1 small">{$promo.formatted_start_date}</div>
+											<div class="period-separator"><i class="fas fa-arrow-down"></i></div>
+											<div class="end-date mt-1 small">{$promo.formatted_end_date}</div>
+											<span class="period-badge period-{$promo.date_status}">
+												{if $promo.date_status == 'upcoming'}
+												<i class="fas fa-hourglass-start"></i> Upcoming
+												{elseif $promo.date_status == 'active'}
+												<i class="fas fa-clock"></i> Berlangsung
+												{else}
+												<i class="fas fa-hourglass-end"></i> Berakhir
+												{/if}
+											</span>
+										</div>
+									</td>
+									<td class="text-center">
+										<div class="quota-info">
+											{if $promo.quota !== null}
+											<div class="quota-progress position-relative">
+												{assign var=percentUsed value=($promo.quota > 0) ? ($promo.usage_count /
+												$promo.quota * 100) : 0}
+												<div class="progress" style="height: 8px;">
+													<div class="progress-bar {if $percentUsed >= 80}bg-danger{elseif $percentUsed >= 50}bg-warning{else}bg-success{/if}"
+														role="progressbar" style="width: {$percentUsed}%;"
+														aria-valuenow="{$percentUsed}" aria-valuemin="0"
+														aria-valuemax="100">
+													</div>
+												</div>
+											</div>
+											<div class="quota-numbers mt-1">
+												<small>{$promo.usage_count} / {$promo.quota}</small>
+											</div>
+											{if $promo.quota_status == 'exhausted'}
+											<span class="quota-exhausted">
+												<i class="fas fa-times-circle"></i> Habis
+											</span>
+											{/if}
+											{else}
+											<span class="unlimited-badge">
+												<i class="fas fa-infinity"></i> Unlimited
+											</span>
+											<div class="usage-count mt-1">
+												<small>{$promo.usage_count} kali digunakan</small>
+											</div>
+											{/if}
+										</div>
+									</td>
+									<td class="text-center">
+										{if $promo.overall_status == 'active'}
+										<span class="status-badge status-active">
+											<i class="fas fa-check-circle me-1"></i> Aktif
+										</span>
+										{else}
+										<span class="status-badge status-inactive">
+											<i class="fas fa-times-circle me-1"></i> Non-aktif
+										</span>
+										<div class="status-reason mt-1">
+											<small>
+												{if $promo.promo_status != 'active'}
+												<span class="text-muted">Dinonaktifkan</span>
+												{elseif $promo.date_status != 'active'}
+												<span class="text-muted">{if $promo.date_status == 'upcoming'}Belum
+													dimulai{else}Sudah berakhir{/if}</span>
+												{elseif $promo.quota_status != 'available'}
+												<span class="text-muted">Kuota habis</span>
+												{/if}
+											</small>
+										</div>
+										{/if}
+									</td>
+									<td class="text-center">
+										<div class="action-buttons">
+											<a href="{site_url('promo/MasterPromo/edit/')}{$promo.promo_id}"
+												class="btn btn-sm btn-primary action-btn" data-bs-toggle="tooltip"
+												title="Edit">
+												<i class="fas fa-edit"></i>
+											</a>
+											<a href="{site_url('promo/MasterPromo/usage/')}{$promo.promo_id}"
+												class="btn btn-sm btn-info action-btn" data-bs-toggle="tooltip"
+												title="History">
+												<i class="fas fa-history"></i>
+											</a>
+											<a href="javascript:void(0)"
+												onclick="confirmDelete('{site_url('promo/MasterPromo/delete/')}{$promo.promo_id}')"
+												class="btn btn-sm btn-danger action-btn" data-bs-toggle="tooltip"
+												title="Hapus">
+												<i class="fas fa-trash"></i>
+											</a>
+										</div>
+									</td>
+								</tr>
+								{/foreach}
+							</tbody>
+						</table>
+					</div>
+					{else}
+					<!-- Empty State for Discount Promos -->
+					<div class="text-center py-5">
+						<div class="empty-state">
+							<i class="fas fa-percent fa-4x text-muted mb-4"></i>
+							<h4>Belum ada promo diskon</h4>
+							<p class="text-muted mb-4">Belum ada promo diskon yang ditambahkan</p>
+							<a href="{site_url('promo/MasterPromo/create')}" class="btn btn-primary">
+								<i class="fas fa-plus me-2"></i> Tambah Promo Diskon
+							</a>
+						</div>
+					</div>
+					{/if}
+				</div>
+
+				<!-- Tab Promo Bundling -->
+				<div class="tab-pane fade" id="bundling-promos" role="tabpanel" aria-labelledby="bundling-promos-tab">
+					<div class="card mb-4">
+						<div class="card-body">
+							<form action="{site_url('promo/MasterPromo/index')}" method="get" class="row g-3">
+								<input type="hidden" name="tab" value="bundling">
+								<input type="hidden" name="promo_type" value="bundling">
+
+								<div class="col-md-6">
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-search"></i></span>
+										<input type="text" class="form-control" name="search"
+											placeholder="Cari promo bundling..." value="{$search}">
+										<button type="submit" class="btn btn-primary">Cari</button>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<select class="form-select" name="brand">
+										<option value="all" {if $filter_brand=='all' }selected{/if}>Semua Brand</option>
+										<option value="bakery" {if $filter_brand=='bakery' }selected{/if}>Bakery
+										</option>
+										<option value="resto" {if $filter_brand=='resto' }selected{/if}>Resto</option>
+										<option value="kopitiam" {if $filter_brand=='kopitiam' }selected{/if}>Kopitiam
+										</option>
+									</select>
+								</div>
+
+								<div class="col-md-3">
+									<select class="form-select" name="status">
+										<option value="all" {if $filter_status=='all' }selected{/if}>Semua Status
+										</option>
+										<option value="active" {if $filter_status=='active' }selected{/if}>Aktif
+										</option>
+										<option value="inactive" {if $filter_status=='inactive' }selected{/if}>Non-aktif
+										</option>
+									</select>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					{assign var=filteredBundlingPromos value=[]}
+					{foreach from=$promos item=promo}
+					{if $promo.promo_type == 'bundling'}
+					{append var=filteredBundlingPromos value=$promo}
+					{/if}
+					{/foreach}
+
+					{if $filteredBundlingPromos|@count > 0}
+					<div class="table-responsive">
+						<table class="table align-middle promo-table">
+							<thead>
+								<tr>
+									<th class="text-center" width="60">No</th>
+									<th>Informasi Promo</th>
+									<th class="text-center">Brand</th>
+									<th class="text-center">Konfigurasi</th>
+									<th class="text-center">Periode</th>
+									<th class="text-center">Status</th>
+									<th class="text-center" width="120">Aksi</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$filteredBundlingPromos key=key item=promo name=bundlingpromolist}
+								<tr class="{if $promo.overall_status != 'active'}inactive-promo{/if}">
+									<td class="text-center fw-bold">{$key+1}</td>
+									<td>
+										<div class="promo-info">
+											<h6 class="mb-0 d-flex align-items-center">
+												{$promo.promo_name}
+												<span class="badge bg-indigo ms-2">Bundling</span>
+											</h6>
+											<div class="d-flex align-items-center mt-1">
+												<span class="promo-code me-2">{$promo.promo_code}</span>
+											</div>
+											{if !empty($promo.description)}
+											<div class="mt-1">
+												<small
+													class="text-muted promo-description">{$promo.description|truncate:60}</small>
+											</div>
+											{/if}
+
+											<!-- Detail Bundling -->
+											<div class="mt-2">
+												<span class="bundling-badge" data-bs-toggle="tooltip"
+													title="Promo bundling: beli produk A & produk B, gratis produk C">
+													<i class="fas fa-gift me-1"></i> Bundling
+													{if isset($promo.bundle_count) && $promo.bundle_count > 0}
+													<span class="badge bg-light text-dark">{$promo.bundle_count}
+														rule</span>
+													{/if}
+												</span>
+											</div>
+
+											<!-- Tampilkan badge khusus jika promo terbatas produk atau kategori tertentu -->
+											<div class="mt-2 d-flex flex-wrap gap-1">
+												{if $promo.has_product_specific}
+												<span class="specificity-badge product-specific"
+													data-bs-toggle="tooltip"
+													title="Hanya berlaku untuk {$promo.product_count} produk tertentu">
+													<i class="fas fa-box-open me-1"></i> {$promo.product_count} Produk
+												</span>
+												{/if}
+
+												{if $promo.has_category_specific}
+												<span class="specificity-badge category-specific"
+													data-bs-toggle="tooltip"
+													title="Hanya berlaku untuk {$promo.category_count} kategori tertentu">
+													<i class="fas fa-folder me-1"></i> {$promo.category_count} Kategori
+												</span>
+												{/if}
+											</div>
+										</div>
+									</td>
+									<td class="text-center">
+										<span class="brand-badge brand-{$promo.promo_brand}">
+											{strtoupper($promo.promo_brand)}
+										</span>
+									</td>
+									<td class="text-center">
+										<a href="{site_url('promo/MasterPromo/bundling/')}{$promo.promo_id}"
+											class="btn btn-sm btn-outline-primary">
+											<i class="fas fa-cogs me-1"></i> Konfigurasi Bundling
+										</a>
+										<div class="mt-2 small text-muted">
+											{if isset($promo.bundle_count) && $promo.bundle_count > 0}
+											{$promo.bundle_count} konfigurasi
+											{else}
+											Belum dikonfigurasi
+											{/if}
+										</div>
+									</td>
+									<td class="text-center">
+										<div class="period-info">
+											<div class="start-date mb-1 small">{$promo.formatted_start_date}</div>
+											<div class="period-separator"><i class="fas fa-arrow-down"></i></div>
+											<div class="end-date mt-1 small">{$promo.formatted_end_date}</div>
+											<span class="period-badge period-{$promo.date_status}">
+												{if $promo.date_status == 'upcoming'}
+												<i class="fas fa-hourglass-start"></i> Upcoming
+												{elseif $promo.date_status == 'active'}
+												<i class="fas fa-clock"></i> Berlangsung
+												{else}
+												<i class="fas fa-hourglass-end"></i> Berakhir
+												{/if}
+											</span>
+										</div>
+									</td>
+									<td class="text-center">
+										{if $promo.overall_status == 'active'}
+										<span class="status-badge status-active">
+											<i class="fas fa-check-circle me-1"></i> Aktif
+										</span>
+										{else}
+										<span class="status-badge status-inactive">
+											<i class="fas fa-times-circle me-1"></i> Non-aktif
+										</span>
+										<div class="status-reason mt-1">
+											<small>
+												{if $promo.promo_status != 'active'}
+												<span class="text-muted">Dinonaktifkan</span>
+												{elseif $promo.date_status != 'active'}
+												<span class="text-muted">{if $promo.date_status == 'upcoming'}Belum
+													dimulai{else}Sudah berakhir{/if}</span>
+												{/if}
+											</small>
+										</div>
+										{/if}
+									</td>
+									<td class="text-center">
+										<div class="action-buttons">
+											<a href="{site_url('promo/MasterPromo/edit/')}{$promo.promo_id}"
+												class="btn btn-sm btn-primary action-btn" data-bs-toggle="tooltip"
+												title="Edit">
+												<i class="fas fa-edit"></i>
+											</a>
+											<a href="{site_url('promo/MasterPromo/bundling/')}{$promo.promo_id}"
+												class="btn btn-sm btn-success action-btn" data-bs-toggle="tooltip"
+												title="Edit Bundling">
+												<i class="fas fa-gift"></i>
+											</a>
+											<a href="{site_url('promo/MasterPromo/usage/')}{$promo.promo_id}"
+												class="btn btn-sm btn-info action-btn" data-bs-toggle="tooltip"
+												title="History">
+												<i class="fas fa-history"></i>
+											</a>
+											<a href="javascript:void(0)"
+												onclick="confirmDelete('{site_url('promo/MasterPromo/delete/')}{$promo.promo_id}')"
+												class="btn btn-sm btn-danger action-btn" data-bs-toggle="tooltip"
+												title="Hapus">
+												<i class="fas fa-trash"></i>
+											</a>
+										</div>
+									</td>
+								</tr>
+								{/foreach}
+							</tbody>
+						</table>
+					</div>
+					{else}
+					<!-- Empty State for Bundling Promos -->
+					<div class="text-center py-5">
+						<div class="empty-state">
+							<i class="fas fa-gift fa-4x text-muted mb-4"></i>
+							<h4>Belum ada promo bundling</h4>
+							<p class="text-muted mb-4">Belum ada promo bundling yang ditambahkan</p>
+							<a href="{site_url('promo/MasterPromo/create')}" class="btn btn-primary">
+								<i class="fas fa-plus me-2"></i> Tambah Promo Bundling
+							</a>
+						</div>
+					</div>
+					{/if}
+				</div>
+
+				<!-- Tab Promo BOGO -->
+				<div class="tab-pane fade" id="bogo-promos" role="tabpanel" aria-labelledby="bogo-promos-tab">
+
+					<div class="card mb-4">
+						<div class="card-body">
+							<form action="{site_url('promo/MasterPromo/index')}" method="get" class="row g-3">
+								<input type="hidden" name="tab" value="bogo">
+								<input type="hidden" name="promo_type" value="bogo">
+
+								<div class="col-md-6">
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-search"></i></span>
+										<input type="text" class="form-control" name="search"
+											placeholder="Cari promo BOGO..." value="{$search}">
+										<button type="submit" class="btn btn-primary">Cari</button>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<select class="form-select" name="brand">
+										<option value="all" {if $filter_brand=='all' }selected{/if}>Semua Brand</option>
+										<option value="bakery" {if $filter_brand=='bakery' }selected{/if}>Bakery
+										</option>
+										<option value="resto" {if $filter_brand=='resto' }selected{/if}>Resto</option>
+										<option value="kopitiam" {if $filter_brand=='kopitiam' }selected{/if}>Kopitiam
+										</option>
+									</select>
+								</div>
+
+								<div class="col-md-3">
+									<select class="form-select" name="status">
+										<option value="all" {if $filter_status=='all' }selected{/if}>Semua Status
+										</option>
+										<option value="active" {if $filter_status=='active' }selected{/if}>Aktif
+										</option>
+										<option value="inactive" {if $filter_status=='inactive' }selected{/if}>Non-aktif
+										</option>
+									</select>
+								</div>
+							</form>
+						</div>
+					</div>
+					{assign var=filteredBogoPromos value=[]}
+					{foreach from=$promos item=promo}
+					{if $promo.promo_type == 'bogo'}
+					{append var=filteredBogoPromos value=$promo}
+					{/if}
+					{/foreach}
+
+					{if $filteredBogoPromos|@count > 0}
+					<div class="table-responsive">
+						<table class="table align-middle promo-table">
+							<thead>
+								<tr>
+									<th class="text-center" width="60">No</th>
+									<th>Informasi Promo</th>
+									<th class="text-center">Brand</th>
+									<th class="text-center">Konfigurasi</th>
+									<th class="text-center">Periode</th>
+									<th class="text-center">Status</th>
+									<th class="text-center" width="120">Aksi</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$filteredBogoPromos key=key item=promo name=bogopromolist}
+								<tr class="{if $promo.overall_status != 'active'}inactive-promo{/if}">
+									<td class="text-center fw-bold">{$key+1}</td>
+									<td>
+										<div class="promo-info">
+											<h6 class="mb-0 d-flex align-items-center">
+												{$promo.promo_name}
+												<span class="badge bg-pink ms-2">BOGO</span>
+											</h6>
+											<div class="d-flex align-items-center mt-1">
+												<span class="promo-code me-2">{$promo.promo_code}</span>
+											</div>
+											{if !empty($promo.description)}
+											<div class="mt-1">
+												<small
+													class="text-muted promo-description">{$promo.description|truncate:60}</small>
+											</div>
+											{/if}
+
+											<!-- Detail BOGO -->
+											<div class="mt-2">
+												<span class="bogo-badge" data-bs-toggle="tooltip"
+													title="Promo BOGO: beli X produk, gratis Y produk">
+													<i class="fas fa-tag me-1"></i> Bogo
+													{if isset($promo.bogo_count) && $promo.bogo_count > 0}
+													<span class="badge bg-light text-dark">{$promo.bogo_count}
+														rule</span>
+													{/if}
+												</span>
+											</div>
+
+											<!-- Tampilkan badge khusus jika promo terbatas produk atau kategori tertentu -->
+											<div class="mt-2 d-flex flex-wrap gap-1">
+												{if $promo.has_product_specific}
+												<span class="specificity-badge product-specific"
+													data-bs-toggle="tooltip"
+													title="Hanya berlaku untuk {$promo.product_count} produk tertentu">
+													<i class="fas fa-box-open me-1"></i> {$promo.product_count} Produk
+												</span>
+												{/if}
+
+												{if $promo.has_category_specific}
+												<span class="specificity-badge category-specific"
+													data-bs-toggle="tooltip"
+													title="Hanya berlaku untuk {$promo.category_count} kategori tertentu">
+													<i class="fas fa-folder me-1"></i> {$promo.category_count} Kategori
+												</span>
+												{/if}
+											</div>
+										</div>
+									</td>
+									<td class="text-center">
+										<span class="brand-badge brand-{$promo.promo_brand}">
+											{strtoupper($promo.promo_brand)}
+										</span>
+									</td>
+									<td class="text-center">
+										<a href="{site_url('promo/MasterPromo/bogo/')}{$promo.promo_id}"
+											class="btn btn-sm btn-outline-primary">
+											<i class="fas fa-cogs me-1"></i> Konfigurasi BOGO
+										</a>
+										<div class="mt-2 small text-muted">
+											{if isset($promo.bogo_count) && $promo.bogo_count > 0}
+											{$promo.bogo_count} konfigurasi
+											{else}
+											Belum dikonfigurasi
+											{/if}
+										</div>
+									</td>
+									<td class="text-center">
+										<div class="period-info">
+											<div class="start-date mb-1 small">{$promo.formatted_start_date}</div>
+											<div class="period-separator"><i class="fas fa-arrow-down"></i></div>
+											<div class="end-date mt-1 small">{$promo.formatted_end_date}</div>
+											<span class="period-badge period-{$promo.date_status}">
+												{if $promo.date_status == 'upcoming'}
+												<i class="fas fa-hourglass-start"></i> Upcoming
+												{elseif $promo.date_status == 'active'}
+												<i class="fas fa-clock"></i> Berlangsung
+												{else}
+												<i class="fas fa-hourglass-end"></i> Berakhir
+												{/if}
+											</span>
+										</div>
+									</td>
+									<td class="text-center">
+										{if $promo.overall_status == 'active'}
+										<span class="status-badge status-active">
+											<i class="fas fa-check-circle me-1"></i> Aktif
+										</span>
+										{else}
+										<span class="status-badge status-inactive">
+											<i class="fas fa-times-circle me-1"></i> Non-aktif
+										</span>
+										<div class="status-reason mt-1">
+											<small>
+												{if $promo.promo_status != 'active'}
+												<span class="text-muted">Dinonaktifkan</span>
+												{elseif $promo.date_status != 'active'}
+												<span class="text-muted">{if $promo.date_status == 'upcoming'}Belum
+													dimulai{else}Sudah berakhir{/if}</span>
+												{/if}
+											</small>
+										</div>
+										{/if}
+									</td>
+									<td class="text-center">
+										<div class="action-buttons">
+											<a href="{site_url('promo/MasterPromo/edit/')}{$promo.promo_id}"
+												class="btn btn-sm btn-primary action-btn" data-bs-toggle="tooltip"
+												title="Edit">
+												<i class="fas fa-edit"></i>
+											</a>
+											<a href="{site_url('promo/MasterPromo/bogo/')}{$promo.promo_id}"
+												class="btn btn-sm btn-success action-btn" data-bs-toggle="tooltip"
+												title="Edit BOGO">
+												<i class="fas fa-tag"></i>
+											</a>
+											<a href="{site_url('promo/MasterPromo/usage/')}{$promo.promo_id}"
+												class="btn btn-sm btn-info action-btn" data-bs-toggle="tooltip"
+												title="History">
+												<i class="fas fa-history"></i>
+											</a>
+											<a href="javascript:void(0)"
+												onclick="confirmDelete('{site_url('promo/MasterPromo/delete/')}{$promo.promo_id}')"
+												class="btn btn-sm btn-danger action-btn" data-bs-toggle="tooltip"
+												title="Hapus">
+												<i class="fas fa-trash"></i>
+											</a>
+										</div>
+									</td>
+								</tr>
+								{/foreach}
+							</tbody>
+						</table>
+					</div>
+					{else}
+					<!-- Empty State for BOGO Promos -->
+					<div class="text-center py-5">
+						<div class="empty-state">
+							<i class="fas fa-tag fa-4x text-muted mb-4"></i>
+							<h4>Belum ada promo BOGO</h4>
+							<p class="text-muted mb-4">Belum ada promo BOGO (Buy One Get One) yang ditambahkan</p>
+							<a href="{site_url('promo/MasterPromo/create')}" class="btn btn-primary">
+								<i class="fas fa-plus me-2"></i> Tambah Promo BOGO
+							</a>
+						</div>
+					</div>
+					{/if}
+				</div>
+			</div>
+		</div>
+
+		<!-- Filter Modal -->
+		<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-lg">
+				<div class="modal-content">
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="filterModalLabel">Filter Promo</h5>
+						<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form action="{site_url('promo/MasterPromo/index')}" method="get" id="filterForm">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label for="brand" class="form-label">Brand</label>
+										<select class="form-select" id="brand" name="brand">
+											<option value="all" {if $filter_brand=='all' }selected{/if}>Semua Brand
+											</option>
+											<option value="bakery" {if $filter_brand=='bakery' }selected{/if}>Bakery
+											</option>
+											<option value="resto" {if $filter_brand=='resto' }selected{/if}>Resto
+											</option>
+											<option value="kopitiam" {if $filter_brand=='kopitiam' }selected{/if}>
+												Kopitiam
+											</option>
+										</select>
+									</div>
+
+									<div class="mb-3">
+										<label for="status" class="form-label">Status</label>
+										<select class="form-select" id="status" name="status">
+											<option value="all" {if $filter_status=='all' }selected{/if}>Semua Status
+											</option>
+											<option value="active" {if $filter_status=='active' }selected{/if}>Aktif
+											</option>
+											<option value="inactive" {if $filter_status=='inactive' }selected{/if}>
+												Non-aktif
+											</option>
+										</select>
+									</div>
+
+									<div class="mb-3">
+										<label for="promo_type" class="form-label">Tipe Promo</label>
+										<select class="form-select" id="promo_type" name="promo_type">
+											<option value="all" {if $filter_promo_type=='all' }selected{/if}>Semua Tipe
+											</option>
+											<option value="discount" {if $filter_promo_type=='discount' }selected{/if}>
+												Diskon (Persentase/Nominal)</option>
+											<option value="bundling" {if $filter_promo_type=='bundling' }selected{/if}>
+												Bundling</option>
+											<option value="bogo" {if $filter_promo_type=='bogo' }selected{/if}>BOGO
+											</option>
+										</select>
+									</div>
+
+									<div class="mb-3">
+										<label for="search" class="form-label">Pencarian</label>
+										<div class="input-group">
+											<span class="input-group-text"><i class="fas fa-search"></i></span>
+											<input type="text" class="form-control" id="search" name="search"
+												placeholder="Cari kode atau nama promo..." value="{$search}">
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-6">
+									<div class="mb-3">
+										<label for="product_id" class="form-label">Filter Produk</label>
+										<select class="form-select select2-filter-product" id="product_id"
+											name="product_id">
+											<option value="">Semua Produk</option>
+											<optgroup label="Bakery">
+												{foreach from=$bakery_products item=product}
+												<option value="{$product.product_id}" {if
+													$filter_product_id==$product.product_id}selected{/if}>
+													{$product.product_name}
+												</option>
+												{/foreach}
+											</optgroup>
+											<optgroup label="Resto">
+												{foreach from=$resto_products item=product}
+												<option value="{$product.product_id}" {if
+													$filter_product_id==$product.product_id}selected{/if}>
+													{$product.product_name}
+												</option>
+												{/foreach}
+											</optgroup>
+											<optgroup label="Kopitiam">
+												{foreach from=$kopitiam_products item=product}
+												<option value="{$product.product_id}" {if
+													$filter_product_id==$product.product_id}selected{/if}>
+													{$product.product_name}
+												</option>
+												{/foreach}
+											</optgroup>
+										</select>
+										<small class="text-muted">Filter promo berdasarkan produk tertentu</small>
+									</div>
+
+									<div class="mb-3">
+										<label for="voucher_type" class="form-label">Tipe Voucher</label>
+										<select class="form-select" id="voucher_type" name="voucher_type">
+											<option value="all" {if $filter_voucher_type=='all' }selected{/if}>Semua
+												Voucher</option>
+											<option value="mrp" {if $filter_voucher_type=='mrp' }selected{/if}>Voucher
+												MRP</option>
+											<option value="internal" {if $filter_voucher_type=='internal'
+												}selected{/if}>Voucher Internal</option>
+										</select>
+									</div>
+
+									<div class="mb-3">
+										<label for="category_id" class="form-label">Filter Kategori</label>
+										<select class="form-select select2-filter-category" id="category_id"
+											name="category_id">
+											<option value="">Semua Kategori</option>
+											<optgroup label="Bakery">
+												{foreach from=$bakery_categories item=category}
+												<option value="{$category.cat_id}" {if
+													$filter_category_id==$category.cat_id}selected{/if}>
+													{$category.cat_name}
+												</option>
+												{/foreach}
+											</optgroup>
+											<optgroup label="Resto">
+												{foreach from=$resto_categories item=category}
+												<option value="{$category.cat_id}" {if
+													$filter_category_id==$category.cat_id}selected{/if}>
+													{$category.cat_name}
+												</option>
+												{/foreach}
+											</optgroup>
+											<optgroup label="Kopitiam">
+												{foreach from=$kopitiam_categories item=category}
+												<option value="{$category.cat_id}" {if
+													$filter_category_id==$category.cat_id}selected{/if}>
+													{$category.cat_name}
+												</option>
+												{/foreach}
+											</optgroup>
+										</select>
+										<small class="text-muted">Filter promo berdasarkan kategori tertentu</small>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<a href="{site_url('promo/MasterPromo/index')}" class="btn btn-secondary">
+							<i class="fas fa-redo me-1"></i> Reset Filter
+						</a>
+						<button type="button" class="btn btn-primary"
+							onclick="document.getElementById('filterForm').submit();">
+							<i class="fas fa-filter me-1"></i> Terapkan Filter
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Delete Confirmation Modal -->
+		<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-danger text-white">
+						<h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus</h5>
+						<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body text-center py-4">
+						<i class="fas fa-exclamation-triangle text-danger fa-4x mb-3"></i>
+						<h4>Apakah Anda yakin?</h4>
+						<p class="mb-0">Menghapus promo akan menghilangkan semua data terkait dan tidak dapat
+							dikembalikan.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+							<i class="fas fa-times me-1"></i> Batal
+						</button>
+						<a href="#" id="confirmDeleteButton" class="btn btn-danger">
+							<i class="fas fa-trash me-1"></i> Hapus
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			var site_url = '{site_url()}';
+			var auth_token = '{base64_encode("api:0a6a2c9d1b10d26ef70f773c68c0f58e5eb85a6624015f12d70c635a23376c1f")}';
+		</script>
+		<script src="{$BASEURL}resource/assets-frontend/js/Promo/list.js"></script>

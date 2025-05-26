@@ -1,0 +1,601 @@
+<div class="row">
+	<div class="col-md-4 stretch-card grid-margin">
+		<div class="card bg-gradient-danger card-img-holder text-white">
+			<div class="card-body">
+				<img src="{$BASEURL}resource/assets/images/dashboard/circle.svg" class="card-img-absolute"
+					alt="circle-image" />
+				<h4 class="font-weight-normal mb-3">Pengunjung Hari Ini <i
+						class="mdi mdi-account-multiple mdi-24px float-right"></i></h4>
+				<h2 class="mb-5">{$visitor.today|default:0}</h2>
+				<h6 class="card-text">
+					Peningkatan
+					{assign var="today_val" value=$visitor.today|default:0}
+					{assign var="weekly_val" value=$visitor.weekly|default:0}
+					{if $today_val > 0 && $weekly_val > 0}
+					{assign var="weekly_avg" value=$weekly_val/7}
+					{if $weekly_avg > 0}
+					{math equation="(x/y)*100" x=$today_val y=$weekly_avg format="%.1f"}%
+					{else}
+					0%
+					{/if}
+					{else}
+					0%
+					{/if}
+					dari rata-rata
+				</h6>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4 stretch-card grid-margin">
+		<div class="card bg-gradient-info card-img-holder text-white">
+			<div class="card-body">
+				<img src="{$BASEURL}resource/assets/images/dashboard/circle.svg" class="card-img-absolute"
+					alt="circle-image" />
+				<h4 class="font-weight-normal mb-3">Pengunjung Minggu Ini <i
+						class="mdi mdi-chart-line mdi-24px float-right"></i></h4>
+				<h2 class="mb-5">{$visitor.weekly|default:0}</h2>
+				<h6 class="card-text">
+					Rata-rata
+					{assign var="weekly_val" value=$visitor.weekly|default:0}
+					{if $weekly_val > 0}
+					{math equation="x/7" x=$weekly_val format="%.1f"}
+					{else}
+					0
+					{/if}
+					pengunjung per hari
+				</h6>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4 stretch-card grid-margin">
+		<div class="card bg-gradient-success card-img-holder text-white">
+			<div class="card-body">
+				<img src="{$BASEURL}resource/assets/images/dashboard/circle.svg" class="card-img-absolute"
+					alt="circle-image" />
+				<h4 class="font-weight-normal mb-3">Pengunjung Bulan Ini <i
+						class="mdi mdi-calendar-multiple mdi-24px float-right"></i></h4>
+				<h2 class="mb-5">{$visitor.monthly|default:0}</h2>
+				<h6 class="card-text">Total akumulasi pengunjung bulan ini</h6>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<div class="clearfix">
+					<h4 class="card-title float-left">Total Produk</h4>
+					<div class="float-right">
+						<button type="button" class="btn btn-outline-info btn-sm">
+							<i class="mdi mdi-refresh"></i> Refresh Data
+						</button>
+					</div>
+				</div>
+
+				<div class="row mt-3">
+					<div class="col-md-3 stretch-card grid-margin">
+						<div class="card bg-gradient-success card-img-holder text-white">
+							<div class="card-body">
+								<img src="{$BASEURL}resource/assets/images/dashboard/circle.svg"
+									class="card-img-absolute" alt="circle-image" />
+								<h4 class="font-weight-normal mb-3">Baru Ditambahkan <i
+										class="mdi mdi-new-box mdi-24px float-right"></i></h4>
+								<h2 class="mb-5">{$product.new_added|default:0}</h2>
+								<h6 class="card-text">dalam 10 hari terakhir</h6>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 stretch-card grid-margin">
+						<div class="card bg-gradient-primary card-img-holder text-white">
+							<div class="card-body">
+								<img src="{$BASEURL}resource/assets/images/dashboard/circle.svg"
+									class="card-img-absolute" alt="circle-image" />
+								<h4 class="font-weight-normal mb-3">Prelaunch <i
+										class="mdi mdi-rocket mdi-24px float-right"></i></h4>
+								<h2 class="mb-5">{$product.prelaunch|default:0}</h2>
+								<h6 class="card-text">produk dalam fase peluncuran</h6>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 stretch-card grid-margin">
+						<div class="card bg-gradient-info card-img-holder text-white">
+							<div class="card-body">
+								<img src="{$BASEURL}resource/assets/images/dashboard/circle.svg"
+									class="card-img-absolute" alt="circle-image" />
+								<h4 class="font-weight-normal mb-3">New Arrival <i
+										class="mdi mdi-tag-multiple mdi-24px float-right"></i></h4>
+								<h2 class="mb-5">{$product.arrival|default:0}</h2>
+								<h6 class="card-text">produk baru tersedia</h6>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 stretch-card grid-margin">
+						<div class="card bg-gradient-dark card-img-holder text-white">
+							<div class="card-body">
+								<img src="{$BASEURL}resource/assets/images/dashboard/circle.svg"
+									class="card-img-absolute" alt="circle-image" />
+								<h4 class="font-weight-normal mb-3">Total Aktif <i
+										class="mdi mdi-check-all mdi-24px float-right"></i></h4>
+								<h2 class="mb-5">{$product.aktif|default:0}</h2>
+								<h6 class="card-text">produk tersedia di sistem</h6>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-4 stretch-card grid-margin">
+						<div class="card bg-gradient-warning card-img-holder text-white">
+							<div class="card-body">
+								<img src="{$BASEURL}resource/assets/images/dashboard/circle.svg"
+									class="card-img-absolute" alt="circle-image" />
+								<h4 class="font-weight-normal mb-3">Produk Bakery <i
+										class="mdi mdi-food-croissant mdi-24px float-right"></i></h4>
+								<h2 class="mb-5">{$product.bakery|default:0}</h2>
+								<h6 class="card-text">
+									{assign var="bakery_val" value=$product.bakery|default:0}
+									{assign var="resto_val" value=$product.resto|default:0}
+									{assign var="kopitiam_val" value=$product.kopitiam|default:0}
+									{assign var="total_products" value=$bakery_val+$resto_val+$kopitiam_val}
+									{if $total_products > 0}
+									{math equation="(x/y)*100" x=$bakery_val y=$total_products format="%.1f"}%
+									{else}
+									0%
+									{/if}
+									dari total produk
+								</h6>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 stretch-card grid-margin">
+						<div class="card bg-gradient-info card-img-holder text-white">
+							<div class="card-body">
+								<img src="{$BASEURL}resource/assets/images/dashboard/circle.svg"
+									class="card-img-absolute" alt="circle-image" />
+								<h4 class="font-weight-normal mb-3">Produk Resto <i
+										class="mdi mdi-food-fork-drink mdi-24px float-right"></i></h4>
+								<h2 class="mb-5">{$product.resto|default:0}</h2>
+								<h6 class="card-text">
+									{assign var="bakery_val" value=$product.bakery|default:0}
+									{assign var="resto_val" value=$product.resto|default:0}
+									{assign var="kopitiam_val" value=$product.kopitiam|default:0}
+									{assign var="total_products" value=$bakery_val+$resto_val+$kopitiam_val}
+									{if $total_products > 0}
+									{math equation="(x/y)*100" x=$resto_val y=$total_products format="%.1f"}%
+									{else}
+									0%
+									{/if}
+									dari total produk
+								</h6>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 stretch-card grid-margin">
+						<div class="card bg-gradient-danger card-img-holder text-white">
+							<div class="card-body">
+								<img src="{$BASEURL}resource/assets/images/dashboard/circle.svg"
+									class="card-img-absolute" alt="circle-image" />
+								<h4 class="font-weight-normal mb-3">Produk Kopitiam <i
+										class="mdi mdi-coffee mdi-24px float-right"></i></h4>
+								<h2 class="mb-5">{$product.kopitiam|default:0}</h2>
+								<h6 class="card-text">
+									{assign var="bakery_val" value=$product.bakery|default:0}
+									{assign var="resto_val" value=$product.resto|default:0}
+									{assign var="kopitiam_val" value=$product.kopitiam|default:0}
+									{assign var="total_products" value=$bakery_val+$resto_val+$kopitiam_val}
+									{if $total_products > 0}
+									{math equation="(x/y)*100" x=$kopitiam_val y=$total_products format="%.1f"}%
+									{else}
+									0%
+									{/if}
+									dari total produk
+								</h6>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row mt-3">
+					<div class="col-md-12">
+						<div class="card bg-gradient-light">
+							<div class="card-body p-4">
+								<div class="d-flex justify-content-between">
+									<div>
+										<h4 class="card-title mb-0">Ringkasan Produk</h4>
+										<p class="text-muted">Informasi statistik produk aktif</p>
+									</div>
+									<div>
+										<div class="badge badge-pill badge-primary">
+											{$product_summary.total_products|default:0}
+											Total Produk</div>
+									</div>
+								</div>
+
+								<div class="row mt-4">
+									<div class="col-md-3">
+										<div class="d-flex flex-column">
+											<h6 class="mb-1 text-muted">Total Kategori</h6>
+											<h4>{$product_summary.total_categories|default:0}</h4>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="d-flex flex-column">
+											<h6 class="mb-1 text-muted">Harga Terendah</h6>
+											<h4>Rp {$product_summary.min_price|default:0|number_format:0:",":"."}</h4>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="d-flex flex-column">
+											<h6 class="mb-1 text-muted">Harga Tertinggi</h6>
+											<h4>Rp {$product_summary.max_price|default:0|number_format:0:",":"."}</h4>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="d-flex flex-column">
+											<h6 class="mb-1 text-muted">Harga Rata-Rata</h6>
+											<h4>Rp {$product_summary.avg_price|default:0|number_format:0:",":"."}</h4>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-6 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<h4 class="card-title">Pesanan Terbaru</h4>
+				<p class="card-description">
+					5 pesanan terbaru dari outlet
+				</p>
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Pelanggan</th>
+								<th>Outlet</th>
+								<th>Total</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							{if !empty($recent_orders)}
+							{foreach from=$recent_orders item=order}
+							<tr>
+								<td>#{$order.id|default:'-'}</td>
+								<td>{$order.name|default:'-'}</td>
+								<td>{$order.outlet_name|default:'-'}</td>
+								<td>Rp {$order.total_amount|default:0|number_format:0:",":"."}</td>
+								<td>
+									{assign var="status_val" value=$order.status|default:0}
+									{if $status_val == 0}
+									<label class="badge badge-warning">Reserved</label>
+									{elseif $status_val == 1}
+									<label class="badge badge-info">Ordered</label>
+									{elseif $status_val == 2}
+									<label class="badge badge-primary">Processing</label>
+									{elseif $status_val == 3}
+									<label class="badge badge-success">Served</label>
+									{elseif $status_val == 4}
+									<label class="badge badge-dark">Completed</label>
+									{elseif $status_val == 5}
+									<label class="badge badge-danger">Cancelled</label>
+									{/if}
+								</td>
+							</tr>
+							{/foreach}
+							{else}
+							<tr>
+								<td colspan="5" class="text-center">Tidak ada pesanan terbaru</td>
+							</tr>
+							{/if}
+						</tbody>
+					</table>
+				</div>
+				<div class="d-flex justify-content-end mt-3">
+					<a href="{site_url('orders')}" class="btn btn-outline-primary btn-sm">Lihat Semua <i
+							class="mdi mdi-arrow-right ml-1"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-6 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<h4 class="card-title">Promo Aktif</h4>
+				<p class="card-description">
+					5 promo yang sedang berjalan
+				</p>
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Kode</th>
+								<th>Nama</th>
+								<th>Brand</th>
+								<th>Nilai</th>
+								<th>Berakhir</th>
+							</tr>
+						</thead>
+						<tbody>
+							{if !empty($active_promos)}
+							{foreach from=$active_promos item=promo}
+							<tr>
+								<td><span class="text-primary font-weight-bold">{$promo.promo_code|default:'-'}</span>
+								</td>
+								<td>{$promo.promo_name|default:'-'}</td>
+								<td>
+									{assign var="brand_val" value=$promo.promo_brand|default:''}
+									{if $brand_val == 'bakery'}
+									<label class="badge badge-warning">Bakery</label>
+									{elseif $brand_val == 'resto'}
+									<label class="badge badge-info">Resto</label>
+									{elseif $brand_val == 'kopitiam'}
+									<label class="badge badge-danger">Kopitiam</label>
+									{else}
+									<label class="badge badge-secondary">-</label>
+									{/if}
+								</td>
+								<td>
+									{assign var="type_val" value=$promo.promo_type|default:''}
+									{assign var="value_val" value=$promo.promo_value|default:0}
+									{if $type_val == 'percentage'}
+									{$value_val}%
+									{elseif $type_val == 'nominal'}
+									Rp {$value_val|number_format:0:",":"."}
+									{elseif $type_val == 'bundling'}
+									Bundling
+									{elseif $type_val == 'bogo'}
+									Buy 1 Get 1
+									{else}
+									-
+									{/if}
+								</td>
+								<td>{$promo.end_date|default:'-'|date_format:"%d/%m/%Y"}</td>
+							</tr>
+							{/foreach}
+							{else}
+							<tr>
+								<td colspan="5" class="text-center">Tidak ada promo aktif</td>
+							</tr>
+							{/if}
+						</tbody>
+					</table>
+				</div>
+				<div class="d-flex justify-content-end mt-3">
+					<a href="{site_url('promos')}" class="btn btn-outline-primary btn-sm">Lihat Semua <i
+							class="mdi mdi-arrow-right ml-1"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<h4 class="card-title">Notifikasi Terbaru</h4>
+				<p class="card-description">
+					Pemberitahuan pesanan dan panggilan pelayan
+				</p>
+				<div class="list-wrapper">
+					<ul class="d-flex flex-column-reverse todo-list todo-list-custom">
+						{if !empty($notifications)}
+						{foreach from=$notifications item=notif}
+						<li>
+							<div class="d-flex align-items-center">
+								<div class="form-check">
+									{assign var="notif_type" value=$notif.type|default:''}
+									{if $notif_type == 'order'}
+									<i class="mdi mdi-food-fork-drink text-primary mr-3 font-20"></i>
+									{else}
+									<i class="mdi mdi-bell-ring text-warning mr-3 font-20"></i>
+									{/if}
+								</div>
+								<div class="task-title">
+									<p class="mb-0">{$notif.message|default:'-'}</p>
+									<p class="text-muted small mb-0">
+										{$notif.created_at|default:'-'|date_format:"%d/%m/%Y %H:%M"}
+									</p>
+								</div>
+								<div class="ml-auto">
+									<button type="button" class="btn btn-icon btn-rounded btn-outline-primary">
+										<i class="mdi mdi-check"></i>
+									</button>
+								</div>
+							</div>
+						</li>
+						{/foreach}
+						{else}
+						<li class="text-center py-4">
+							<div>Tidak ada notifikasi terbaru</div>
+						</li>
+						{/if}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(document).ready(function () {
+		// Ambil data dari Smarty template dengan validasi
+		var visitorToday = { $visitor.today |default: 0 };
+		var visitorWeekly = { $visitor.weekly |default: 0 };
+		var productBakery = { $product.bakery |default: 0 };
+		var productResto = { $product.resto |default: 0 };
+		var productKopitiam = { $product.kopitiam |default: 0 };
+
+		// Pastikan semua nilai adalah numerik
+		visitorToday = parseInt(visitorToday) || 0;
+		visitorWeekly = parseInt(visitorWeekly) || 0;
+		productBakery = parseInt(productBakery) || 0;
+		productResto = parseInt(productResto) || 0;
+		productKopitiam = parseInt(productKopitiam) || 0;
+
+		// Setup visitor chart
+		var ctx = document.getElementById('visitor-chart');
+		if (ctx) {
+			ctx = ctx.getContext('2d');
+			var gradientStrokeViolet = ctx.createLinearGradient(0, 0, 0, 181);
+			gradientStrokeViolet.addColorStop(0, 'rgba(218, 140, 255, 1)');
+			gradientStrokeViolet.addColorStop(1, 'rgba(154, 85, 255, 1)');
+
+			// Generate dates untuk 7 hari terakhir
+			var lastWeekDates = [];
+			var today = new Date();
+			for (var i = 6; i >= 0; i--) {
+				var d = new Date(today);
+				d.setDate(d.getDate() - i);
+				lastWeekDates.push(d.getDate() + '/' + (d.getMonth() + 1));
+			}
+
+			var visitorChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: lastWeekDates,
+					datasets: [{
+						label: 'Jumlah Pengunjung',
+						data: [45, 38, 62, 78, 56, 70, visitorToday],
+						backgroundColor: 'rgba(154, 85, 255, 0.2)',
+						borderColor: gradientStrokeViolet,
+						borderWidth: 3,
+						pointBackgroundColor: gradientStrokeViolet,
+						pointBorderColor: '#fff',
+						pointBorderWidth: 2,
+						pointRadius: 4,
+						fill: true
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					legend: {
+						display: false,
+					},
+					tooltips: {
+						mode: 'index',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							gridLines: {
+								display: false,
+								drawBorder: false,
+							},
+							ticks: {
+								fontColor: "#9c9fa6",
+							}
+						}],
+						yAxes: [{
+							ticks: {
+								beginAtZero: true,
+								fontColor: "#9c9fa6",
+								stepSize: 20
+							},
+							gridLines: {
+								color: "rgba(235,237,242,1)",
+								zeroLineColor: "rgba(235,237,242,1)",
+								drawBorder: false,
+							}
+						}]
+					}
+				}
+			});
+		}
+
+		// Setup product distribution chart
+		var ctxDonut = document.getElementById('product-distribution-chart');
+		if (ctxDonut) {
+			ctxDonut = ctxDonut.getContext('2d');
+
+			var gradientBakery = ctxDonut.createLinearGradient(0, 0, 0, 181);
+			gradientBakery.addColorStop(0, 'rgba(255, 191, 150, 1)');
+			gradientBakery.addColorStop(1, 'rgba(254, 112, 150, 1)');
+
+			var gradientResto = ctxDonut.createLinearGradient(0, 0, 0, 50);
+			gradientResto.addColorStop(0, 'rgba(54, 215, 232, 1)');
+			gradientResto.addColorStop(1, 'rgba(177, 148, 250, 1)');
+
+			var gradientKopitiam = ctxDonut.createLinearGradient(0, 0, 0, 300);
+			gradientKopitiam.addColorStop(0, 'rgba(6, 185, 157, 1)');
+			gradientKopitiam.addColorStop(1, 'rgba(132, 217, 210, 1)');
+
+			var productChart = new Chart(ctxDonut, {
+				type: 'doughnut',
+				data: {
+					datasets: [{
+						data: [productBakery, productResto, productKopitiam],
+						backgroundColor: [
+							gradientBakery,
+							gradientResto,
+							gradientKopitiam
+						],
+						borderColor: [
+							gradientBakery,
+							gradientResto,
+							gradientKopitiam
+						],
+					}],
+					labels: [
+						'Bakery',
+						'Resto',
+						'Kopitiam'
+					]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					cutoutPercentage: 70,
+					legend: {
+						display: false
+					},
+					animation: {
+						animateScale: true,
+						animateRotate: true
+					}
+				}
+			});
+
+			// Generate chart legend dengan validasi
+			var totalProducts = productBakery + productResto + productKopitiam;
+			var legendMarkup = '<ul class="legend-list">';
+			var legendColors = [
+				'linear-gradient(to right, rgba(255, 191, 150, 1), rgba(254, 112, 150, 1))',
+				'linear-gradient(to right, rgba(54, 215, 232, 1), rgba(177, 148, 250, 1))',
+				'linear-gradient(to right, rgba(6, 185, 157, 1), rgba(132, 217, 210, 1))'
+			];
+			var productData = [productBakery, productResto, productKopitiam];
+
+			for (var i = 0; i < productChart.data.labels.length; i++) {
+				var percentage = totalProducts > 0 ? ((productData[i] / totalProducts) * 100).toFixed(1) : '0.0';
+				legendMarkup += '<li class="mb-3">' +
+					'<span class="legend-dots" style="background:' + legendColors[i] + '"></span>' +
+					productChart.data.labels[i] + ': ' + percentage + '%' +
+					'</li>';
+			}
+			legendMarkup += '</ul>';
+
+			var legendElement = document.getElementById('product-distribution-legend');
+			if (legendElement) {
+				legendElement.innerHTML = legendMarkup;
+			}
+		}
+	});
+</script>

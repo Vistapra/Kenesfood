@@ -1,0 +1,847 @@
+<link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/Kenesfood.css">
+<!-- Session Management Sections -->
+<div class="container py-4" id="session-page">
+	<!-- Location Verification -->
+	<div id="location-verification" class="location-alert" hidden>
+		<div class="d-flex align-items-center">
+			<i class="bi bi-geo-alt location-icon"></i>
+			<div>
+				<h5 class="mb-1">Verifikasi Lokasi</h5>
+				<p class="mb-0" id="location-status">Mohon izinkan akses lokasi</p>
+				<div class="progress mt-2" style="height: 3px;" id="location-progress" hidden>
+					<div class="progress-bar progress-bar-striped progress-bar-animated"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Session Creation Form -->
+	<div class="modern-card" id="session-creation" {if isset($session) && $session}hidden{/if}>
+		<div class="card-header bg-light">
+			<h5 class="mb-0">Mulai Pesanan</h5>
+		</div>
+		<div class="card-body">
+			<form id="session-form" class="needs-validation" novalidate>
+				<div class="mb-3">
+					<label class="form-label">Nama Pelanggan</label>
+					<input type="text" class="form-control" id="customer-name" minlength="3" maxlength="50" required
+						placeholder="Masukkan nama Anda">
+					<div class="invalid-feedback">
+						Nama minimal 3 karakter dan maksimal 50 karakter
+					</div>
+				</div>
+				<div class="mb-3" hidden>
+					<label class="form-label">Passcode</label>
+					<input type="password" class="form-control" id="passcode" minlength="4" maxlength="10"
+						placeholder="Masukkan passcode">
+					<div class="invalid-feedback">
+						Passcode minimal 4 karakter dan maksimal 10 karakter
+					</div>
+				</div>
+				<button type="submit" class="btn btn-primary w-100">
+					<i class="bi bi-clock me-2"></i>Mulai Pesanan
+				</button>
+			</form>
+		</div>
+	</div>
+
+	<!-- Outlet Information -->
+	<div class="modern-card" id="outlet-info-section">
+		<div class="card-header bg-light d-flex justify-content-between align-items-center">
+			<h5 class="mb-0">Informasi Outlet</h5>
+			<span class="status-badge" id="outlet-status">
+				{if isset($outlet.outlet_status) && $outlet.outlet_status == '0'}Buka{else}Tutup{/if}
+			</span>
+		</div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col-md-6">
+					<p class="mb-2 fs-5 fw-bold" id="outlet-name">
+						{if isset($outlet.outlet_name)}{$outlet.outlet_name}{else}Outlet Tidak Tersedia{/if}
+					</p>
+					<p class="text-muted" id="outlet-address">
+						{if isset($outlet.outlet_address)}{$outlet.outlet_address}{else}Alamat Tidak Tersedia{/if}
+					</p>
+				</div>
+				<div class="col-md-6">
+					<div class="operating-hours">
+						<div class="d-flex justify-content-between mb-2">
+							<span>Jam Buka:</span>
+							<span class="fw-bold" id="outlet-open">
+								{if isset($outlet.hour_open)}{$outlet.hour_open}{else}--:--{/if}
+							</span>
+						</div>
+						<div class="d-flex justify-content-between">
+							<span>Jam Tutup:</span>
+							<span class="fw-bold" id="outlet-close">
+								{if isset($outlet.hour_close)}{$outlet.hour_close}{else}--:--{/if}
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Resume Session -->
+	<div class="modern-card" id="resume-session" hidden>
+		<div class="card-header bg-light">
+			<h5 class="mb-0">Lanjutkan Sesi</h5>
+		</div>
+		<div class="card-body">
+			<div class="alert alert-info mb-3">
+				<i class="bi bi-info-circle me-2"></i>
+				Meja ini memiliki sesi yang masih aktif
+			</div>
+			<form id="resume-form">
+				<div class="mb-3">
+					<label class="form-label">Masukkan Passcode</label>
+					<input type="password" class="form-control" id="resume-passcode" required minlength="4"
+						maxlength="10" placeholder="Masukkan passcode">
+				</div>
+				<button type="submit" class="btn btn-primary w-100">
+					<i class="bi bi-arrow-clockwise me-2"></i>Lanjutkan Sesi
+				</button>
+			</form>
+		</div>
+	</div>
+
+	<!-- Active Session Display -->
+	{if isset($session) && $session && $session.status == $smarty.const.STATUS_RESERVED}
+	<div class="modern-card" id="active-session">
+		<div class="timer-display">
+			<div class="row align-items-center">
+				<div class="col">
+					<span class="fs-4" id="session-timer">00:00</span>
+				</div>
+			</div>
+		</div>
+		<div class="p-4">
+			<div class="row mb-4">
+				<div class="col-md-6">
+					<p class="mb-1">
+						Nama Pelanggan:
+						<strong id="active-customer">
+							{if isset($session.name)}{$session.name}{else}Nama Tidak Tersedia{/if}
+						</strong>
+					</p>
+					<p class="mb-0">
+						Nomor Meja:
+						<strong id="active-table">
+							{if isset($table_id)}{$table_id}{else}--{/if}
+						</strong>
+					</p>
+				</div>
+				<div class="col-md-6 text-md-end">
+					<p class="mb-1">
+						Status:
+						<span class="badge bg-info" id="session-status">
+							{if isset($session.status)}
+							{if $session.status == $smarty.const.STATUS_RESERVED}Dipesan{else}Status Tidak Dikenal{/if}
+							{else}
+							Status Tidak Tersedia
+							{/if}
+						</span>
+					</p>
+					<p class="mb-0">
+						Mulai:
+						<span id="session-start">
+							{if isset($session.created_at)}{$session.created_at}{else}--{/if}
+						</span>
+					</p>
+				</div>
+			</div>
+
+			{* Cart Summary Section *}
+			{if isset($cart_items) && is_array($cart_items) && count($cart_items) > 0}
+			<div class="cart-summary mb-4">
+				<h6 class="mb-3">Ringkasan Pesanan</h6>
+				<div class="table-responsive">
+					<table class="table table-sm">
+						<thead>
+							<tr>
+								<th>Item</th>
+								<th class="text-center">Qty</th>
+								<th class="text-end">Subtotal</th>
+							</tr>
+						</thead>
+						<tbody>
+							{foreach from=$cart_items item=item}
+							<tr>
+								<td>
+									{if isset($item.product_name)}
+									{$item.product_name}
+									{else}
+									Item Tidak Dikenal
+									{/if}
+								</td>
+								<td class="text-center">
+									{if isset($item.quantity)}
+									{$item.quantity}x
+									{else}
+									0x
+									{/if}
+								</td>
+								<td class="text-end">
+									{if isset($item.subtotal)}
+									Rp {$item.subtotal|number_format:0:',':'.'}
+									{else}
+									Rp 0
+									{/if}
+								</td>
+							</tr>
+							{if isset($item.notes) && !empty($item.notes)}
+							<tr>
+								<td colspan="3" class="text-muted small">
+									<i class="bi bi-pencil-square me-1"></i> {$item.notes}
+								</td>
+							</tr>
+							{/if}
+							{/foreach}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th>Total</th>
+								<th class="text-center">
+									{if isset($total_items)}{$total_items}{else}0{/if} items
+								</th>
+								<th class="text-end">
+									Rp {if isset($total_amount)}{$total_amount|number_format:0:',':'.'}{else}0{/if}
+								</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+			{/if}
+		</div>
+	</div>
+	{/if}
+</div>
+
+
+<section class="explore-section section-padding" id="order-page" {if !isset($session) || !$session}hidden{/if}>
+	<div class="modal fade" id="cart-modal" tabindex="-1">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<!-- Enhanced Header -->
+				<div class="modal-header bg-gradient-primary border-0">
+					<h5 class="modal-title text-white d-flex align-items-center">
+						<i class="bi bi-cart3 me-2"></i> Shopping Cart
+						<div class="ms-3 d-flex align-items-center">
+							<span class="badge bg-white text-primary rounded-pill" id="cart-count">0</span>
+						</div>
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+				</div>
+
+				<!-- Enhanced Body with Sections -->
+				<div class="modal-body p-0">
+					<div class="row g-0">
+						<!-- Cart Items Section (70%) -->
+						<div class="col-lg-8 border-end">
+							<div class="p-4">
+								<!-- Regular Products Section -->
+								<div class="cart-section mb-4" id="regular-products">
+									<h6 class="section-title d-flex align-items-center mb-3">
+										<i class="fa-solid fa-box-open me-2"></i> Regular Items
+									</h6>
+									<div class="cart-items">
+										{foreach from=$regular_items item=item}
+										<div class="cart-item bg-white rounded-3 shadow-sm mb-3 overflow-hidden">
+											<div class="row g-0">
+												<!-- Product Image -->
+												<div class="col-3">
+													<div class="position-relative h-100">
+														<img src="{$BASEURL}resource/assets-frontend/dist/product/{$item.product_pict}"
+															class="img-fluid h-100 w-100 object-fit-cover"
+															alt="{$item.product_name}">
+														<!-- Stock Badge -->
+														<div class="position-absolute top-0 end-0 m-2">
+															<span class="badge bg-light text-dark">
+																Stock: {$item.stock}
+															</span>
+														</div>
+													</div>
+												</div>
+
+												<!-- Product Details -->
+												<div class="col-9">
+													<div class="p-3">
+														<div
+															class="d-flex justify-content-between align-items-start mb-2">
+															<h6 class="mb-0">{$item.product_name}</h6>
+															<button class="btn btn-sm btn-link text-danger remove-item"
+																data-item-id="{$item.id}">
+																<i class="bi bi-trash"></i>
+															</button>
+														</div>
+
+														<!-- Price -->
+														<div class="text-primary mb-3">
+															Rp {$item.price|number_format:0:',':'.'}
+														</div>
+
+														<!-- Quantity Control -->
+														<div class="d-flex align-items-center justify-content-between">
+															<div class="quantity-control d-flex align-items-center">
+																<button
+																	class="btn btn-sm btn-outline-secondary rounded-circle decrease-qty"
+																	data-item-id="{$item.id}">
+																	<i class="bi bi-dash"></i>
+																</button>
+																<input type="number"
+																	class="form-control form-control-sm text-center mx-2"
+																	style="width: 60px" value="{$item.quantity}" min="1"
+																	max="{$item.stock}">
+																<button
+																	class="btn btn-sm btn-outline-secondary rounded-circle increase-qty"
+																	data-item-id="{$item.id}">
+																	<i class="bi bi-plus"></i>
+																</button>
+															</div>
+															<div class="subtotal">
+																<span class="text-muted">Subtotal:</span>
+																<span class="fw-bold ms-2">
+																	Rp {$item.subtotal|number_format:0:',':'.'}
+																</span>
+															</div>
+														</div>
+
+														<!-- Notes -->
+														{if $item.notes}
+														<div class="notes mt-3">
+															<small class="text-muted d-flex align-items-center">
+																<i class="bi bi-pencil-square me-2"></i> {$item.notes}
+															</small>
+														</div>
+														{/if}
+													</div>
+												</div>
+											</div>
+										</div>
+										{/foreach}
+									</div>
+								</div>
+
+								<!-- Package Products Section -->
+								<div class="cart-section" id="package-products">
+									<h6 class="section-title d-flex align-items-center mb-3">
+										<i class="fa-solid fa-boxes-stacked me-2"></i> Package Items
+									</h6>
+									<div class="cart-items">
+										{foreach from=$package_items item=package}
+										<div class="cart-package bg-white rounded-3 shadow-sm mb-3 overflow-hidden">
+											<!-- Package Header -->
+											<div class="package-header bg-light p-3 border-bottom">
+												<div class="d-flex justify-content-between align-items-start">
+													<div>
+														<h6 class="mb-1">{$package.name}</h6>
+														<span class="badge bg-primary">Package</span>
+													</div>
+													<button class="btn btn-sm btn-link text-danger remove-package"
+														data-package-id="{$package.id}">
+														<i class="bi bi-trash"></i>
+													</button>
+												</div>
+											</div>
+
+											<!-- Package Items -->
+											<div class="package-items p-3">
+												{foreach from=$package.items item=item}
+												<div class="package-item mb-3 pb-3 border-bottom">
+													<div class="row align-items-center">
+														<!-- Item Image -->
+														<div class="col-2">
+															<img src="{$BASEURL}resource/assets-frontend/dist/product/{$item.product_pict}"
+																class="img-fluid rounded" alt="{$item.product_name}">
+														</div>
+
+														<!-- Item Details -->
+														<div class="col-4">
+															<h6 class="mb-1">{$item.product_name}</h6>
+															<small class="text-muted">{$item.category_name}</small>
+														</div>
+
+														<!-- Quantity -->
+														<div class="col-3">
+															<div class="quantity-control d-flex align-items-center">
+																<button
+																	class="btn btn-sm btn-outline-secondary rounded-circle decrease-pkg-qty"
+																	data-item-id="{$item.id}"
+																	data-package-id="{$package.id}">
+																	<i class="bi bi-dash"></i>
+																</button>
+																<input type="number"
+																	class="form-control form-control-sm text-center mx-2"
+																	style="width: 50px" value="{$item.quantity}" min="1"
+																	max="{$item.stock}">
+																<button
+																	class="btn btn-sm btn-outline-secondary rounded-circle increase-pkg-qty"
+																	data-item-id="{$item.id}"
+																	data-package-id="{$package.id}">
+																	<i class="bi bi-plus"></i>
+																</button>
+															</div>
+														</div>
+
+														<!-- Price -->
+														<div class="col-3 text-end">
+															<div class="text-primary">
+																Rp {$item.price|number_format:0:',':'.'}
+															</div>
+														</div>
+													</div>
+
+													<!-- Item Notes -->
+													{if $item.notes}
+													<div class="mt-2">
+														<small class="text-muted d-flex align-items-center">
+															<i class="bi bi-pencil-square me-2"></i> {$item.notes}
+														</small>
+													</div>
+													{/if}
+												</div>
+												{/foreach}
+
+												<!-- Package Summary -->
+												<div class="package-summary mt-3 pt-3 border-top">
+													<div class="d-flex justify-content-between align-items-center">
+														<div>
+															<span class="text-muted">Package Total</span>
+															<span class="d-block fw-bold">
+																Rp {$package.total|number_format:0:',':'.'}
+															</span>
+														</div>
+														<div class="text-end">
+															<small class="text-muted d-block">Base Price</small>
+															<span class="text-primary">
+																Rp {$package.base_price|number_format:0:',':'.'}
+															</span>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										{/foreach}
+									</div>
+								</div>
+
+								<!-- Empty State -->
+								<div id="empty-cart" class="text-center py-5" style="display: none;">
+									<div class="empty-cart-illustration mb-4">
+										<i class="bi bi-cart-x display-1 text-muted"></i>
+									</div>
+									<h5 class="mb-3">Your cart is empty</h5>
+									<p class="text-muted mb-4">Add some products to your cart and start shopping!</p>
+									<button class="btn btn-primary" data-bs-dismiss="modal">
+										Lanjutkan Belanja
+									</button>
+								</div>
+							</div>
+						</div>
+
+						<!-- Cart Summary Section (30%) -->
+						<div class="col-lg-4">
+							<div class="cart-summary h-100 p-4">
+								<h6 class="mb-4">Order Summary</h6>
+
+								<!-- Summary Details -->
+								<div class="summary-details mb-4">
+									<div class="d-flex justify-content-between mb-2">
+										<span class="text-muted">Regular Items (<span
+												class="regular-count">0</span>)</span>
+										<span class="regular-amount">Rp 0</span>
+									</div>
+									<div class="d-flex justify-content-between mb-2">
+										<span class="text-muted">Package Items (<span
+												class="package-count">0</span>)</span>
+										<span class="package-amount">Rp 0</span>
+									</div>
+									<div class="d-flex justify-content-between mb-2">
+										<span class="text-muted">Subtotal</span>
+										<span class="subtotal-amount fw-bold">Rp 0</span>
+									</div>
+									<!-- Regular discount row (percentage/nominal) - Hidden by default -->
+									<div class="d-flex justify-content-between mb-2 discount-row"
+										style="display: none;">
+										<span class="text-muted">Diskon</span>
+										<span class="discount-amount text-success">Rp 0</span>
+									</div>
+									<!-- Bundle/BOGO discount row (informational only) - Hidden by default -->
+									<div class="d-flex justify-content-between mb-2 bundle-bogo-discount-row"
+										style="display: none;">
+										<span class="text-muted">Nilai Produk Gratis</span>
+										<span class="bundle-bogo-discount-amount text-info">Rp 0</span>
+									</div>
+								</div>
+
+								<div class="promo-suggestions mb-4" style="display: none;">
+								</div>
+
+								<!-- Promo Code -->
+								<div class="promo-section mb-4">
+									<div class="d-flex">
+										<input type="text" id="promo-code-input" class="form-control"
+											placeholder="Kode Promo">
+										<button id="apply-promo-btn"
+											class="btn btn-outline-primary ms-2">Terapkan</button>
+									</div>
+									<div class="promo-info mt-2" style="display: none;"></div>
+								</div>
+
+								<div class="d-flex justify-content-between mb-2">
+									<span class="text-muted">Tax (10%)</span>
+									<span class="tax-amount">Rp 0</span>
+								</div>
+
+								<div class="total-section bg-light p-3 rounded-3 mb-4">
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="fw-bold">Total</span>
+										<span class="total-amount fs-4 fw-bold text-primary">Rp 0</span>
+									</div>
+								</div>
+
+								<!-- Action Buttons -->
+								<div class="actions">
+									<button class="btn btn-primary w-100 mb-2" id="checkout-btn">
+										<i class="bi bi-credit-card me-2"></i> Order
+									</button>
+									<button class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">
+										Lanjutkan Belanja
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End of Cart -->
+
+	<div class="container">
+		<div class="row custom-center-element">
+			<div class="col-12 text-center">
+				<h2 class="mb-4">Browse Products</h2>
+			</div>
+		</div>
+	</div>
+
+	<!-- Filter select category -->
+	<div class="container text-center pb-lg-1">
+		<div class="row p-4 p-lg-0" style="margin-left: 0">
+			<!-- Kategori Select -->
+			<div class="col-12 col-md-4 mb-3">
+				<select id="category-select" class="form-select" aria-label="Select category">
+					<option value="all" selected>Semua Kategori</option>
+					{foreach from=$catalogueCategories item=cat}
+					<option value="{$cat.cat_id}">{$cat.cat_name}</option>
+					{/foreach}
+				</select>
+			</div>
+
+			<!-- Cart and Call Waiter Buttons -->
+			<div class="col-12 col-md-4 d-flex justify-content-center align-items-center mb-3 mb-md-0">
+				<!-- Show Cart Button -->
+				<button class="btn btn-primary position-relative me-3" id="show-cart">
+					<i class="fa-solid fa-cart-shopping"></i>
+					<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
+						id="count-cart">0</span>
+				</button>
+				<!-- Call Waiter Button -->
+				<button id="call-waiter" class="btn btn-warning rounded-circle shadow p-3">
+					<i class="fa fa-bell fs-4"></i>
+				</button>
+			</div>
+
+			<!-- Product Search -->
+			<div class="col-12 col-md-4 mt-2">
+				<input type="text" class="form-control" placeholder="Cari produk..." id="product-search">
+			</div>
+		</div>
+	</div>
+
+	<!-- End of select category -->
+
+	<!-- Browse Product -->
+	<div class="container" id="product-listing">
+		{if !empty($grouped_products)}
+		{foreach from=$grouped_products key=cat_id item=category}
+		<!-- Category Header -->
+		<div class="category-header mb-4 ">
+			<h3 class="text-center">{$category.category_name|upper}</h3>
+		</div>
+
+		<!-- Product Grid -->
+		<div class="row g-4 mb-5">
+			{foreach from=$category.products item=product}
+			<div class="col-6 col-sm-4 col-lg-3 product-card" data-product-id="{$product.product_id}"
+				data-category-id="{$product.cat_id}" data-product-name="{$product.product_name|escape:'html'}"
+				data-product-desc="{$product.product_desc|escape:'html'}" data-api-id="{$product.api_id|default:'0'}"
+				data-api-status="{if $product.api_id}connected{else}not-connected{/if}">
+				<!-- Product Card -->
+				<div class="card h-100">
+					<!-- Image Container -->
+					<div class="position-relative">
+						<img src="{$BASEURL}resource/assets-frontend/dist/product/{$product.product_pict}"
+							class="card-img-top" alt="{$product.product_name}"
+							style="height: 200px; object-fit: cover;">
+						<!-- Stock Badge -->
+						<div class="position-absolute top-0 end-0 p-2">
+							<span class="badge {if $product.current_stock > 0}bg-success{else}bg-danger{/if}">
+								{if $product.current_stock > 0} Stok: {$product.current_stock} {else} Habis {/if}
+							</span>
+						</div>
+						<!-- API Connection Badge -->
+						{if !$product.api_id}
+						<div class="position-absolute top-0 start-0 p-2">
+							<span class="badge bg-warning text-dark">
+								<i class="fa fa-exclamation-triangle me-1"></i>Belum Terhubung MRP
+							</span>
+						</div>
+						{/if}
+						{if $product.current_stock == 0}
+						<div
+							class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
+							<img src="{$BASEURL}resource/assets-frontend/dist/katalog/soldout.png" class="img-fluid"
+								alt="Sold Out" style="max-height: 60px;">
+						</div>
+						{/if}
+						<!-- MRP Not Connected Overlay -->
+						{if !$product.api_id}
+						<div
+							class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-30">
+							<div class="p-2 bg-warning bg-opacity-75 rounded text-center">
+								<i class="fa fa-exclamation-triangle fs-3"></i>
+								<div class="mt-2 fw-bold">Belum Terhubung MRP</div>
+							</div>
+						</div>
+						{/if}
+					</div>
+					<!-- Product Info -->
+					<div class="card-body d-flex flex-column">
+						<h5 class="card-title text-center mb-3">{$product.product_name|upper}</h5>
+						<!-- Price Display - Improved structure to handle promo pricing -->
+						<div class="price-display text-center mb-3">
+							<span class="price-currency">Rp</span>
+							<span class="price-amount">
+								{math equation="floor(x/1000)" x=$product.price_catalogue}<sup>K</sup>
+							</span>
+						</div>
+						{if !$product.api_id}
+						<div class="text-center mt-auto">
+							<small class="text-danger"><i class="bi bi-exclamation-triangle me-1"></i>Belum Terhubung
+								MRP</small>
+						</div>
+						{elseif $product.current_stock == 0}
+						<div class="text-center mt-auto">
+							<small class="text-danger"><i class="bi bi-x-circle me-1"></i>Stok Habis</small>
+						</div>
+						{/if}
+					</div>
+				</div>
+			</div>
+			{/foreach}
+		</div>
+		{/foreach}
+		{else}
+		<!-- Empty State -->
+		<div class="text-center py-5">
+			<div class="alert alert-info">
+				<i class="bi bi-info-circle me-2"></i>
+				Tidak ada produk tersedia saat ini
+			</div>
+		</div>
+		{/if}
+	</div>
+
+	<!-- Product Modal -->
+	<div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="modal-header bg-light border-0">
+					<h5 class="modal-title" id="modal-product-name"></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+
+				<!-- Regular Product Content -->
+				<div id="regular-product-content">
+					<div class="modal-body">
+						<div class="row">
+							<!-- Product Image -->
+							<div class="col-md-5 mb-3">
+								<div class="position-relative">
+									<img id="modal-product-image" class="img-fluid rounded w-100 h-100 object-fit-cover"
+										style="max-height: 400px">
+
+									<div class="position-absolute top-0 end-0 m-3">
+										<span class="badge bg-light text-dark px-3 py-2 rounded-pill">
+											<i class="bi bi-box-seam me-1"></i>
+											Stock: <span id="modal-product-stock" class="fw-bold"></span>
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Product Details -->
+							<div class="col-md-7">
+								<div class="mb-4">
+									<label class="fw-bold mb-2">Description</label>
+									<p id="modal-product-description" class="text-muted"></p>
+								</div>
+
+								<div
+									class="d-flex justify-content-between align-items-center py-3 border-top border-bottom">
+									<span class="text-muted">Price</span>
+									<span id="modal-product-price" class="fs-4 fw-bold text-primary"></span>
+								</div>
+
+								<div class="my-4">
+									<label class="fw-bold mb-3">Quantity</label>
+									<div class="d-flex align-items-center gap-3" style="width: 150px;">
+										<button class="btn btn-outline-secondary rounded-circle p-2 decrease-qty">
+											<i class="bi bi-dash"></i>
+										</button>
+										<input type="number" class="form-control text-center product-qty" value="1"
+											min="1">
+										<button class="btn btn-outline-secondary rounded-circle p-2 increase-qty">
+											<i class="bi bi-plus"></i>
+										</button>
+									</div>
+								</div>
+
+								<div class="mb-4">
+									<label class="fw-bold mb-2">Notes</label>
+									<textarea id="product-note" class="form-control" rows="3"
+										placeholder="Add special instructions..."></textarea>
+								</div>
+
+								<div class="d-flex justify-content-between align-items-center py-3 border-top">
+									<span class="fw-bold">Subtotal</span>
+									<span id="product-subtotal" class="fs-4 fw-bold text-primary"></span>
+								</div>
+
+								<button id="add-to-cart-regular" class="btn btn-primary w-100 py-3 mt-3">
+									<i class="bi bi-cart-plus me-2"></i>
+									Add to Cart
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Package Product Content -->
+				<div id="package-product-content">
+					<div class="modal-body p-0">
+						<div class="row g-0">
+							<!-- Package Info -->
+							<div class="col-md-4 border-end bg-light">
+								<div class="p-4">
+									<img id="modal-package-image" class="img-fluid rounded mb-3">
+									<h5 id="modal-package-name" class="mb-2"></h5>
+									<p id="modal-package-description" class="text-muted small mb-3"></p>
+									<div class="package-price-box p-3 bg-white rounded">
+										<div class="d-flex justify-content-between align-items-center">
+											<span class="text-muted">Harga Paket</span>
+											<span id="modal-package-base-price"
+												class="text-primary fw-bold fs-5"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Product Selection -->
+							<div class="col-md-8">
+								<div class="p-4">
+									<nav>
+										<div class="nav nav-tabs" id="category-tabs" role="tablist"></div>
+									</nav>
+									<div class="tab-content pt-4" id="category-content">
+										<div id="package-products-grid" class="row g-4"></div>
+									</div>
+									<div class="package-summary mt-4 p-4 bg-light rounded">
+										<div class="d-flex justify-content-between align-items-center mb-3">
+											<div>
+												<p class="text-muted mb-1">Total Paket</p>
+												<h4 id="package-total-price" class="mb-0"></h4>
+											</div>
+											<button id="add-package-to-cart" class="btn btn-primary px-4">
+												Tambah ke Keranjang
+											</button>
+										</div>
+										<div id="package-validation-messages"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div id="order-receipt-view" class="container py-4">
+		<!-- Receipt content will be dynamically injected here -->
+	</div>
+
+	<!-- Package Product Card Template -->
+	<template id="package-product-template">
+		<div
+			class="package-product-card bg-white rounded-lg border shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+			<div class="relative">
+				<img class="package-product-image w-full h-32 object-cover" alt="">
+				<div class="absolute top-2 right-2">
+					<span
+						class="package-product-stock px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm"></span>
+				</div>
+			</div>
+
+			<div class="p-3">
+				<h6 class="package-product-name font-medium mb-2 line-clamp-2 text-sm"></h6>
+				<p class="package-product-desc text-xs text-gray-500 mb-3 line-clamp-2"></p>
+
+				<div class="flex items-center justify-between">
+					<span class="package-product-price text-sm font-medium"></span>
+					<div class="flex items-center gap-1">
+						<button
+							class="decrease-package-qty w-7 h-7 rounded-full border hover:bg-gray-50 flex items-center justify-center">
+							<i class="bi bi-dash"></i>
+						</button>
+						<span class="package-qty w-8 text-center font-medium">0</span>
+						<button
+							class="increase-package-qty w-7 h-7 rounded-full border hover:bg-gray-50 flex items-center justify-center">
+							<i class="bi bi-plus"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</template>
+
+	<!-- Loading State Template -->
+	<template id="loading-state">
+		<div class="loading-overlay absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+			<div
+				class="loading-spinner animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent">
+			</div>
+		</div>
+	</template>
+</section>
+
+
+<!-- Denpedensi -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Script -->
+<script src="{$BASEURL}resource/assets-frontend/js/Product/ProductFilter.js"></script>
+<script src="{$BASEURL}resource/assets-frontend/js/Product/ProductSearch.js"></script>
+<script src="{$BASEURL}resource/assets-frontend/js/Order/product-modal.js"></script>
+<script src="{$BASEURL}resource/assets-frontend/js/Order/order.js"></script>
+<script src="{$BASEURL}resource/assets-frontend/js/Order/session-management.js"></script>
+<script src="{$BASEURL}/resource/assets-frontend/js/Order/promo-visual.js"></script>

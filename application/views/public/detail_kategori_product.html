@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<div class="title"> {$detail_product.product_name} </div>
+	<div class="cat_detail_sub">
+		<p>{$detail_product.product_desc}</p>
+	</div>
+</head>
+<body>
+
+	<div id="content-wrapper-produk">
+		
+
+		<div class="column">
+			<img id=featured src="{$BASEURL}resource/assets-frontend/dist/product/{$products.product_pict}" style="width:100%">
+
+			<div id="slide-wrapper" >
+				<img id="slideLeft" class="arrow" src="{$BASEURL}resource/assets-frontend/dist/logo/arrow-left.png">
+
+				<div id="slider">
+					<!-- <img class="thumbnail active" src="{$BASEURL}resource/assets-frontend/dist/product/{$products.product_pict}"> -->
+      
+            {if !empty($products)} 
+            {if $products.varian == 0} 
+              <div class="column" align="center">
+                <img  class="thumbnail  active" src="{$BASEURL}resource/assets-frontend/dist/product/{$products.product_pict}" alt="" onclick="get_detail_product( {$products.product_id} );">
+              <h6>{$products.product_name}</h6>
+            </div>
+            {/if}
+            {/if}
+            {if !empty($varians)}
+            {foreach from=$varians key=key item=varian}
+            <div class="column" align="center">
+              <img class="thumbnail" data-id="{$varian.product_id}" src="{$BASEURL}resource/assets-frontend/dist/product/{$varian.product_pict}" alt="{$varian.product_name}"  onclick="get_detail_product({$varian.product_id});">
+            <h6>{$varian.product_name}</h6>
+            </div>
+            {/foreach}
+            {/if}
+            
+            </div>
+            
+
+				<img id="slideRight" class="arrow" src="{$BASEURL}resource/assets-frontend/dist/logo/arrow-right.png">
+			</div>
+		</div>
+
+		<div class="column">
+			<h1 id="product_name">{$products.product_name}</h1>
+			<hr>
+			
+			<h5 id="product_price">Harga : Rp {number_format($products.product_price, 2, ",",".")}</h5>
+
+			<h5 id="product_komposisi">Komposisi : {$products.product_komposisi}</h5>
+			<h5 id="expired_date">Masa Simpan : {$products.expired_date} Hari</h5> 
+			<h5 id="product_netto">Berat Bersih : {$products.product_netto} gram</h5>
+
+			
+		</div>
+
+	</div>
+
+	<script type="text/javascript">
+		
+		let thumbnails = document.getElementsByClassName('thumbnail')
+
+		let activeImages = document.getElementsByClassName('active')
+
+		for (var i=0; i < thumbnails.length; i++){
+
+			thumbnails[i].addEventListener('mouseover', function(){
+				console.log(activeImages)
+				
+				if (activeImages.length > 0){
+					activeImages[0].classList.remove('active')
+				}
+				
+
+				this.classList.add('active')
+				document.getElementById('featured').src = this.src
+				
+			})
+		}
+
+
+		let buttonRight = document.getElementById('slideRight');
+		let buttonLeft = document.getElementById('slideLeft');
+
+		buttonLeft.addEventListener('click', function(){
+			document.getElementById('slider').scrollLeft -= 180
+			
+		})
+
+		buttonRight.addEventListener('click', function(){
+			document.getElementById('slider').scrollLeft += 180
+			
+		})
+		
+
+		function get_detail_product(product_id) {
+		$.ajax({
+		url: "{site_url('public/products/get_detail_product')}",
+		type: "GET",
+		dataType: "json",
+		data: { product_id : product_id },
+		success: function (result) {
+			$('#product_name').html(result.product_name);
+			
+
+
+
+
+			
+			var number = parseFloat(result.product_price);
+			console.log(number);
+			var options = {
+				style: 'currency',
+				currency: 'IDR'
+			};
+			var formattedNumber = number.toLocaleString('id-ID', options);
+			
+			document.getElementById('product_price').innerHTML =  "Harga : " + formattedNumber;
+
+
+			$('#product_komposisi').html("Komposisi : " +result.product_komposisi);
+			// Menambahkan teks di depan elemen
+			// var targetElement = document.getElementById("product_komposisi");
+			
+			// targetElement.innerHTML = "Komposisi : " + targetElement.innerHTML;	
+		
+			$('#expired_date').html("Masa Simpan : " +result.expired_date +" Hari");
+			// Menambahkan teks di depan elemen
+			// var targetElement = document.getElementById("expired_date");
+			// var newText = "Masa Simpan : ";
+			// targetElement.innerHTML = newText + targetElement.innerHTML;	
+			// // Menambahkan teks di belakang elemen
+			// targetElement.innerHTML += " Hari";
+			
+			$('#product_netto').html("Berat Bersih : " +result.product_netto +" gram");
+			// Menambahkan teks di depan elemen
+			// var targetElement = document.getElementById("product_netto");
+			// var newText = "Berat Bersih : ";
+			// targetElement.innerHTML = newText + targetElement.innerHTML;
+			// Menambahkan teks di belakang elemen
+			// targetElement.innerHTML += " gram";
+		
+		},
+		error: function (xhr, status, error) {
+			console.error(error);
+		}
+		
+	});
+}
+	</script>
+
+</body>
+</html>

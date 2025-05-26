@@ -1,0 +1,191 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{site_url([$current_page.nav_url, 'add'])}" enctype="multipart/form-data">
+                <div class="col-md-12 align-self-center center">
+                    <div class="row">
+                        <div class="col-md-4 align-self-center center">
+                            <div class="form-group">
+                                <img id="preview" src="" alt="logo" class="img-preview"/><br/>
+                                <label class="mt-2 pt-2 text-small">Preview</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Foto Outlet</label>
+                                <input type="file" name="outlet_img" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="Foto Outlet">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Kode Outlet</label>
+                          <input type="text" class="form-control" readonly value="{$outlet_code|default:''}" name="outlet_code">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Nama Outlet</label>
+                          <input type="text" class="form-control" name="outlet_name">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Telepon</label>
+                          <input type="text" class="form-control" name="outlet_phone">
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="nav_id">Status</label>
+                            <select name="outlet_status" class="form-control select2">
+                                <option value="0" selected>Aktif</option>
+                                <option value="1">Non-aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="nav_id">Highlight</label>
+                            <select name="outlet_highlight" class="form-control select2">
+                                <option value="0" selected>Sembunyikan</option>
+                                <option value="1">Tampilkan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Kota</label>
+                          <input type="text" class="form-control" name="kota">
+                        </div>
+                    </div>
+                </div>
+				<div class="row my-2">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="hour_open" class="form-label">Jam Buka</label>
+							<input name="hour_open" type="text" class="form-control time-input" id="hour_open" placeholder="HH:MM" maxlength="5" required>
+							<div class="invalid-feedback">Please enter time in HH:MM format.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="hour_close" class="form-label">Jam Tutup</label>
+							<input name="hour_close" type="text" class="form-control time-input" id="hour_close" placeholder="HH:MM" maxlength="5" required>
+							<div class="invalid-feedback">Please enter time in HH:MM format.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="count_table" class="form-label">Jumlah Meja</label>
+							<input name="count_table" type="number" class="form-control" min="1" placeholder="" required>
+						</div>
+					</div>
+				</div>
+                <div class="row my-2"> 
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="nav_id">Alamat</label>
+                            <textarea class="form-control" name="outlet_address" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Latitude</label>
+                          <input type="text" class="form-control" name="latitude">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Longitude</label>
+                          <input type="text" class="form-control" name="longitude">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="nav_id">Google Maps Link</label>
+                          <input type="text" class="form-control" name="maps">
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+
+	function formatTimeInput(input)
+	{
+		input.value = input.value.replace(/[^0-9]/g, '');
+		if (input.value.length > 2) {
+			input.value = input.value.slice(0, 2) + ':' + input.value.slice(2, 4);
+		}
+
+		if (input.value.length > 5) {
+			input.value = input.value.slice(0, 5);
+		}
+	}
+
+	document.getElementById('hour_open').addEventListener('input', function() {
+		formatTimeInput(this);
+	});
+
+	document.getElementById('hour_close').addEventListener('input', function() {
+		formatTimeInput(this);
+	});
+
+	document.querySelector('form').addEventListener('submit', function(event) {
+		const hourOpen = document.getElementById('hour_open');
+		const hourClose = document.getElementById('hour_close');
+		
+		// Check if the inputs are valid
+		if (!/^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(hourOpen.value)) {
+			hourOpen.classList.add('is-invalid');
+			event.preventDefault(); // Prevent form submission
+		} else {
+			hourOpen.classList.remove('is-invalid');
+		}
+
+		if (!/^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(hourClose.value)) {
+			hourClose.classList.add('is-invalid');
+			event.preventDefault(); // Prevent form submission
+		} else {
+			hourClose.classList.remove('is-invalid');
+		}
+	});
+
+	// document.getElementById('submitBtn').addEventListener('click', function(event) {
+	// 	const timePattern = /^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
+	// 	if (!timePattern.test(timeInput.value)) {
+	// 		event.preventDefault();
+	// 		timeInput.classList.add('is-invalid');
+	// 	} else {
+	// 		timeInput.classList.remove('is-invalid');
+	// 	}
+	// });
+</script>

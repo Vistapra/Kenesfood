@@ -1,0 +1,112 @@
+/* Card styling */
+.card {
+	border-radius: 10px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	overflow: hidden;
+	margin-bottom: 20px;
+}
+
+.card-header {
+	font-weight: 600;
+	padding: 12px 20px;
+}
+
+/* Brand badges */
+.brand-badge {
+	display: inline-block;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.brand-bakery {
+	background-color: #fcead8;
+	color: #d9730d;
+}
+
+.brand-resto {
+	background-color: #d8e8fc;
+	color: #0d5ad9;
+}
+
+.brand-kopitiam {
+	background-color: #e8d8fc;
+	color: #730dd9;
+}
+
+/* Bundle styling */
+.bundle-item {
+	transition: all 0.3s ease;
+}
+
+.bundle-item:hover {
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.bundle-item .card-header {
+	background-color: #f8f9fa;
+}
+
+.remove-bundle-btn {
+	width: 30px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+
+/* Select2 enhancements */
+.select2-container--default .select2-selection--single {
+	height: 38px;
+	line-height: 38px;
+	border-color: #ced4da;
+	border-radius: 6px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+	line-height: 38px;
+	padding-left: 15px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+	height: 38px;
+}
+
+.select2-results__option {
+	padding: 8px 12px;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+	background-color: #0d6efd;
+}
+
+.select2-dropdown {
+	border-color: #ced4da;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+	border-radius: 6px;
+}
+
+.select2-search--dropdown .select2-search__field {
+	padding: 8px;
+	border-radius: 4px;
+}
+
+/* Animation */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.bundle-item {
+	animation: fadeIn 0.3s ease-out;
+}

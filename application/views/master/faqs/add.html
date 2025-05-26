@@ -1,0 +1,94 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{site_url([$current_page.nav_url, 'add'])}" enctype="multipart/form-data">
+                <div class="col-md-12 align-self-center center">
+                    <div class="row">
+                        <div class="col-md-4 align-self-center center">
+                            <div class="form-group">
+                                <img id="preview" src="" alt="icon" class="img-preview"/><br/>
+                                <label class="mt-2 pt-2 text-small">Preview</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>FAQ Icon</label>
+                                <input type="file" name="faq_icon" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                <div class="input-group col-xs-12">
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="FAQ Icon">
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-8 align-self-center center file-input">
+                        <div class="form-group text-start">
+                            <label>Question</label>
+                            <input type="text" name="question" class="form-control" value="{$detail.question|default:''}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group text-start">
+                                <label>Jawaban</label>
+                                <textarea rows="2" name="answer" class="form-control">{$detail.answer|default:''}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 align-self-center center file-input">
+                    <div class="form-group text-start">
+                        <label>Kategori FAQ</label>
+                        <select name="faq_kategori" class="form-control select2">
+                            <option value="general" {if $detail.faq_kategori|default:'' == 'general'}selected{/if}>General</option>
+                            <option value="sertifikasi" {if $detail.faq_kategori|default:'' == 'sertifikasi'}selected{/if}>Sertifikasi</option>
+                            <option value="delivery" {if $detail.faq_kategori|default:'' == 'delivery'}selected{/if}>Delivery</option>
+                            <option value="sponsorship" {if $detail.faq_kategori|default:'' == 'sponsorship'}selected{/if}>Sponsorship</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- <div class="col-md-6 align-self-center center file-input">
+                    <div class="form-group text-start">
+                        <label>Kategori FAQ</label>
+                        <select name="faq_id" class="form-control select2">
+                            {foreach from=$faqs item=faq}
+                                <option value="{$faq.faq_id}" {if $detail.faq_id|default:'' == {$faq.faq_id}}selected{/if}>{$faq.faq_name|default:''}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div> -->
+                <div class="row my-2"> 
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="nav_id">Status</label>
+                            <select name="deleted" class="form-control select2">
+                                <option value="0" selected>Aktif</option>
+                                <option value="1">Non-aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+              
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) 
+        }
+    };
+</script>

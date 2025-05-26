@@ -1,0 +1,34 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <ul class="nav">
+        {foreach $menus as $menu}
+            {if empty($menu.child)}
+                <li class="nav-item {if $parent_menu.nav_id == $menu.nav_id}active{/if}">
+                    <a class="nav-link" href="{site_url($menu.nav_url)}">
+                        <i class="{$menu.nav_icon}  mx-2"></i>
+                        <span class="menu-title">{$menu.nav_title}</span>
+                    </a>
+                </li>
+            {else}
+                <li class="nav-item {if $parent_menu.nav_id == $menu.nav_id}active{/if}">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#{$menu.nav_url}" aria-expanded="false" aria-controls="{$menu.nav_url}">
+                        <i class="{$menu.nav_icon} mx-2"></i>
+                        <span class="menu-title">{$menu.nav_title}</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse {if $parent_menu.nav_id == $menu.nav_id}show{/if}" id="{$menu.nav_url}">
+                        <ul class="nav flex-column sub-menu">
+                            {foreach $menu.child as $child}
+                            <li class="nav-item"> 
+                                <a class="nav-link {if $current_page.nav_id == $child.nav_id}active{/if}" href="{site_url($child.nav_url)}">
+                                    <i class="{$child.nav_icon} mx-2"></i>
+                                    <span class="menu-title">{$child.nav_title}</span>
+                                </a>
+                            </li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                </li>
+            {/if}
+        {/foreach}
+    </ul>
+</nav>

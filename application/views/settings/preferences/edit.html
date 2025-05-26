@@ -1,0 +1,52 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{site_url([$current_page.nav_url, 'edit', {$preference.pref_id}])}" enctype="multipart/form-data">
+                <div class="row my-2"> 
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="nav_id">Portal *</label>
+                            <select name="site_id" class="form-control select2">
+                                {foreach from=$portals item=portal}
+                                    <option value="{$portal.site_id}" {if $preference.site_id|default:'' == $portal.site_id}selected{/if}>{$portal.site_type}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="nav_id">Group *</label>
+                          <input type="text" class="form-control" name="pref_group" required value="{$preference.pref_group|default:''}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="nav_id">Label *</label>
+                          <input type="text" class="form-control" name="pref_label" required value="{$preference.pref_label|default:''}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="nav_id">Name *</label>
+                          <input type="text" class="form-control" name="pref_name" required value="{$preference.pref_name|default:''}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-12">
+                        <div class="form-group">
+                          <label for="nav_id">Value *</label>
+                          <textarea id="editor" name="pref_value" class="form-control">{$preference.pref_value|default:''}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary me-2"><i class="fas fa-pencil-alt"></i> Ubah</button>
+                    <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                        <i class="fa fa-times"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,200 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Edit Paket Produk</h4>
+            </div>
+            <div class="card-body">
+                <div class="clearfix">
+                    <form action="{site_url(['master/package', 'edit', $detail.id])}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="product_id" value="{$detail.product_id}" />
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-4 align-self-center center">
+                                        <div class="form-group">
+                                            <img id="preview" src="{$BASEURL}resource/assets-frontend/dist/product/{$detail.product_pict|default:''}" alt="foto-produk" class="img-preview"/><br/>
+                                            <label class="mt-2 pt-2 text-small">Preview</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Foto Produk</label>
+                                            <input type="file" name="product_pict" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                            <div class="input-group col-xs-12">
+                                                <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Foto">
+                                                <span class="input-group-append">
+                                                    <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                                </span>
+                                             </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Informasi Dasar</h5>
+                                <div class="form-group text-start">
+                                    <label>Kode Produk <span class="text-danger">*</span></label>
+                                    <input type="text" name="product_code" class="form-control" required value="{$detail.product_code|default:''}">
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Nama Produk <span class="text-danger">*</span></label>
+                                    <input type="text" name="product_name" class="form-control" required value="{$detail.product_name|default:''}">
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Kategori Produk <span class="text-danger">*</span></label>
+                                    <select name="cat_id" class="form-control select2" required>
+                                        <option value="">-- Pilih Kategori --</option>
+                                        {foreach from=$categories item=cat}
+                                            <option value="{$cat.cat_id}" {if $detail.cat_id|default:'' == {$cat.cat_id}}selected{/if}>{$cat.cat_name|default:''}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Brand Produk <span class="text-danger">*</span></label>
+                                    <select name="product_brand" class="form-control select2" required>
+                                        <option value="">-- Pilih Brand --</option>
+                                        {foreach from=$brands item=brand}
+                                            <option value="{$brand.brand_type}" {if $detail.product_brand|default:'' == {$brand.brand_type}}selected{/if}>{$brand.brand_name|default:''}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Detail Paket</h5>
+                                <div class="form-group text-start">
+                                    <label>Tipe Paket <span class="text-danger">*</span></label>
+                                    <select name="package_type" class="form-control select2" required>
+                                        <option value="standard" {if $detail.package_type|default:'' == 'standard'}selected{/if}>Standard (Tetap)</option>
+                                        <option value="custom" {if $detail.package_type|default:'' == 'custom'}selected{/if}>Custom (Kustomisasi)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Harga Produk <span class="text-danger">*</span></label>
+                                    <input type="number" name="product_price" class="form-control" required value="{$detail.product_price|default:''}">
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Jenis Promosi <span class="text-danger">*</span></label>
+                                    <select name="product_promote" class="form-control select2" required>
+                                        <option value="none" {if $detail.product_promote|default:'' == 'none'}selected{/if}>Tidak Ada</option>
+                                        <option value="arrival" {if $detail.product_promote|default:'' == 'arrival'}selected{/if}>Arrival</option>
+                                        <option value="prelaunch" {if $detail.product_promote|default:'' == 'prelaunch'}selected{/if}>Prelaunch</option>
+                                        <option value="seasonal" {if $detail.product_promote|default:'' == 'seasonal'}selected{/if}>Seasonal Collection</option>
+                                    </select>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Status Produk <span class="text-danger">*</span></label>
+                                    <select name="product_st" class="form-control select2" required>
+                                        <option value="0" {if $detail.product_st|default:'' == '0'}selected{/if}>Aktif</option>
+                                        <option value="1" {if $detail.product_st|default:'' == '1'}selected{/if}>Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group text-start">
+                                    <label>Deskripsi Produk</label>
+                                    <textarea rows="4" name="product_desc" class="form-control">{$detail.product_desc|default:''}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="form-group text-start">
+                                    <label>Komposisi Product <span class="text-danger">*</span></label>
+                                    <textarea rows="2" name="product_komposisi" class="form-control" required>{$detail.product_komposisi|default:''}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group text-start">
+                                    <label>Urutan Tampil</label>
+                                    <input type="number" name="product_no" class="form-control" value="{$detail.product_no|default:'0'}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="form-group text-start">
+                                    <label>Durability <span class="text-danger">*</span></label>
+                                    <div class="input-group col-xs-12">
+                                        <input type="number" name="expired_date" class="form-control" required value="{$detail.expired_date|default:''}">
+                                        <span class="input-group-append">
+                                            <button class="file-upload-browse btn btn-secondary" type="button">Hari</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group text-start">
+                                    <label>Netto Product <span class="text-danger">*</span></label>
+                                    <div class="input-group col-xs-12">
+                                        <input type="number" name="product_netto" class="form-control" required value="{$detail.product_netto|default:''}">
+                                        <span class="input-group-append">
+                                            <button class="file-upload-browse btn btn-secondary" type="button">gram</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="form-group text-start">
+                                    <label>Status Marketing <span class="text-danger">*</span></label>
+                                    <select name="ek_marketing" class="form-control select2" required>
+                                        <option value="0" {if $detail.ek_marketing|default:'' == '0'}selected{/if}>Aktif</option>
+                                        <option value="1" {if $detail.ek_marketing|default:'' == '1'}selected{/if}>Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group text-start">
+                                    <label>Status Customer <span class="text-danger">*</span></label>
+                                    <select name="ek_customer" class="form-control select2" required>
+                                        <option value="0" {if $detail.ek_customer|default:'' == '0'}selected{/if}>Aktif</option>
+                                        <option value="1" {if $detail.ek_customer|default:'' == '1'}selected{/if}>Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group text-start">
+                                    <label>Status Outlet <span class="text-danger">*</span></label>
+                                    <select name="ek_outlet" class="form-control select2" required>
+                                        <option value="0" {if $detail.ek_outlet|default:'' == '0'}selected{/if}>Aktif</option>
+                                        <option value="1" {if $detail.ek_outlet|default:'' == '1'}selected{/if}>Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-4"> 
+                            <button type="submit" class="btn btn-primary me-2"><i class="fas fa-save"></i> Simpan</button>
+                            <a href="{site_url('master/package/detail/')}{$detail.id}" class="btn btn-secondary me-2">
+                                <i class="fa fa-times"></i> Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+            URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>

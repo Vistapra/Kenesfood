@@ -1,0 +1,86 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="clearfix">
+                    <form action="{site_url($current_page.nav_url)|cat:'/'|cat:$action|cat:'/'|cat:$detail.banner_id}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="banner_id" value="{$detail.banner_id}" />
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-4 align-self-center center">
+                                        <div class="form-group">
+                                            <img id="preview" src="{$BASEURL}resource/assets-frontend/dist/logo/{$detail.banner_img|default:''}" alt="Foto Banner" class="img-preview"/><br/>
+                                            <label class="mt-2 pt-2 text-small">Preview</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Banner Image</label>
+                                            <input type="file" name="banner_img" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                            <div class="input-group col-xs-12">
+                                                <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Foto">
+                                                <span class="input-group-append">
+                                                    <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>banner_name</label>
+                                    <input type="text" name="banner_name" class="form-control" value="{$detail.banner_name|default:''}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                  <label>Nama FAQ</label>
+                                  <input type="text" class="form-control" name="banner_name" value="{$detail.banner_name|default:''}">
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Status Banner</label>
+                                    <select name="banner_st" class="form-control select2">
+                                        <option value="0" {if $detail.banner_st|default:'' == '0'}selected{/if}>Aktif</option>
+                                        <option value="1" {if $detail.banner_st|default:'' == '1'}selected{/if}>Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Katalog</label>
+                                    <select name="status_catalogue" class="form-control select2">
+                                        <option value="0" {if $detail.status_catalogue|default:'' == '0'}selected{/if}>Aktif</option>
+                                        <option value="1" {if $detail.status_catalogue|default:'' == '1'}selected{/if}>Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center my-4"> 
+                            <button type="submit" class="btn btn-primary me-2"><i class="fas fa-pencil-alt"></i> Ubah</button>
+                            <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                                <i class="fa fa-times"></i> Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) 
+        }
+    };
+</script>

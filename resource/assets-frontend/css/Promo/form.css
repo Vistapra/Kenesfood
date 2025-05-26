@@ -1,0 +1,397 @@
+/* Section Headers */
+.section-header {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 1rem;
+}
+
+/* Promo Scope Cards */
+.promo-scope-card {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 15px;
+  height: 100%;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+}
+
+.promo-scope-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.promo-scope-card .form-check-label {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.promo-scope-description {
+  margin-top: 10px;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* Custom Switch Styling */
+.custom-switch .form-check-input {
+  width: 3em;
+  height: 1.5em;
+  margin-top: 0.1em;
+}
+
+.custom-switch .form-check-input:checked {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+/* Selector Sections */
+.selector-section {
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.selector-section:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.search-filter-container {
+  margin-bottom: 15px;
+}
+
+.select-container {
+  margin-bottom: 15px;
+}
+
+.select2-container--default .select2-selection--multiple {
+  border-color: #ced4da;
+  border-radius: 6px;
+  min-height: 42px;
+}
+
+.select2-container--default.select2-container--focus
+  .select2-selection--multiple {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__choice {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-top: 5px;
+  margin-right: 5px;
+  animation: popIn 0.2s ease-out;
+}
+
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__choice__remove {
+  color: #6c757d;
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+/* Selected Items Container */
+.selected-items-container {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  padding: 15px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.selected-items-header {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.selected-items-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.selected-item {
+  display: inline-flex;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 0 8px 8px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.selected-item:hover {
+  background-color: #e9ecef;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.selected-item .brand-badge {
+  margin-left: 8px;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.selected-item .delete-btn {
+  margin-left: 8px;
+  color: #6c757d;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.selected-item .delete-btn:hover {
+  background-color: #f8d7da;
+  color: #dc3545;
+}
+
+.no-items-selected {
+  width: 100%;
+  text-align: center;
+  color: #6c757d;
+  padding: 15px;
+  font-style: italic;
+  background-color: #fff;
+  border-radius: 6px;
+  border: 1px dashed #ced4da;
+}
+
+/* Ripple effect for delete buttons */
+.ripple {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Brand Badges styling */
+.brand-badge.brand-bakery {
+  background-color: #fcead8;
+  color: #d9730d;
+}
+
+.brand-badge.brand-resto {
+  background-color: #d8e8fc;
+  color: #0d5ad9;
+}
+
+.brand-badge.brand-kopitiam {
+  background-color: #e8d8fc;
+  color: #730dd9;
+}
+
+/* Status Controls styling */
+.status-controls .form-select {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+}
+
+.status-controls .form-select option {
+  padding: 10px;
+}
+
+.status-controls .form-text {
+  margin-top: 0.5rem;
+}
+
+/* Custom styling for Search inputs */
+#product_search,
+#category_search {
+  padding-left: 2.5rem;
+  transition: all 0.3s ease;
+}
+
+.input-group-text {
+  transition: all 0.3s ease;
+}
+
+.input-group:focus-within .input-group-text {
+  background-color: #e9ecef;
+  border-color: #86b7fe;
+}
+
+/* Styling for filter dropdowns */
+.search-filter-container select.form-select {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.search-filter-container select.form-select:hover {
+  background-color: #e9ecef;
+}
+
+/* Enhance scrollbar for selected items container */
+.selected-items-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.selected-items-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+
+.selected-items-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 8px;
+}
+
+.selected-items-container::-webkit-scrollbar-thumb:hover {
+  background: #bbb;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Scale hover effect */
+.scale-hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+/* Select2 Dropdown styling */
+.select2-container--default
+  .select2-results__option--highlighted[aria-selected] {
+  background-color: #e9ecef;
+  color: #212529;
+  transition: background-color 0.2s ease;
+}
+
+.select2-container--default
+  .select2-results__option--highlighted[aria-selected]:hover {
+  background-color: #dee2e6;
+}
+
+.select2-container--default .select2-results__option[aria-selected='true'] {
+  background-color: #e2efff;
+}
+
+.select2-container--default .select2-results__group {
+  padding: 8px 10px;
+  font-weight: 600;
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.select2-container--default .select2-results__option {
+  padding: 8px 10px;
+}
+
+/* Badge styling */
+.section-header .badge {
+  vertical-align: middle;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35em 0.65em;
+}
+
+/* Select2 search input styling */
+.select2-search--dropdown .select2-search__field {
+  padding: 8px;
+  border-radius: 4px;
+  border-color: #ced4da;
+}
+
+.select2-dropdown {
+  border-color: #ced4da;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+}
+
+/* Form checkboxes and toggle switches styling */
+.form-check-input {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-check-label {
+  cursor: pointer;
+}
+
+/* Card styling enhancements */
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  font-weight: 600;
+  padding: 12px 20px;
+}
+
+/* Row and column spacing adjustments */
+.row.g-2 {
+  margin-left: -8px;
+  margin-right: -8px;
+}
+
+.row.g-2 > .col-md-8,
+.row.g-2 > .col-md-4 {
+  padding-left: 8px;
+  padding-right: 8px;
+}

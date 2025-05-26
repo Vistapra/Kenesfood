@@ -1,0 +1,832 @@
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css"
+	rel="stylesheet" />
+<link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/Promo/form.css">
+
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h4 class="card-title mb-0">
+					<i class="fas fa-{if $is_edit}edit{else}plus{/if} text-primary me-2"></i>
+					{if $is_edit}Edit Promo{else}Tambah Promo Baru{/if}
+				</h4>
+			</div>
+
+			<!-- Flash Messages -->
+			{if isset($smarty.session.success)}
+			<div class="alert alert-success alert-dismissible fade show" role="alert">
+				<i class="fas fa-check-circle me-2"></i> {$smarty.session.success}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			{if isset($smarty.session.error)}
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				<i class="fas fa-exclamation-circle me-2"></i> {$smarty.session.error}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			<!-- Tambahkan input hidden untuk menyimpan tipe promo yang dipilih -->
+			<input type="hidden" id="promo_type_hidden" name="promo_type_hidden"
+				value="{$promo.promo_type|default:'percentage'}">
+			<input type="hidden" id="is_edit" value="{if $is_edit}1{else}0{/if}">
+
+			<!-- Ganti radio button tipe promo dengan tabs -->
+			<div class="promo-type-tabs mb-4">
+				<ul class="nav nav-tabs" id="promoTypeTabs" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button
+							class="nav-link {if $promo.promo_type|default:'' != 'bundling' && $promo.promo_type|default:'' != 'bogo'}active{/if}"
+							id="discount_tab" data-bs-toggle="tab" data-bs-target="#discount_content" type="button"
+							role="tab" aria-controls="discount_content"
+							aria-selected="{if $promo.promo_type|default:'' != 'bundling' && $promo.promo_type|default:'' != 'bogo'}true{else}false{/if}">
+							<i class="fas fa-percentage"></i> Promo Diskon
+						</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link {if $promo.promo_type|default:'' == 'bundling'}active{/if}"
+							id="bundling_tab" data-bs-toggle="tab" data-bs-target="#bundling_content" type="button"
+							role="tab" aria-controls="bundling_content"
+							aria-selected="{if $promo.promo_type|default:'' == 'bundling'}true{else}false{/if}">
+							<i class="fas fa-gift"></i> Promo Bundling
+						</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link {if $promo.promo_type|default:'' == 'bogo'}active{/if}" id="bogo_tab"
+							data-bs-toggle="tab" data-bs-target="#bogo_content" type="button" role="tab"
+							aria-controls="bogo_content"
+							aria-selected="{if $promo.promo_type|default:'' == 'bogo'}true{else}false{/if}">
+							<i class="fas fa-tags"></i> Promo BOGO
+						</button>
+					</li>
+				</ul>
+
+				<div class="tab-content mt-3" id="promoTypeTabContent">
+					<!-- Tab Diskon -->
+					<div class="tab-pane fade {if $promo.promo_type|default:'' != 'bundling' && $promo.promo_type|default:'' != 'bogo'}show active{/if}"
+						id="discount_content" role="tabpanel" aria-labelledby="discount_tab">
+						<div class="card">
+							<div class="card-body">
+								<div class="mb-3">
+									<label for="promo_type" class="form-label">Tipe Diskon <span
+											class="text-danger">*</span></label>
+									<div class="form-check">
+										<input class="form-check-input" type="radio" name="promo_type"
+											id="type_percentage" value="percentage" {if
+											$promo.promo_type|default:''=='percentage' || !$is_edit}checked{/if}
+											onchange="toggleDiscountFields()">
+										<label class="form-check-label" for="type_percentage">
+											Persentase (%)
+										</label>
+									</div>
+									<div class="form-check">
+										<input class="form-check-input" type="radio" name="promo_type" id="type_nominal"
+											value="nominal" {if $promo.promo_type|default:''=='nominal' }checked{/if}
+											onchange="toggleDiscountFields()">
+										<label class="form-check-label" for="type_nominal">
+											Nominal (Rp)
+										</label>
+									</div>
+								</div>
+
+								<div class="mb-3" id="percentage_field"
+									style="{if $promo.promo_type|default:'' == 'nominal'}display:none{/if}">
+									<label for="percentage_value" class="form-label">Nilai Persentase <span
+											class="text-danger">*</span></label>
+									<div class="input-group">
+										<input type="number" class="form-control" id="percentage_value"
+											name="percentage_value" min="1" max="100" step="0.1"
+											placeholder="contoh: 20"
+											value="{if $promo.promo_type|default:'' == 'percentage'}{$promo.promo_value|default:''}{/if}">
+										<span class="input-group-text">%</span>
+									</div>
+									<small class="text-muted">Masukkan angka antara 1-100</small>
+								</div>
+
+								<div class="mb-3" id="nominal_field"
+									style="{if $promo.promo_type|default:'' != 'nominal'}display:none{/if}">
+									<label for="nominal_value" class="form-label">Nilai Nominal <span
+											class="text-danger">*</span></label>
+									<div class="input-group">
+										<span class="input-group-text">Rp</span>
+										<input type="number" class="form-control" id="nominal_value"
+											name="nominal_value" min="1000" step="1000" placeholder="contoh: 25000"
+											value="{if $promo.promo_type|default:'' == 'nominal'}{$promo.promo_value|default:''}{/if}">
+									</div>
+									<small class="text-muted">Masukkan nilai minimal Rp 1.000</small>
+								</div>
+
+								<div class="mb-3" id="maximum_discount_field"
+									style="{if $promo.promo_type|default:'' == 'nominal'}display:none{/if}">
+									<label for="maximum_discount" class="form-label">Maksimum Diskon</label>
+									<div class="input-group">
+										<span class="input-group-text">Rp</span>
+										<input type="number" class="form-control" id="maximum_discount"
+											name="maximum_discount" min="1000" step="1000" placeholder="contoh: 50000"
+											value="{$promo.maximum_discount|default:''}">
+									</div>
+									<small class="text-muted">Batas maksimum nilai diskon yang diberikan, kosongkan jika
+										tidak ada batas</small>
+								</div>
+
+								<div class="mb-3">
+									<label for="minimum_order" class="form-label">Minimum Pembelian</label>
+									<div class="input-group">
+										<span class="input-group-text">Rp</span>
+										<input type="number" class="form-control" id="minimum_order"
+											name="minimum_order" min="0" step="1000" placeholder="contoh: 100000"
+											value="{$promo.minimum_order|default:'0'}">
+									</div>
+									<small class="text-muted">Minimal total pembelian untuk menggunakan promo ini,
+										kosongkan atau 0 jika tidak ada minimal</small>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Tab Bundling -->
+					<div class="tab-pane fade {if $promo.promo_type|default:'' == 'bundling'}show active{/if}"
+						id="bundling_content" role="tabpanel" aria-labelledby="bundling_tab">
+						<div class="card">
+							<div class="card-body">
+								<div class="alert alert-info mb-4">
+									<div class="d-flex">
+										<div class="me-3">
+											<i class="fas fa-info-circle fa-2x"></i>
+										</div>
+										<div>
+											<h5 class="alert-heading">Tentang Promo Bundling</h5>
+											<p class="mb-0">Promo bundling adalah "beli produk A dan produk B, gratis
+												produk C". {if !$is_edit}Anda dapat langsung membuat promo bundling
+												dengan mengisi informasi promo pada form ini.{else}Konfigurasi bundling
+												dilakukan di halaman terpisah setelah menyimpan detail promo ini.{/if}
+											</p>
+										</div>
+									</div>
+								</div>
+
+								{if $is_edit}
+								{if $has_bundles}
+								<div class="bundling-tab-preview">
+									<div class="d-flex justify-content-between align-items-center mb-3">
+										<div class="bundling-info">
+											<div class="bundling-count">{count($bundles)}</div>
+											<h5 class="mb-0">Bundle Aktif</h5>
+										</div>
+										<a href="{$bundling_url}" class="btn btn-primary btn-sm">
+											<i class="fas fa-edit me-1"></i> Edit Bundle
+										</a>
+									</div>
+
+									<div class="bundling-examples">
+										<div class="table-responsive">
+											<table class="table table-sm">
+												<thead>
+													<tr>
+														<th>#</th>
+														<th>Produk 1</th>
+														<th>Produk 2</th>
+														<th>Produk Gratis</th>
+													</tr>
+												</thead>
+												<tbody>
+													{foreach from=$bundles key=index item=bundle name=bundle_loop}
+													{if $smarty.foreach.bundle_loop.index < 3} <tr>
+														<td>{$index+1}</td>
+														<td>{$bundle.required_product_name1} (min:
+															{$bundle.min_quantity1})</td>
+														<td>{$bundle.required_product_name2} (min:
+															{$bundle.min_quantity2})</td>
+														<td>{$bundle.free_product_name} ({$bundle.free_quantity})</td>
+														</tr>
+														{/if}
+														{/foreach}
+
+														{if count($bundles) > 3}
+														<tr>
+															<td colspan="4" class="text-center">
+																<a href="{$bundling_url}"
+																	class="btn btn-sm btn-link">Lihat
+																	{count($bundles)-3} bundle lainnya &rarr;</a>
+															</td>
+														</tr>
+														{/if}
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+								{else}
+								<div class="text-center py-4">
+									<i class="fas fa-gift fa-3x mb-3 text-muted"></i>
+									<h5>Belum Ada Bundle</h5>
+									<p class="text-muted mb-3">Anda perlu menyimpan perubahan pada promo ini terlebih
+										dahulu.</p>
+									<div class="alert alert-info">
+										<i class="fas fa-info-circle me-2"></i>
+										Klik tombol "Simpan Perubahan" di bawah, kemudian Anda akan diarahkan ke halaman
+										konfigurasi bundle.
+									</div>
+								</div>
+								{/if}
+								{else}
+								<div class="text-center py-4">
+									<i class="fas fa-gift fa-3x mb-3 text-primary"></i>
+									<h5>Promo Bundling</h5>
+									<p class="text-muted mb-3">Isi informasi dasar, periode, dan pengaturan promo,
+										kemudian simpan untuk melanjutkan ke konfigurasi bundling.</p>
+									<div class="alert alert-info">
+										<i class="fas fa-info-circle me-2"></i>
+										Setelah promo bundling disimpan, Anda akan diarahkan ke halaman konfigurasi
+										bundle.
+									</div>
+								</div>
+								{/if}
+							</div>
+						</div>
+					</div>
+
+
+					<!-- Tab BOGO -->
+					<div class="tab-pane fade {if $promo.promo_type|default:'' == 'bogo'}show active{/if}"
+						id="bogo_content" role="tabpanel" aria-labelledby="bogo_tab">
+						<div class="card">
+							<div class="card-body">
+								<div class="alert alert-info mb-4">
+									<div class="d-flex">
+										<div class="me-3">
+											<i class="fas fa-info-circle fa-2x"></i>
+										</div>
+										<div>
+											<h5 class="alert-heading">Tentang Promo BOGO</h5>
+											<p class="mb-0">BOGO (Buy One Get One atau Buy X Get Y) adalah jenis promo
+												dimana pelanggan membeli sejumlah produk tertentu dan mendapatkan produk
+												gratis. {if !$is_edit}Anda dapat langsung membuat promo BOGO dengan
+												mengisi informasi promo pada form ini.{else}Konfigurasi BOGO dilakukan
+												di halaman terpisah setelah menyimpan detail promo ini.{/if}</p>
+											<ul class="mb-0 mt-2">
+												<li>Beli 1 produk A, gratis 1 produk A</li>
+												<li>Beli 5 produk B, gratis 2 produk B</li>
+												<li>Beli 3 produk C, gratis 1 produk D yang berbeda</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+
+								{if $is_edit}
+								{if $has_bogos}
+								<div class="bundling-tab-preview">
+									<div class="d-flex justify-content-between align-items-center mb-3">
+										<div class="bundling-info">
+											<div class="bundling-count">{count($bogos)}</div>
+											<h5 class="mb-0">Konfigurasi BOGO Aktif</h5>
+										</div>
+										<a href="{$bogo_url}" class="btn btn-primary btn-sm">
+											<i class="fas fa-edit me-1"></i> Edit Konfigurasi
+										</a>
+									</div>
+
+									<div class="bundling-examples">
+										<div class="table-responsive">
+											<table class="table table-sm">
+												<thead>
+													<tr>
+														<th>#</th>
+														<th>Produk</th>
+														<th>Jumlah Beli</th>
+														<th>Jumlah Gratis</th>
+														<th>Produk Gratis</th>
+													</tr>
+												</thead>
+												<tbody>
+													{foreach from=$bogos key=index item=bogo name=bogo_loop}
+													{if $smarty.foreach.bogo_loop.index < 3} <tr>
+														<td>{$index+1}</td>
+														<td>{$bogo.product_name}</td>
+														<td>{$bogo.buy_quantity}</td>
+														<td>{$bogo.free_quantity}</td>
+														<td>{if $bogo.free_product_id ==
+															$bogo.product_id}Sama{else}{$bogo.free_product_name}{/if}
+														</td>
+														</tr>
+														{/if}
+														{/foreach}
+
+														{if count($bogos) > 3}
+														<tr>
+															<td colspan="5" class="text-center">
+																<a href="{$bogo_url}" class="btn btn-sm btn-link">Lihat
+																	{count($bogos)-3} konfigurasi BOGO lainnya
+																	&rarr;</a>
+															</td>
+														</tr>
+														{/if}
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+								{else}
+								<div class="text-center py-4">
+									<i class="fas fa-tags fa-3x mb-3 text-muted"></i>
+									<h5>Belum Ada Konfigurasi BOGO</h5>
+									<p class="text-muted mb-3">Anda perlu menyimpan perubahan pada promo ini terlebih
+										dahulu.</p>
+									<div class="alert alert-info">
+										<i class="fas fa-info-circle me-2"></i>
+										Klik tombol "Simpan Perubahan" di bawah, kemudian Anda akan diarahkan ke halaman
+										konfigurasi BOGO.
+									</div>
+								</div>
+								{/if}
+								{else}
+								<div class="text-center py-4">
+									<i class="fas fa-tags fa-3x mb-3 text-primary"></i>
+									<h5>Promo BOGO</h5>
+									<p class="text-muted mb-3">Isi informasi dasar, periode, dan pengaturan promo,
+										kemudian simpan untuk melanjutkan ke konfigurasi BOGO.</p>
+									<div class="alert alert-info">
+										<i class="fas fa-info-circle me-2"></i>
+										Setelah promo BOGO disimpan, Anda akan diarahkan ke halaman konfigurasi BOGO.
+									</div>
+								</div>
+								{/if}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Form -->
+			<form action="{$form_action}" method="post" id="promoForm" onsubmit="return prepareFormSubmit()">
+				<div class="row">
+					<!-- Left Column - Basic Info -->
+					<div class="col-md-6">
+						<div class="card mb-4">
+							<div class="card-header bg-light">
+								<h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Dasar</h5>
+							</div>
+							<div class="card-body">
+								<div class="mb-3">
+									<label for="promo_code" class="form-label">Kode Promo <span
+											class="text-danger">*</span></label>
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-tag"></i></span>
+										<input type="text" class="form-control" id="promo_code" name="promo_code"
+											placeholder="contoh: KenesFood20" value="{$promo.promo_code|default:''}" {if
+											$is_edit}{/if} required>
+										{if $is_edit}<span class="input-group-text"><i
+												class="fas fa-lock"></i></span>{/if}
+									</div>
+									<small class="text-muted">Kode promo harus unik dan hanya boleh menggunakan huruf
+										dan angka</small>
+								</div>
+
+								<div class="mb-3">
+									<label for="promo_name" class="form-label">Nama Promo <span
+											class="text-danger">*</span></label>
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-heading"></i></span>
+										<input type="text" class="form-control" id="promo_name" name="promo_name"
+											placeholder="contoh: KenesFood Discount 20%"
+											value="{$promo.promo_name|default:''}" required>
+									</div>
+									<small class="text-muted">Nama yang akan ditampilkan ke pelanggan</small>
+								</div>
+
+								<div class="mb-3">
+									<label for="promo_brand" class="form-label">Brand <span
+											class="text-danger">*</span></label>
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-store"></i></span>
+										<select class="form-select" id="promo_brand" name="promo_brand" required
+											onchange="handleBrandChange()">
+											<option value="">Pilih Brand</option>
+											<option value="bakery" {if $promo.promo_brand|default:''=='bakery'
+												}selected{/if}>Bakery</option>
+											<option value="resto" {if $promo.promo_brand|default:''=='resto'
+												}selected{/if}>Resto</option>
+											<option value="kopitiam" {if $promo.promo_brand|default:''=='kopitiam'
+												}selected{/if}>Kopitiam</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="mb-3">
+									<label for="description" class="form-label">Deskripsi</label>
+									<textarea class="form-control" id="description" name="description" rows="3"
+										placeholder="Deskripsi detail tentang promo ini">{$promo.description|default:''}</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Right Column - Schedule, Rules -->
+					<div class="col-md-6">
+						<div class="card mb-4">
+							<div class="card-header bg-light">
+								<h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Periode &amp; Kuota</h5>
+							</div>
+							<div class="card-body">
+								<div class="mb-3">
+									<label for="start_date" class="form-label">Tanggal Mulai <span
+											class="text-danger">*</span></label>
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-calendar"></i></span>
+										<input type="datetime-local" class="form-control" id="start_date"
+											name="start_date"
+											value="{if isset($promo.start_date_formatted)}{$promo.start_date_formatted}{else}{$smarty.now|date_format:'%Y-%m-%dT%H:%M'}{/if}"
+											required>
+									</div>
+								</div>
+
+								<div class="mb-3">
+									<label for="end_date" class="form-label">Tanggal Selesai <span
+											class="text-danger">*</span></label>
+									<div class="input-group">
+										<span class="input-group-text"><i class="fas fa-calendar"></i></span>
+										<input type="datetime-local" class="form-control" id="end_date" name="end_date"
+											value="{if isset($promo.end_date_formatted)}{$promo.end_date_formatted}{else}{($smarty.now + 604800)|date_format:'%Y-%m-%dT%H:%M'}{/if}"
+											required>
+									</div>
+								</div>
+
+								<div class="mb-3 d-flex align-items-center">
+									<div class="form-check form-switch me-3">
+										<input class="form-check-input" type="checkbox" id="has_quota" {if
+											isset($promo.quota) && $promo.quota !==null}checked{/if}
+											onchange="toggleQuotaField()">
+										<label class="form-check-label" for="has_quota">Batasi Kuota</label>
+									</div>
+									<div id="quota_field"
+										style="{if !isset($promo.quota) || $promo.quota === null}display:none{/if}"
+										class="flex-grow-1">
+										<div class="input-group">
+											<span class="input-group-text"><i
+													class="fas fa-sort-amount-down"></i></span>
+											<input type="number" class="form-control" id="quota" name="quota" min="1"
+												step="1" placeholder="Jumlah maksimal penggunaan"
+												value="{$promo.quota|default:''}">
+										</div>
+									</div>
+								</div>
+								<small class="text-muted mb-4 d-block">Tentukan berapa kali promo ini dapat digunakan,
+									kosongkan jika tidak ada batasan</small>
+
+								{if $is_edit && isset($usage_count)}
+								<div class="alert alert-info mt-3">
+									<div class="d-flex align-items-center">
+										<i class="fas fa-info-circle fa-2x me-3"></i>
+										<div>
+											<h6 class="mb-1">Informasi Penggunaan</h6>
+											<p class="mb-0">Promo ini telah digunakan sebanyak
+												<strong>{$usage_count}</strong> kali
+											</p>
+											{if isset($promo.quota) && $promo.quota !== null}
+											<p class="mb-0">Sisa kuota: <strong>{$remaining_quota}</strong></p>
+											{/if}
+											<a href="{site_url('promo/MasterPromo/usage/')}{$promo.promo_id}"
+												class="btn btn-sm btn-outline-primary mt-2">
+												<i class="fas fa-history me-1"></i> Lihat History
+											</a>
+										</div>
+									</div>
+								</div>
+								{/if}
+							</div>
+						</div>
+
+						<div class="card mb-4">
+							<div class="card-header bg-light">
+								<h5 class="mb-0"><i class="fas fa-cog me-2"></i>Pengaturan Aplikasi</h5>
+							</div>
+							<div class="card-body">
+								<!-- Cakupan Promo Section -->
+								<div class="mb-4">
+									<h6 class="section-header border-bottom pb-2 mb-3">
+										<i class="fas fa-filter me-2"></i>Cakupan Promo
+									</h6>
+
+									<div class="row mb-3">
+										<div class="col-md-6">
+											<div class="promo-scope-card product-scope">
+												<div class="form-check form-switch custom-switch">
+													<input class="form-check-input" type="checkbox"
+														id="product_specific" name="product_specific" value="yes" {if
+														$product_specific|default:''=='yes' }checked{/if}
+														onchange="toggleTargetField('product')">
+													<label class="form-check-label" for="product_specific">
+														<i class="fas fa-box me-2"></i>Khusus produk tertentu
+													</label>
+												</div>
+												<p class="promo-scope-description">
+													<i class="fas fa-info-circle me-1 text-info"></i>
+													Promo hanya berlaku untuk produk yang dipilih secara spesifik
+												</p>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="promo-scope-card category-scope">
+												<div class="form-check form-switch custom-switch">
+													<input class="form-check-input" type="checkbox"
+														id="category_specific" name="category_specific" value="yes" {if
+														$category_specific|default:''=='yes' }checked{/if}
+														onchange="toggleTargetField('category')">
+													<label class="form-check-label" for="category_specific">
+														<i class="fas fa-tags me-2"></i>Khusus kategori tertentu
+													</label>
+												</div>
+												<p class="promo-scope-description">
+													<i class="fas fa-info-circle me-1 text-info"></i>
+													Promo hanya berlaku untuk kategori yang dipilih secara spesifik
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Product Selector Section -->
+								<div id="product_selector" class="selector-section mb-4"
+									style="{if $product_specific|default:'' != 'yes'}display:none{/if}">
+									<h6 class="section-header border-bottom pb-2 mb-3">
+										<i class="fas fa-box me-2"></i>Pilih Produk
+									</h6>
+
+									<div class="search-filter-container mb-3">
+										<div class="row g-2">
+											<div class="col-md-8">
+												<div class="input-group">
+													<span class="input-group-text bg-light">
+														<i class="fas fa-search"></i>
+													</span>
+													<input type="text" class="form-control" id="product_search"
+														placeholder="Cari produk berdasarkan nama...">
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="input-group">
+													<span class="input-group-text bg-light">
+														<i class="fas fa-filter"></i>
+													</span>
+													<select class="form-select" id="product_brand_filter"
+														onchange="filterProductsByBrand()">
+														<option value="all">Semua Brand</option>
+														<option value="bakery">Bakery</option>
+														<option value="resto">Resto</option>
+														<option value="kopitiam">Kopitiam</option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="select-container mb-3">
+										<select class="form-select select2-product-search" id="product_ids"
+											name="product_ids[]" multiple
+											data-placeholder="Pilih produk yang berlaku untuk promo ini">
+											<optgroup label="Bakery" class="brand-optgroup bakery-optgroup">
+												{foreach from=$bakery_products item=product}
+												<option value="{$product.product_id}" data-brand="bakery" {if
+													isset($product_ids) && in_array($product.product_id,
+													$product_ids)}selected{/if}>
+													{$product.product_name}
+												</option>
+												{/foreach}
+											</optgroup>
+											<optgroup label="Resto" class="brand-optgroup resto-optgroup">
+												{foreach from=$resto_products item=product}
+												<option value="{$product.product_id}" data-brand="resto" {if
+													isset($product_ids) && in_array($product.product_id,
+													$product_ids)}selected{/if}>
+													{$product.product_name}
+												</option>
+												{/foreach}
+											</optgroup>
+											<optgroup label="Kopitiam" class="brand-optgroup kopitiam-optgroup">
+												{foreach from=$kopitiam_products item=product}
+												<option value="{$product.product_id}" data-brand="kopitiam" {if
+													isset($product_ids) && in_array($product.product_id,
+													$product_ids)}selected{/if}>
+													{$product.product_name}
+												</option>
+												{/foreach}
+											</optgroup>
+										</select>
+									</div>
+
+									<div class="selected-items-container">
+										<h6 class="selected-items-header">
+											<i class="fas fa-check-circle me-2"></i>Produk Terpilih
+											<span class="badge bg-primary rounded-pill" id="product_count">0</span>
+										</h6>
+										<div class="selected-items-list" id="selected_products_list">
+											<!-- Selected products will be displayed here -->
+											<div class="no-items-selected">
+												<i class="fas fa-info-circle me-2"></i>Belum ada produk yang dipilih
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Category Selector Section -->
+								<div id="category_selector" class="selector-section mb-4"
+									style="{if $category_specific|default:'' != 'yes'}display:none{/if}">
+									<h6 class="section-header border-bottom pb-2 mb-3">
+										<i class="fas fa-tags me-2"></i>Pilih Kategori
+									</h6>
+
+									<div class="search-filter-container mb-3">
+										<div class="row g-2">
+											<div class="col-md-8">
+												<div class="input-group">
+													<span class="input-group-text bg-light">
+														<i class="fas fa-search"></i>
+													</span>
+													<input type="text" class="form-control" id="category_search"
+														placeholder="Cari kategori berdasarkan nama...">
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="input-group">
+													<span class="input-group-text bg-light">
+														<i class="fas fa-filter"></i>
+													</span>
+													<select class="form-select" id="category_brand_filter"
+														onchange="filterCategoriesByBrand()">
+														<option value="all">Semua Brand</option>
+														<option value="bakery">Bakery</option>
+														<option value="resto">Resto</option>
+														<option value="kopitiam">Kopitiam</option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="select-container mb-3">
+										<select class="form-select select2-category-search" id="category_ids"
+											name="category_ids[]" multiple
+											data-placeholder="Pilih kategori yang berlaku untuk promo ini">
+											<optgroup label="Bakery" class="brand-optgroup bakery-optgroup">
+												{foreach from=$bakery_categories item=category}
+												<option value="{$category.cat_id}" data-brand="bakery" {if
+													isset($category_ids) && in_array($category.cat_id,
+													$category_ids)}selected{/if}>
+													{$category.cat_name}
+												</option>
+												{/foreach}
+											</optgroup>
+											<optgroup label="Resto" class="brand-optgroup resto-optgroup">
+												{foreach from=$resto_categories item=category}
+												<option value="{$category.cat_id}" data-brand="resto" {if
+													isset($category_ids) && in_array($category.cat_id,
+													$category_ids)}selected{/if}>
+													{$category.cat_name}
+												</option>
+												{/foreach}
+											</optgroup>
+											<optgroup label="Kopitiam" class="brand-optgroup kopitiam-optgroup">
+												{foreach from=$kopitiam_categories item=category}
+												<option value="{$category.cat_id}" data-brand="kopitiam" {if
+													isset($category_ids) && in_array($category.cat_id,
+													$category_ids)}selected{/if}>
+													{$category.cat_name}
+												</option>
+												{/foreach}
+											</optgroup>
+										</select>
+									</div>
+
+									<div class="selected-items-container">
+										<h6 class="selected-items-header">
+											<i class="fas fa-check-circle me-2"></i>Kategori Terpilih
+											<span class="badge bg-primary rounded-pill" id="category_count">0</span>
+										</h6>
+										<div class="selected-items-list" id="selected_categories_list">
+											<!-- Selected categories will be displayed here -->
+											<div class="no-items-selected">
+												<i class="fas fa-info-circle me-2"></i>Belum ada kategori yang dipilih
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Status Section -->
+								<div class="mb-3">
+									<h6 class="section-header border-bottom pb-2 mb-3">
+										<i class="fas fa-toggle-on me-2"></i>Status Promo
+									</h6>
+
+									<div class="status-controls">
+										<div class="form-group">
+											<select class="form-select form-select-lg" id="promo_status"
+												name="promo_status">
+												<option value="active" {if $promo.promo_status|default:''=='active' ||
+													!$is_edit}selected{/if}>
+													<i class="fas fa-check-circle"></i> Aktif
+												</option>
+												<option value="inactive" {if $promo.promo_status|default:''=='inactive'
+													}selected{/if}>
+													<i class="fas fa-times-circle"></i> Non-aktif
+												</option>
+											</select>
+											<small class="form-text text-muted">
+												<i class="fas fa-info-circle me-1"></i>
+												Status non-aktif akan menyembunyikan promo dari pelanggan meskipun dalam
+												periode aktif
+											</small>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Preview Card -->
+				<div class="card mb-4">
+					<div class="card-header bg-light">
+						<h5 class="mb-0"><i class="fas fa-eye me-2"></i>Preview Promo</h5>
+					</div>
+					<div class="card-body">
+						<div class="row">
+							<div class="col-md-4">
+								<div class="promo-preview-card">
+									<div class="promo-preview-header">
+										<span class="promo-brand" id="preview_brand">Brand</span>
+										<span class="promo-status" id="preview_status">Aktif</span>
+									</div>
+									<div class="promo-preview-body">
+										<h4 class="promo-name" id="preview_name">Nama Promo</h4>
+										<div class="promo-code-display">
+											<span id="preview_code">KODEPROMOXXX</span>
+										</div>
+										<div class="promo-value">
+											<span class="value-label">Nilai Diskon:</span>
+											<span class="value-display" id="preview_value">-</span>
+										</div>
+										<div class="promo-minimum">
+											<span class="min-label">Min. Pembelian:</span>
+											<span class="min-display" id="preview_minimum">-</span>
+										</div>
+										<div class="promo-period">
+											<i class="fas fa-calendar-day me-1"></i>
+											<span id="preview_period">Periode Promo</span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-8">
+								<div class="calculation-example">
+									<h5 class="mb-3">Contoh Perhitungan</h5>
+									<div class="row gx-0">
+										<div class="col-md-4">
+											<div class="input-group mb-3">
+												<span class="input-group-text">Rp</span>
+												<input type="number" class="form-control" id="sample_amount"
+													value="100000" min="1000" step="1000" oninput="updateCalculation()">
+											</div>
+										</div>
+										<div class="col-md-8">
+											<div class="calculation-result">
+												<div class="calculation-breakdown">
+													<div class="d-flex justify-content-between mb-2 border-bottom pb-2">
+														<span>Total Belanja:</span>
+														<span>Rp <span id="calc_total">100,000</span></span>
+													</div>
+													<div class="d-flex justify-content-between mb-2 text-danger">
+														<span>Diskon (<span id="calc_discount_label">-</span>):</span>
+														<span>- Rp <span id="calc_discount">0</span></span>
+													</div>
+													<div class="d-flex justify-content-between fw-bold">
+														<span>Total Setelah Diskon:</span>
+														<span>Rp <span id="calc_final">100,000</span></span>
+													</div>
+												</div>
+												<div id="calc_message" class="mt-2 small"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Form Submit Buttons -->
+				<div class="d-flex justify-content-center mt-4 mb-2">
+					<button type="submit" class="btn btn-primary px-4 py-2 me-2">
+						<i class="fas fa-save me-2"></i> {if $is_edit}Simpan Perubahan{else}Simpan Promo{/if}
+					</button>
+					<a href="{site_url('promo/MasterPromo')}" class="btn btn-outline-secondary px-4 py-2">
+						<i class="fas fa-times me-2"></i> Batal
+					</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script src="{$BASEURL}resource/assets-frontend/js/Promo/form.js"></script>

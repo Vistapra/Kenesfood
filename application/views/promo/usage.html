@@ -1,0 +1,625 @@
+<link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/Promo/usage.css">
+
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h4 class="card-title mb-0">
+					<i class="fas fa-history text-primary me-2"></i> History Penggunaan Promo
+				</h4>
+				<div>
+					{if $promo.promo_type == 'bundling'}
+					<a href="{site_url('promo/MasterPromo/bundling/')}{$promo.promo_id}" class="btn btn-primary ms-2">
+						<i class="fas fa-gift me-1"></i> Edit Bundling
+					</a>
+					{elseif $promo.promo_type == 'bogo'}
+					<a href="{site_url('promo/MasterPromo/bogo/')}{$promo.promo_id}" class="btn btn-primary ms-2">
+						<i class="fas fa-tag me-1"></i> Edit BOGO
+					</a>
+					{/if}
+				</div>
+			</div>
+
+			<!-- Flash Messages -->
+			{if isset($smarty.session.success)}
+			<div class="alert alert-success alert-dismissible fade show" role="alert">
+				<i class="fas fa-check-circle me-2"></i> {$smarty.session.success}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			{if isset($smarty.session.error)}
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				<i class="fas fa-exclamation-circle me-2"></i> {$smarty.session.error}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			<!-- Promo Summary Card -->
+			<div class="card mb-4">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="promo-info mb-4">
+								<h5 class="mb-3">Detail Promo</h5>
+								<div class="d-flex mb-2">
+									<div class="promo-label">Kode Promo:</div>
+									<div class="promo-value">
+										<span class="badge bg-light text-dark">{$promo.promo_code}</span>
+									</div>
+								</div>
+								<div class="d-flex mb-2">
+									<div class="promo-label">Nama Promo:</div>
+									<div class="promo-value">{$promo.promo_name}</div>
+								</div>
+								<div class="d-flex mb-2">
+									<div class="promo-label">Brand:</div>
+									<div class="promo-value">
+										{if $promo.is_mrp_voucher == 1 && !empty($promo.supported_brands)}
+										<div class="supported-brands">
+											{assign var=brands value=","|explode:$promo.supported_brands}
+											{foreach from=$brands item=brand name=brand_loop}
+											<span
+												class="brand-badge brand-{$brand|lower|trim}">{strtoupper($brand|trim)}</span>
+											{/foreach}
+										</div>
+										{else}
+										<span
+											class="brand-badge brand-{$promo.promo_brand}">{strtoupper($promo.promo_brand)}</span>
+										{/if}
+									</div>
+								</div>
+								<div class="d-flex mb-2">
+									<div class="promo-label">Tipe Promo:</div>
+									<div class="promo-value">
+										{if $promo.promo_type == 'percentage'}
+										<span class="promo-type-badge type-percentage">
+											<i class="fas fa-percent me-1"></i> Persentase
+										</span>
+										{elseif $promo.promo_type == 'nominal'}
+										<span class="promo-type-badge type-nominal">
+											<i class="fas fa-money-bill-wave me-1"></i> Nominal
+										</span>
+										{elseif $promo.promo_type == 'bundling'}
+										<span class="promo-type-badge type-bundling">
+											<i class="fas fa-gift me-1"></i> Bundling
+										</span>
+										{elseif $promo.promo_type == 'bogo'}
+										<span class="promo-type-badge type-bogo">
+											<i class="fas fa-tag me-1"></i> BOGO
+										</span>
+										{/if}
+									</div>
+								</div>
+								{if $promo.promo_type == 'percentage' || $promo.promo_type == 'nominal'}
+								<div class="d-flex mb-2">
+									<div class="promo-label">Nilai Diskon:</div>
+									<div class="promo-value">
+										<span
+											class="discount-badge 
+                                            {if $promo.promo_type == 'percentage'}discount-percentage{else}discount-nominal{/if}">
+											{if $promo.promo_type == 'percentage'}
+											{$promo.promo_value}%
+											{if $promo.maximum_discount}
+											<small>Max: Rp {number_format($promo.maximum_discount, 0, ',', '.')}</small>
+											{/if}
+											{else}
+											Rp {number_format($promo.promo_value, 0, ',', '.')}
+											{/if}
+										</span>
+									</div>
+								</div>
+								<div class="d-flex mb-2">
+									<div class="promo-label">Min. Pembelian:</div>
+									<div class="promo-value">
+										{if $promo.minimum_order > 0}
+										Rp {number_format($promo.minimum_order, 0, ',', '.')}
+										{else}
+										<span class="text-muted">Tidak ada minimum</span>
+										{/if}
+									</div>
+								</div>
+								{/if}
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="promo-status-info mb-4">
+								<h5 class="mb-3">Status & Periode</h5>
+								<div class="d-flex mb-2">
+									<div class="promo-label">Status:</div>
+									<div class="promo-value">
+										{if $promo.promo_status == 'active'}
+										<span class="badge bg-success">Aktif</span>
+										{else}
+										<span class="badge bg-danger">Non-aktif</span>
+										{/if}
+									</div>
+								</div>
+								<div class="d-flex mb-2">
+									<div class="promo-label">Periode:</div>
+									<div class="promo-value">
+										<div class="period-dates">
+											<div>{$promo.formatted_start_date}</div>
+											<div class="period-separator"><i class="fas fa-arrow-right"></i></div>
+											<div>{$promo.formatted_end_date}</div>
+										</div>
+									</div>
+								</div>
+								<div class="d-flex mb-2">
+									<div class="promo-label">Kuota:</div>
+									<div class="promo-value">
+										{if $promo.quota !== null}
+										<div class="quota-display">
+											<div class="quota-text">
+												<span class="usage-count">{$promo.usage_count}</span> /
+												<span class="quota-total">{$promo.quota}</span>
+											</div>
+											<div class="progress mt-1" style="height: 8px; width: 150px;">
+												{assign var=percentUsed value=($promo.quota > 0) ? ($promo.usage_count /
+												$promo.quota * 100) : 0}
+												<div class="progress-bar 
+                                                        {if $percentUsed >= 80}bg-danger
+                                                        {elseif $percentUsed >= 50}bg-warning
+                                                        {else}bg-success{/if}" role="progressbar"
+													style="width: {$percentUsed}%;" aria-valuenow="{$percentUsed}"
+													aria-valuemin="0" aria-valuemax="100">
+												</div>
+											</div>
+										</div>
+										{else}
+										<span class="unlimited-badge">
+											<i class="fas fa-infinity"></i> Tidak terbatas
+										</span>
+										{/if}
+									</div>
+								</div>
+								<div class="d-flex mb-0">
+									<div class="promo-label">Total Penggunaan:</div>
+									<div class="promo-value">
+										<span class="fw-bold">{$total_usage}</span> kali digunakan
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{if $promo.promo_type == 'bundling' && $bundles|@count > 0}
+			<!-- Bundling Configuration Card -->
+			<div class="card mb-4">
+				<div class="card-header bg-light">
+					<h5 class="mb-0"><i class="fas fa-gift me-2"></i>Konfigurasi Bundling</h5>
+				</div>
+				<div class="card-body">
+					<div class="alert alert-info mb-3">
+						<i class="fas fa-info-circle me-2"></i>
+						Promo bundling memberikan produk gratis ketika pelanggan membeli dua produk yang ditentukan.
+					</div>
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead class="bg-light">
+								<tr>
+									<th class="text-center" width="50">No</th>
+									<th>Produk Pertama</th>
+									<th>Produk Kedua</th>
+									<th class="text-center">Produk Gratis</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$bundles key=key item=bundle name=bundle_loop}
+								<tr>
+									<td class="text-center">{$key+1}</td>
+									<td>
+										<div class="bundle-product">
+											<span class="fw-bold">{$bundle.required_product_name1}</span>
+											<div class="text-muted small">
+												Min qty: <span
+													class="badge bg-light text-dark">{$bundle.min_quantity1}</span>
+											</div>
+											<div class="mt-1">
+												<span class="brand-badge brand-{$bundle.required_product_brand1}">
+													{strtoupper($bundle.required_product_brand1)}
+												</span>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="bundle-product">
+											<span class="fw-bold">{$bundle.required_product_name2}</span>
+											<div class="text-muted small">
+												Min qty: <span
+													class="badge bg-light text-dark">{$bundle.min_quantity2}</span>
+											</div>
+											<div class="mt-1">
+												<span class="brand-badge brand-{$bundle.required_product_brand2}">
+													{strtoupper($bundle.required_product_brand2)}
+												</span>
+											</div>
+										</div>
+									</td>
+									<td class="text-center">
+										<div class="free-product text-success">
+											<i class="fas fa-gift me-1"></i>
+											<span class="fw-bold">{$bundle.free_quantity}x
+												{$bundle.free_product_name}</span>
+											<div class="mt-1">
+												<span class="brand-badge brand-{$bundle.free_product_brand}">
+													{strtoupper($bundle.free_product_brand)}
+												</span>
+											</div>
+										</div>
+									</td>
+								</tr>
+								{/foreach}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			{/if}
+
+			{if $promo.promo_type == 'bogo' && isset($bogos) && $bogos|@count > 0}
+			<!-- BOGO Configuration Card -->
+			<div class="card mb-4">
+				<div class="card-header bg-light">
+					<h5 class="mb-0"><i class="fas fa-tag me-2"></i>Konfigurasi BOGO</h5>
+				</div>
+				<div class="card-body">
+					<div class="alert alert-info mb-3">
+						<i class="fas fa-info-circle me-2"></i>
+						Promo BOGO (Buy One Get One) memberikan produk gratis ketika pelanggan membeli sejumlah produk
+						tertentu.
+					</div>
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead class="bg-light">
+								<tr>
+									<th class="text-center" width="50">No</th>
+									<th>Produk yang Dibeli</th>
+									<th class="text-center">Jumlah Pembelian</th>
+									<th class="text-center">Produk Gratis</th>
+									<th class="text-center">Jumlah Gratis</th>
+									<th class="text-center">Maks. Berlaku</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$bogos key=key item=bogo name=bogo_loop}
+								<tr>
+									<td class="text-center">{$key+1}</td>
+									<td>
+										<div class="bogo-product">
+											<span class="fw-bold">{$bogo.product_name}</span>
+											<div class="mt-1">
+												<span class="brand-badge brand-{$bogo.product_brand}">
+													{strtoupper($bogo.product_brand)}
+												</span>
+											</div>
+										</div>
+									</td>
+									<td class="text-center">
+										<span class="badge bg-primary">{$bogo.buy_quantity}x</span>
+									</td>
+									<td class="text-center">
+										<div class="free-product text-success">
+											{if $bogo.product_id == $bogo.free_product_id}
+											<span class="fw-bold">Produk yang sama</span>
+											{else}
+											<span class="fw-bold">{$bogo.free_product_name}</span>
+											<div class="mt-1">
+												<span class="brand-badge brand-{$bogo.free_product_brand}">
+													{strtoupper($bogo.free_product_brand)}
+												</span>
+											</div>
+											{/if}
+										</div>
+									</td>
+									<td class="text-center">
+										<span class="badge bg-success">{$bogo.free_quantity}x</span>
+									</td>
+									<td class="text-center">
+										{if $bogo.max_apply_count}
+										<span class="badge bg-warning text-dark">{$bogo.max_apply_count}x per
+											order</span>
+										{else}
+										<span class="text-muted">Tidak terbatas</span>
+										{/if}
+									</td>
+								</tr>
+								{/foreach}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			{/if}
+
+			{if $promo_products|@count > 0 || $promo_categories|@count > 0}
+			<div class="card mb-4">
+				<div class="card-header bg-light">
+					<h5 class="mb-0"><i class="fas fa-filter me-2"></i>Cakupan Promo</h5>
+				</div>
+				<div class="card-body">
+					<div class="row">
+						{if $promo_products|@count > 0}
+						<div class="col-md-6">
+							<div class="detail-section">
+								<h6 class="mb-3 border-bottom pb-2">
+									<i class="fas fa-box me-2"></i>Produk Khusus ({$promo_products|@count})
+								</h6>
+								<div class="product-list">
+									{foreach from=$promo_products item=product name=product_loop}
+									<div
+										class="product-item mb-2 d-flex align-items-center {if $smarty.foreach.product_loop.index >= 5 && $promo_products|@count > 5}d-none more-products{/if}">
+										<span class="product-name flex-grow-1">
+											{$product.product_name}
+										</span>
+										<span
+											class="brand-badge brand-{$product.product_brand|lower|default:'tidak-diketahui'}">
+											{strtoupper($product.product_brand|default:'Tidak Diketahui')}
+										</span>
+									</div>
+									{/foreach}
+									{if $promo_products|@count > 5}
+									<div class="text-center mt-2">
+										<button type="button" class="btn btn-sm btn-outline-primary toggle-products">
+											<span class="show-text">Lihat {$promo_products|@count - 5} produk
+												lainnya</span>
+											<span class="hide-text d-none">Sembunyikan produk</span>
+										</button>
+									</div>
+									{/if}
+								</div>
+							</div>
+						</div>
+						{/if}
+
+						{if $promo_categories|@count > 0}
+						<div class="col-md-6">
+							<div class="detail-section">
+								<h6 class="mb-3 border-bottom pb-2">
+									<i class="fas fa-layer-group me-2"></i>Kategori Khusus ({$promo_categories|@count})
+								</h6>
+								<div class="category-list">
+									{foreach from=$promo_categories item=category name=category_loop}
+									<div
+										class="category-item mb-2 d-flex align-items-center {if $smarty.foreach.category_loop.index >= 5 && $promo_categories|@count > 5}d-none more-categories{/if}">
+										<span class="category-name flex-grow-1">
+											{$category.cat_name}
+										</span>
+										<span
+											class="brand-badge brand-{$category.cat_brand|lower|default:'tidak-diketahui'}">
+											{strtoupper($category.cat_brand|default:'Tidak Diketahui')}
+										</span>
+									</div>
+									{/foreach}
+									{if $promo_categories|@count > 5}
+									<div class="text-center mt-2">
+										<button type="button" class="btn btn-sm btn-outline-primary toggle-categories">
+											<span class="show-text">Lihat {$promo_categories|@count - 5} kategori
+												lainnya</span>
+											<span class="hide-text d-none">Sembunyikan kategori</span>
+										</button>
+									</div>
+									{/if}
+								</div>
+							</div>
+						</div>
+						{/if}
+					</div>
+				</div>
+			</div>
+			{/if}
+
+			<!-- Usage Statistics Card -->
+			<div class="card mb-4">
+				<div class="card-header bg-light">
+					<h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Statistik Penggunaan</h5>
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-4 mb-3">
+							<div class="card stats-card h-100">
+								<div class="card-body text-center">
+									<div class="stats-icon bg-primary rounded-circle mb-3">
+										<i class="fas fa-tags"></i>
+									</div>
+									<h3 class="stats-number">{$total_usage}</h3>
+									<p class="stats-title">Total Penggunaan</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4 mb-3">
+							<div class="card stats-card h-100">
+								<div class="card-body text-center">
+									<div class="stats-icon bg-success rounded-circle mb-3">
+										<i class="fas fa-dollar-sign"></i>
+									</div>
+									<h3 class="stats-number">
+										{if $promo.promo_type == 'percentage' || $promo.promo_type == 'nominal'}
+										Rp {number_format($total_discount|default:0, 0, ',', '.')}
+										{elseif $promo.promo_type == 'bundling'}
+										{$total_usage} bundle
+										{elseif $promo.promo_type == 'bogo'}
+										{$total_usage} BOGO
+										{/if}
+									</h3>
+									<p class="stats-title">
+										{if $promo.promo_type == 'percentage' || $promo.promo_type == 'nominal'}
+										Total Diskon
+										{elseif $promo.promo_type == 'bundling'}
+										Total Bundle Terpakai
+										{elseif $promo.promo_type == 'bogo'}
+										Total BOGO Terpakai
+										{/if}
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4 mb-3">
+							<div class="card stats-card h-100">
+								<div class="card-body text-center">
+									<div class="stats-icon bg-info rounded-circle mb-3">
+										<i class="fas fa-calculator"></i>
+									</div>
+									{if $promo.promo_type == 'percentage' || $promo.promo_type == 'nominal'}
+									<h3 class="stats-number">Rp {number_format($avg_discount|default:0, 0, ',', '.')}
+									</h3>
+									<p class="stats-title">Rata-rata Diskon</p>
+									{elseif $promo.promo_type == 'bundling'}
+									<h3 class="stats-number">{if $total_usage > 0 && isset($bundles) && $bundles|@count
+										> 0}{$bundles|@count}{else}0{/if}</h3>
+									<p class="stats-title">Jumlah Konfigurasi</p>
+									{elseif $promo.promo_type == 'bogo'}
+									<h3 class="stats-number">{if $total_usage > 0 && isset($bogos) && $bogos|@count >
+										0}{$bogos|@count}{else}0{/if}</h3>
+									<p class="stats-title">Jumlah Konfigurasi</p>
+									{/if}
+								</div>
+							</div>
+						</div>
+					</div>
+					{if $promo.promo_type == 'bundling' || $promo.promo_type == 'bogo'}
+					<div class="alert alert-info mt-2">
+						<i class="fas fa-info-circle me-2"></i>
+						{if $promo.promo_type == 'bundling'}
+						Statistik menampilkan jumlah penggunaan promo bundling. Setiap transaksi dapat menggunakan lebih
+						dari satu konfigurasi bundling.
+						{elseif $promo.promo_type == 'bogo'}
+						Statistik menampilkan jumlah penggunaan promo BOGO. Setiap transaksi dapat menggunakan lebih
+						dari satu konfigurasi BOGO.
+						{/if}
+					</div>
+					{/if}
+				</div>
+			</div>
+
+			<!-- Usage History Table -->
+			<div class="card mb-4">
+				<div class="card-header bg-light">
+					<h5 class="mb-0"><i class="fas fa-list-alt me-2"></i>Riwayat Penggunaan</h5>
+				</div>
+				<div class="card-body">
+					{if $usage_history|@count > 0}
+					<div class="table-responsive">
+						<table class="table align-middle promo-usage-table">
+							<thead>
+								<tr>
+									<th class="text-center" width="60">No</th>
+									<th>Order ID</th>
+									<th>Waktu Penggunaan</th>
+									{if $promo.promo_type == 'percentage' || $promo.promo_type == 'nominal'}
+									<th class="text-end">Jumlah Diskon</th>
+									{elseif $promo.promo_type == 'bundling'}
+									<th class="text-center">Jumlah Bundle</th>
+									{elseif $promo.promo_type == 'bogo'}
+									<th class="text-center">Jumlah BOGO</th>
+									{/if}
+									<th class="text-center">Detail</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$usage_history key=key item=usage name=usagelist}
+								<tr>
+									<td class="text-center">{$key+1}</td>
+									<td>
+										<div class="order-info">
+											<span class="order-id">{$usage.order_id}</span>
+											{if isset($usage.customer_name)}
+											<div class="customer-name text-muted small">
+												Customer: {$usage.customer_name}
+											</div>
+											{/if}
+										</div>
+									</td>
+									<td>
+										<div class="usage-time">
+											<span class="usage-date">{date('d M Y',
+												strtotime($usage.usage_time))}</span>
+											<div class="usage-hour text-muted small">
+												{date('H:i:s', strtotime($usage.usage_time))}
+											</div>
+										</div>
+									</td>
+									{if $promo.promo_type == 'percentage' || $promo.promo_type == 'nominal'}
+									<td class="text-end">
+										<span class="discount-amount">
+											Rp {number_format($usage.discount_amount, 0, ',', '.')}
+										</span>
+									</td>
+									{elseif $promo.promo_type == 'bundling'}
+									<td class="text-center">
+										<span class="badge bg-indigo">
+											<i class="fas fa-gift me-1"></i> Bundling
+										</span>
+									</td>
+									{elseif $promo.promo_type == 'bogo'}
+									<td class="text-center">
+										<span class="badge bg-pink">
+											<i class="fas fa-tag me-1"></i> BOGO
+										</span>
+									</td>
+									{/if}
+									<td class="text-center">
+										{if isset($usage.order_url)}
+										<a href="{$usage.order_url}" class="btn btn-sm btn-outline-primary">
+											<i class="fas fa-eye"></i>
+										</a>
+										{else}
+										<button type="button" class="btn btn-sm btn-outline-secondary" disabled>
+											<i class="fas fa-eye-slash"></i>
+										</button>
+										{/if}
+									</td>
+								</tr>
+								{/foreach}
+							</tbody>
+						</table>
+					</div>
+
+					<!-- Pagination -->
+					<div class="d-flex justify-content-between align-items-center mt-4">
+						<div class="text-muted">
+							Menampilkan {$pagination.start|default:0} - {$pagination.end|default:0} dari
+							{$total_usage|default:0} data
+						</div>
+						<nav aria-label="Usage pagination">
+							<ul class="pagination pagination-sm mb-0">
+								{$pagination|default:''}
+							</ul>
+						</nav>
+					</div>
+					{else}
+					<!-- Empty State -->
+					<div class="text-center py-5">
+						<div class="empty-state">
+							<i class="fas fa-history fa-4x text-muted mb-4"></i>
+							<h4>Tidak ada data penggunaan</h4>
+							<p class="text-muted mb-0">Promo ini belum pernah digunakan</p>
+						</div>
+					</div>
+					{/if}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		// Initialize tooltips
+		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+			return new bootstrap.Tooltip(tooltipTriggerEl);
+		});
+
+		// Animation for stats cards
+		const statsCards = document.querySelectorAll('.stats-card');
+
+		statsCards.forEach(function (card, index) {
+			setTimeout(function () {
+				card.classList.add('animated');
+			}, 100 * index);
+		});
+	});
+</script>

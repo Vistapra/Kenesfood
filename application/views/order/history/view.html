@@ -1,0 +1,639 @@
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h4 class="card-title">Detail Riwayat Order</h4>
+				<div>
+					<a href="{$site_url}order/history" class="btn btn-outline-secondary">
+						<i class="fa-solid fa-arrow-left me-2"></i>Kembali
+					</a>
+					<button class="btn btn-outline-primary print-receipt-history" data-order-id="{$history.order_id}"
+						data-outlet-id="{$history.outlet_id}" data-table-id="{$history.table_id}"
+						data-brand="{$history.brand}">
+						<i class="fa-solid fa-print me-2"></i>Cetak Struk
+					</button>
+				</div>
+			</div>
+
+			<!-- Order Header Information -->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card bg-light">
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-4">
+									<p class="mb-1"><strong>ID Order:</strong> #{$history.order_id}</p>
+									<p class="mb-1"><strong>Pelanggan:</strong> {$history.customer_name}</p>
+									<p class="mb-0"><strong>Tanggal Order:</strong>
+										{$history.created_at|date_format:"%d/%m/%Y %H:%M"}</p>
+								</div>
+								<div class="col-md-4 text-center">
+									<p class="mb-1"><strong>Status:</strong> <span
+											class="badge {$statusInfo.class} p-2">{$statusInfo.text}</span></p>
+									<p class="mb-1"><strong>Outlet:</strong>
+										{$history.outlet.outlet_name|default:'Unknown Outlet'}</p>
+									<p class="mb-0"><strong>Meja:</strong> {$history.table_id}</p>
+								</div>
+								<div class="col-md-4 text-end">
+									<p class="mb-1"><strong>Brand:</strong> {$history.brand|capitalize}</p>
+									<p class="mb-1"><strong>Total Item:</strong> {$history.total_items}</p>
+									<p class="mb-0"><strong>Total Amount:</strong> Rp
+										{$grandTotal|number_format:0:',':'.'}</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Detail Tracking Order -->
+			<div class="row mt-4">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Detail Tracking Order</h5>
+							<div id="orderTimeline" class="mb-3">
+								<div class="timeline-track"></div>
+								<div class="timeline-steps">
+									<!-- Timeline will be filled by JavaScript -->
+								</div>
+							</div>
+							<div id="orderTimingDetails">
+								<!-- Data timing akan diisi secara dinamis via JavaScript -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Order Items Table -->
+			<div class="row mt-4">
+				<div class="col-md-12">
+					<h5 class="mb-3">Daftar Item</h5>
+					<div class="table-responsive">
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th width="50%">Item</th>
+									<th width="15%" class="text-center">Qty</th>
+									<th width="15%" class="text-end">Harga</th>
+									<th width="20%" class="text-end">Subtotal</th>
+								</tr>
+							</thead>
+							<tbody>
+								{if isset($history.items) && $history.items|@count > 0}
+								{foreach from=$history.items item=item}
+								{if isset($item.is_package) && $item.is_package}
+								<!-- Package Header -->
+								<tr class="table-info">
+									<td>
+										<strong>{$item.product_name}</strong>
+										{if $item.notes != ''}
+										<div class="small text-muted mt-1">
+											<i class="fa-solid fa-comment-dots me-1"></i>{$item.notes}
+										</div>
+										{/if}
+										{if isset($item.is_promo_item) && $item.is_promo_item == 1}
+										<span class="badge bg-success ms-2">Promo</span>
+										{/if}
+									</td>
+									<td class="text-center">{$item.quantity}x</td>
+									<td class="text-end">
+										{if isset($item.is_promo_item) && $item.is_promo_item == 1}
+										Gratis
+										{if isset($item.original_price) && $item.original_price > 0}
+										<span class="text-muted text-decoration-line-through small">
+											Rp {$item.original_price|number_format:0:',':'.'}
+										</span>
+										{/if}
+										{else}
+										Rp {$item.unit_price|number_format:0:',':'.'}
+										{/if}
+									</td>
+									<td class="text-end">
+										{if isset($item.is_promo_item) && $item.is_promo_item == 1}
+										Gratis
+										{else}
+										Rp {$item.subtotal|number_format:0:',':'.'}
+										{/if}
+									</td>
+								</tr>
+								<!-- Package Items -->
+								{if isset($item.items) && $item.items|@count > 0}
+								{foreach from=$item.items item=packageItem}
+								<tr class="table-light">
+									<td class="ps-4">
+										<i class="fa-solid fa-angle-right me-2 text-muted"></i>
+										{$packageItem.product_name}
+										{if $packageItem.notes != ''}
+										<div class="small text-muted mt-1 ms-4">
+											<i class="fa-solid fa-comment-dots me-1"></i>{$packageItem.notes}
+										</div>
+										{/if}
+										{if isset($packageItem.is_promo_item) && $packageItem.is_promo_item == 1}
+										<span class="badge bg-success ms-2">Promo</span>
+										{/if}
+									</td>
+									<td class="text-center">{$packageItem.quantity}x</td>
+									<td class="text-end">
+										{if isset($packageItem.is_promo_item) && $packageItem.is_promo_item == 1}
+										Gratis
+										{if isset($packageItem.original_price) && $packageItem.original_price > 0}
+										<span class="text-muted text-decoration-line-through small">
+											Rp {$packageItem.original_price|number_format:0:',':'.'}
+										</span>
+										{/if}
+										{else}
+										Rp {$packageItem.unit_price|number_format:0:',':'.'}
+										{/if}
+									</td>
+									<td class="text-end">
+										{if isset($packageItem.is_promo_item) && $packageItem.is_promo_item == 1}
+										Gratis
+										{else}
+										Rp {($packageItem.unit_price * $packageItem.quantity)|number_format:0:',':'.'}
+										{/if}
+									</td>
+								</tr>
+								{/foreach}
+								{/if}
+								{else}
+								<!-- Regular Item -->
+								<tr {if isset($item.parent_id) && $item.parent_id} class="package-item table-light"
+									{/if}>
+									<td {if isset($item.parent_id) && $item.parent_id} class="ps-4" {/if}>
+										{if isset($item.parent_id) && $item.parent_id}
+										<i class="fa-solid fa-angle-right me-2 text-muted"></i>
+										{/if}
+										{$item.product_name}
+										{if $item.notes != ''}
+										<div
+											class="small text-muted mt-1 {if isset($item.parent_id) && $item.parent_id}ms-4{/if}">
+											<i class="fa-solid fa-comment-dots me-1"></i>{$item.notes}
+										</div>
+										{/if}
+										{if isset($item.is_promo_item) && $item.is_promo_item == 1}
+										<span class="badge bg-success ms-2">Promo</span>
+										{/if}
+									</td>
+									<td class="text-center">{$item.quantity}x</td>
+									<td class="text-end">
+										{if isset($item.is_promo_item) && $item.is_promo_item == 1}
+										Gratis
+										{if isset($item.original_price) && $item.original_price > 0}
+										<span class="text-muted text-decoration-line-through small">
+											Rp {$item.original_price|number_format:0:',':'.'}
+										</span>
+										{/if}
+										{else}
+										Rp {$item.unit_price|number_format:0:',':'.'}
+										{/if}
+									</td>
+									<td class="text-end">
+										{if isset($item.is_promo_item) && $item.is_promo_item == 1}
+										Gratis
+										{else}
+										Rp {$item.subtotal|number_format:0:',':'.'}
+										{/if}
+									</td>
+								</tr>
+								{/if}
+								{/foreach}
+								{else}
+								<tr>
+									<td colspan="4" class="text-center py-3">
+										<div class="alert alert-info mb-0">
+											<i class="fa-solid fa-info-circle me-2"></i>
+											Tidak ada item dalam order ini
+										</div>
+									</td>
+								</tr>
+								{/if}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<!-- Order Summary -->
+			<div class="row mt-4">
+				<div class="col-md-6 offset-md-6">
+					<div class="card bg-light">
+						<div class="card-body">
+							<h5 class="mb-3">Ringkasan Order</h5>
+							<div class="d-flex justify-content-between mb-2">
+								<span>Regular Items:</span>
+								<span>Rp {$regularTotal|number_format:0:',':'.'}</span>
+							</div>
+							{if $packageTotal > 0}
+							<div class="d-flex justify-content-between mb-2">
+								<span>Package Items:</span>
+								<span>Rp {$packageTotal|number_format:0:',':'.'}</span>
+							</div>
+							{/if}
+							<div class="d-flex justify-content-between mb-2">
+								<span>Subtotal:</span>
+								<span>Rp {$subtotal|number_format:0:',':'.'}</span>
+							</div>
+
+							<!-- Informasi Promo -->
+							{if isset($promo_info) && $promo_info}
+							{if $promo_type == 'bundling' || $promo_type == 'bogo'}
+							<!-- Untuk BOGO/Bundling - tampilkan nilai produk gratis -->
+							{if isset($bundle_bogo_discount) && $bundle_bogo_discount > 0}
+							<div class="d-flex justify-content-between mb-2 text-info">
+								<span>Nilai Produk Gratis ({$promo_info.promo_code}):</span>
+								<span>Rp {$bundle_bogo_discount|number_format:0:',':'.'}</span>
+							</div>
+							<div class="alert alert-info small">
+								<i class="fa-solid fa-info-circle me-1"></i> Nilai produk gratis ditampilkan sebagai
+								informasi dan tidak mengurangi total belanja
+							</div>
+							{/if}
+							{else}
+							<!-- Untuk Percentage/Nominal - tampilkan pengurangan -->
+							{if isset($discount_amount) && $discount_amount > 0}
+							<div class="d-flex justify-content-between mb-2 text-danger">
+								<span>Diskon ({$promo_info.promo_code}):</span>
+								<span>-Rp {$discount_amount|number_format:0:',':'.'}</span>
+							</div>
+							{/if}
+							{/if}
+							{/if}
+
+							<div class="d-flex justify-content-between mb-2">
+								<span>Pajak (10%):</span>
+								<span>Rp {$tax|number_format:0:',':'.'}</span>
+							</div>
+							<hr>
+							<div class="d-flex justify-content-between fw-bold">
+								<span>Total:</span>
+								<span>Rp {$grandTotal|number_format:0:',':'.'}</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Tambahan Card untuk Display Promo Info -->
+					{if isset($promo_info) && $promo_info}
+					<div class="card mt-3">
+						<div class="card-body">
+							<div class="d-flex">
+								<div class="me-3">
+									{if $promo_type == 'bundling'}
+									<i class="fa fa-tags fs-4 text-info"></i>
+									{elseif $promo_type == 'bogo'}
+									<i class="fa fa-tags fs-4 text-success"></i>
+									{elseif $promo_type == 'percentage'}
+									<i class="fa fa-tags fs-4 text-danger"></i>
+									{else}
+									<i class="fa fa-tags fs-4 text-primary"></i>
+									{/if}
+								</div>
+								<div>
+									<h6>Informasi Promo</h6>
+									<div>
+										<strong>Kode:</strong> {$promo_info.promo_code}
+										<span class="badge 
+                                {if $promo_type == 'bundling'}bg-info
+                                {elseif $promo_type == 'bogo'}bg-success
+                                {elseif $promo_type == 'percentage'}bg-danger
+                                {else}bg-primary{/if} ms-2">
+											{if $promo_type == 'bundling'}
+											Bundling
+											{elseif $promo_type == 'bogo'}
+											Buy One Get One
+											{elseif $promo_type == 'percentage'}
+											Diskon {$promo_info.promo_value}%
+											{else}
+											Diskon Nominal
+											{/if}
+										</span>
+									</div>
+									<div class="mt-1 small">
+										{if $promo_type == 'bundling' || $promo_type == 'bogo'}
+										{if isset($bundle_bogo_discount) && $bundle_bogo_discount > 0}
+										<span class="badge bg-info">Nilai Produk Gratis: Rp
+											{$bundle_bogo_discount|number_format:0:',':'.'}</span>
+										{/if}
+										{else}
+										{if isset($discount_amount) && $discount_amount > 0}
+										<span class="badge bg-danger">Hemat Rp
+											{$discount_amount|number_format:0:',':'.'}</span>
+										{/if}
+										{/if}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					{/if}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	/* Timeline styling */
+	.timeline-track {
+		height: 4px;
+		background-color: #e9ecef;
+		position: relative;
+		margin: 20px 0;
+	}
+
+	.timeline-steps {
+		display: flex;
+		justify-content: space-between;
+		position: relative;
+		margin-top: -12px;
+	}
+
+	.timeline-step {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		flex: 1;
+	}
+
+	.timeline-icon {
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background-color: #fff;
+		border: 2px solid #e9ecef;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.timeline-icon.active {
+		background-color: #3498db;
+		border-color: #3498db;
+		color: white;
+	}
+
+	.timeline-icon.completed {
+		background-color: #2ecc71;
+		border-color: #2ecc71;
+		color: white;
+	}
+
+	.timeline-icon.cancelled {
+		background-color: #e74c3c;
+		border-color: #e74c3c;
+		color: white;
+	}
+
+	.timeline-text {
+		margin-top: 10px;
+		text-align: center;
+		max-width: 100px;
+		font-size: 12px;
+	}
+
+	.timeline-time {
+		font-size: 10px;
+		color: #6c757d;
+	}
+</style>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		var orderId = '{$history.id}';
+
+		function loadOrderTimings(orderId) {
+			var url = '{$site_url}order/history/getOrderTimings/' + orderId;
+
+			fetch(url, {
+				method: 'GET',
+				headers: {
+					'Accept': 'application/json',
+					'X-Requested-With': 'XMLHttpRequest'
+				}
+			})
+				.then(function (response) {
+					console.log('Response status:', response.status);
+					if (!response.ok) throw new Error('HTTP error ' + response.status);
+					return response.json();
+				})
+				.then(function (data) {
+					console.log('Response JSON data:', data);
+
+					if (data.success && data.data) {
+						renderOrderTimeline(data.data.timings);
+						renderOrderTimings(data.data.timings);
+					} else {
+						throw new Error(data.message || 'Tidak dapat memuat detail timing');
+					}
+				})
+				.catch(function (error) {
+					console.error('Error loading order timings:', error);
+					document.getElementById('orderTimingDetails').innerHTML =
+						'<div class="alert alert-danger">Gagal memuat detail timing order: ' + error.message + '</div>';
+				});
+		}
+
+		function renderOrderTimeline(timingData) {
+			if (!timingData || !timingData.stages) return;
+
+			var timelineSteps = document.querySelector('.timeline-steps');
+			if (!timelineSteps) return;
+
+			// Define the stages to display - USING ARRAY OF OBJECTS to avoid Smarty conflicts
+			var stageOrder = [];
+			stageOrder.push({ 'key': 'order_created', 'label': 'Order Dibuat', 'icon': 'fa-clock' });
+			stageOrder.push({ 'key': 'order_processed', 'label': 'Diproses', 'icon': 'fa-check-circle' });
+			stageOrder.push({ 'key': 'order_in_kitchen', 'label': 'Di Dapur', 'icon': 'fa-utensils' });
+			stageOrder.push({ 'key': 'order_served', 'label': 'Diantar', 'icon': 'fa-concierge-bell' });
+			stageOrder.push({ 'key': 'order_completed', 'label': 'Selesai', 'icon': 'fa-flag-checkered' });
+
+			// Only show cancelled if it's present and order is cancelled
+			if (timingData.stages.order_cancelled) {
+				stageOrder.push({ 'key': 'order_cancelled', 'label': 'Dibatalkan', 'icon': 'fa-ban' });
+			}
+
+			// Determine the last active stage
+			var lastActiveStage = null;
+			for (var i = stageOrder.length - 1; i >= 0; i--) {
+				if (timingData.stages[stageOrder[i].key]) {
+					lastActiveStage = stageOrder[i].key;
+					break;
+				}
+			}
+
+			var html = '';
+
+			for (var j = 0; j < stageOrder.length; j++) {
+				var stage = stageOrder[j];
+				var timestamp = timingData.stages[stage.key];
+				var statusClass = timestamp ? 'completed' : '';
+
+				// Last active stage gets 'active' class
+				if (stage.key === lastActiveStage) {
+					statusClass = stage.key === 'order_cancelled' ? 'cancelled' : 'active';
+				}
+
+				// Format time if available
+				var timeDisplay = '';
+				if (timestamp) {
+					var time = new Date(timestamp);
+					timeDisplay = time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+				}
+
+				html += '<div class="timeline-step">';
+				html += '<div class="timeline-icon ' + statusClass + '">';
+				html += '<i class="fa-solid ' + stage.icon + '"></i>';
+				html += '</div>';
+				html += '<div class="timeline-text">';
+				html += stage.label;
+
+				if (timestamp) {
+					html += '<div class="timeline-time">' + timeDisplay + '</div>';
+				}
+
+				html += '</div>';
+				html += '</div>';
+			}
+
+			timelineSteps.innerHTML = html;
+
+			// Update track to show progress
+			var track = document.querySelector('.timeline-track');
+			if (track) {
+				var progressPercent = 0;
+				var completedStages = 0;
+
+				// Count completed stages
+				for (var k = 0; k < stageOrder.length; k++) {
+					if (timingData.stages[stageOrder[k].key]) {
+						completedStages++;
+					}
+				}
+
+				if (completedStages > 0) {
+					if (timingData.stages.order_cancelled) {
+						// If cancelled, show red progress
+						progressPercent = 100;
+						track.innerHTML = '<div style="position:absolute; top:0; left:0; height:100%; width:' + progressPercent + '%; background-color:#e74c3c;"></div>';
+					} else {
+						// Normal progress (blue/green)
+						progressPercent = ((completedStages - 1) / (stageOrder.length - 1)) * 100;
+						var color = completedStages === stageOrder.length ? '#2ecc71' : '#3498db';
+						track.innerHTML = '<div style="position:absolute; top:0; left:0; height:100%; width:' + progressPercent + '%; background-color:' + color + ';"></div>';
+					}
+				}
+			}
+		}
+
+		function renderOrderTimings(timingData) {
+			var container = document.getElementById('orderTimingDetails');
+
+			if (!timingData || !timingData.stages || (timingData.message && timingData.stages.order_created === null)) {
+				container.innerHTML = '<div class="alert alert-info">Belum ada data timing yang tersedia untuk order ini</div>';
+				return;
+			}
+
+			function formatStage(stage) {
+				return stage
+					.replace(/_/g, ' ')
+					.replace(/\\b\\w/g, function (letter) {
+						return letter.toUpperCase();
+					});
+			}
+
+			function formatTimestamp(timestamp) {
+				if (!timestamp) return '<span class="text-danger">Belum tercatat</span>';
+
+				var date = new Date(timestamp);
+				return date.toLocaleString('id-ID', {
+					year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+				});
+			}
+
+			function formatDuration(duration) {
+				if (!duration) return '<span class="text-danger">Tidak tersedia</span>';
+
+				var result = '';
+				if (duration.hours > 0) {
+					result += duration.hours + ' jam ';
+				}
+				result += duration.minutes + ' menit ';
+				if (duration.hours == 0) {
+					result += duration.seconds + ' detik';
+				}
+				return result;
+			}
+
+			// Tampilkan stages
+			var stagesHtml = '';
+			for (var stage in timingData.stages) {
+				if (timingData.stages.hasOwnProperty(stage) && timingData.stages[stage]) { // Only show stages with timestamps
+					stagesHtml += '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+						'<strong>' + formatStage(stage) + '</strong>' +
+						'<span class="text-muted">' + formatTimestamp(timingData.stages[stage]) + '</span>' +
+						'</li>';
+				}
+			}
+
+			// Tampilkan durations yang ada di data
+			var stageDurationsHtml = '';
+			if (timingData.stage_durations && Object.keys(timingData.stage_durations).length > 0) {
+				for (var stageDuration in timingData.stage_durations) {
+					if (timingData.stage_durations.hasOwnProperty(stageDuration)) {
+						stageDurationsHtml += '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+							'<strong>' + formatStage(stageDuration) + '</strong>' +
+							'<span class="text-muted">' + formatDuration(timingData.stage_durations[stageDuration]) + '</span>' +
+							'</li>';
+					}
+				}
+			} else {
+				// Jika tidak ada durasi, tampilkan pesan
+				stageDurationsHtml = '<li class="list-group-item text-center text-muted">Tidak ada data durasi tersedia</li>';
+			}
+
+			var totalDurationHtml = '';
+			if (timingData.total_duration) {
+				var durationClass = 'success';
+				// Change color based on duration
+				if (timingData.total_duration.hours > 2) {
+					durationClass = 'danger';
+				} else if (timingData.total_duration.hours > 1) {
+					durationClass = 'warning';
+				}
+
+				totalDurationHtml = '<div class="alert alert-' + durationClass + '">' +
+					'<i class="fa-solid fa-clock me-2"></i>' +
+					'Total waktu: ' + formatDuration(timingData.total_duration) +
+					'</div>';
+			} else {
+				totalDurationHtml = '<div class="alert alert-danger">Total durasi tidak dapat dihitung</div>';
+			}
+
+			container.innerHTML =
+				'<div class="row">' +
+				'<div class="col-md-6">' +
+				'<h6 class="mb-3">Tahapan Order</h6>' +
+				'<ul class="list-group">' + stagesHtml + '</ul>' +
+				'</div>' +
+				'<div class="col-md-6">' +
+				'<h6 class="mb-3">Durasi Antar Tahap</h6>' +
+				'<ul class="list-group">' + stageDurationsHtml + '</ul>' +
+				'</div>' +
+				'</div>' +
+				'<div class="mt-4">' +
+				'<h6 class="mb-3">Total Durasi Order</h6>' +
+				totalDurationHtml +
+				'</div>';
+		}
+
+		if (orderId) {
+			loadOrderTimings(orderId);
+		} else {
+			document.getElementById('orderTimingDetails').innerHTML =
+				'<div class="alert alert-warning">Tidak dapat menemukan ID order</div>';
+		}
+	});
+</script>

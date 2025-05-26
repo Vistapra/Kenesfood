@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, target-densitydpi=device-dpi">
+        <link rel="icon" href="{$BASEURL}resource/assets-frontend/dist/logo/{$site.site_icon|default:'icon.png'}" type="image/png">
+        <link rel="stylesheet" href="{$BASEURL}resource/plugins/bootstrap-5.2.1-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/node_modules/@fancyapps/ui/dist/fancybox/fancybox.css">
+        <!-- <link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/css/kenes_style.css">
+        <link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/css/style.css"> -->
+        <link rel="stylesheet" href="{$BASEURL}resource/plugins/fontawesome-free-6.4.0-web/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+        <link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/jquery/css/alertify.min.css" />
+        <link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/jquery/css/themes/default.min.css" />
+        
+        <title>{$site.site_title|default:'Kenes Resto & Bakery'}</title>        
+    </head>
+    <body>
+            
+           
+                <div class="row">
+                    {if !empty($template_content)}
+                        {include file="$template_content"}
+                    {else}
+                        {include file="base/templates/error_template.html"}
+                    {/if}
+                </div>
+                <!-- FOOTER -->
+                <div class="footer">
+                    <!-- <div class="bg-kenes halal row">
+                        <div class="halal_icon">
+                            <img src="{$BASEURL}resource/assets-frontend/dist/logo/halal.png">
+                        </div>
+                        <div class="halal_detail" style="color: black;">
+                            <p>
+                                Kami tidak menyajikan hidangan yang mengandung alkohol atau makanan yang di larang oleh Majelis Ulama Indonesia
+                            </p>
+                        </div>
+                    </div> -->
+                </div>
+            </div>         
+        </div>
+        <script src="{$BASEURL}resource/assets-frontend/jquery/jquery-3.7.0.min.js"></script>
+        <script src="{$BASEURL}resource/plugins/bootstrap-5.2.1-dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="{$BASEURL}resource/plugins/bootstrap-5.2.1-dist/js/bootstrap.min.js"></script>
+        <script src="{$BASEURL}resource/assets-frontend/js/kenes_script.js"></script>
+        <script src="{$BASEURL}resource/assets-frontend/js/main.js"></script>
+
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+        <script
+            src="{$BASEURL}resource/assets-frontend/node_modules/@fancyapps/ui/dist/fancybox/fancybox.umd.js"></script> 
+        <script src="{$BASEURL}resource/assets-frontend/jquery/popper.min.js"></script>
+        <!-- include the script -->
+        <script src="{$BASEURL}resource/assets-frontend/jquery/alertify.min.js"></script>
+        <script>
+            
+            $('body').on('click', '#showLoc', function(e) {
+                if($('#listLoc').is(":visible")) {
+                $('#listLoc').hide();
+                } else {
+                $('#listLoc').show();
+                }
+            }); 
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,183 @@
+{include file="public/billboard.html"}
+<!-- HIGHLIGHT PROMO -->
+<!-- <section class="py-5">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-5">
+          <div class="banner-ad bg-danger mb-3" style="background-repeat: no-repeat;background-position: right bottom;">
+            <div class="banner-content p-5">
+
+                <div class="categories text-primary fs-3 fw-bold">Upto 10%</div>
+                <h5 class="banner-title"> <img src="{$BASEURL}resource/assets/public/promo/new-product.svg"></h5>
+                <a href="" class="btn btn-dark text-uppercase">Shop Now</a>
+  
+            </div>
+          
+          </div>
+        </div>
+        <div class="col-md-5">
+          <div class="banner-ad bg-info" style="background-repeat: no-repeat;background-position: right bottom;">
+            <div class="banner-content p-5">
+
+                <div class="categories text-primary fs-3 fw-bold">Upto 10%</div>
+                <h5 class="banner-title"><img src="{$BASEURL}resource/assets/public/promo/prelaunching.svg"></h5>
+                <a href="" class="btn btn-dark text-uppercase">Shop Now</a>
+  
+            </div>
+          
+          </div>
+        </div>
+           
+      </div>
+    </div>
+  </section> -->
+
+
+<!-- 
+{if !empty($products)}
+<div id="promo-banner" class="carousel slide" data-bs-ride="true">
+    <div class="carousel-indicators">
+      {foreach from=$products key=key item=product}
+      <button type="button" data-bs-target="#promo-banner" data-bs-slide-to="{$key}" {if $key == 0}class="active" aria-current="true"{/if} aria-label="{$product.product_name}"></button>
+      {/foreach}
+    </div>
+    <div class="carousel-inner">
+        {foreach from=$products key=key item=product}
+        <div class="carousel-item {if $key == 0}active{/if}">
+            <a  style="text-decoration: none;" href="{site_url(['products/product_detail',$product.product_id])}">
+              <div class="promo row">
+                  <div class="promo-detail">
+                      <div class="promo-tag">
+                          {if $product.product_promote == 'arrival'}
+                          <img src="{$BASEURL}resource/assets/public/promo/new-product.svg">
+                          {elseif $product.product_promote == 'prelaunch'}
+                          <img src="{$BASEURL}resource/assets/public/promo/prelaunching.svg">
+                          {/if}
+                      </div>
+                      <div class="promo-title">
+                        <h4>{$product.product_name}</h4>
+                      </div>
+                      <div class="promo-disc ">
+                        {if $product.product_promote == 'arrival'}
+                          <img src="{$BASEURL}resource/assets/public/new-icon/get-10-off.svg">
+                          {elseif $product.product_promote == 'prelaunch'}
+                          <img src="{$BASEURL}resource/assets/public/new-icon/soon.svg">
+                          {/if}
+                      </div>
+                  </div>
+                  <div class="promo-img">
+                      <img src="{$BASEURL}resource/assets-frontend/dist/product/{$product.product_pict}">
+                  </div>
+              </div>
+            </a>
+        </div>
+        {/foreach}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#promo-banner" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#promo-banner" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+{/if} -->
+
+<!-- BANNER -->
+<!-- {if !empty($banners)}
+  {if !empty($banners.brand_banner)}
+ 
+<div class="video-container">
+    {if file_exists('resource/assets-frontend/dist/banner/'|cat:$banners.brand_banner)}
+    <video autoplay loop muted>
+        <source src="{$BASEURL}resource/assets-frontend/dist/banner/{$banners.brand_banner}" type="video/mp4">
+    </video>
+        {else}
+      
+        {/if}
+</div>
+ 
+  {else}
+  <div class="video-container">
+        <img src="{$BASEURL}resource/assets-frontend/dist/product/videonotav.png">
+    </div>
+    {/if}
+{/if} -->
+
+<!-- HIGHLIGHT KATEGORI -->
+<div class="container-sm-2">
+{if !empty($categories)}
+<div class="box-container">
+    {foreach from=$categories key=key item=cat}
+    {if ($cat.cat_sub == '1')}
+       <a style="text-decoration: none;" href="{site_url(['products/category', $cat.cat_id])}"> 
+        <div class="m-1 categories">
+        
+                        
+        {if !empty($cat.cat_img)}
+        <div class="row_img">
+            <div class="cat_img">
+                {if file_exists('resource/assets-frontend/dist/product/'|cat:$cat.cat_img)}
+                        <img src="{$BASEURL}resource/assets-frontend/dist/product/{$cat.cat_img}">
+                        {else}
+                        <img src="{$BASEURL}resource/assets-frontend/dist/product/imagenotfound.png">
+                        {/if}
+
+            </div>
+            <div class="cat_detail">
+                <h4 class="text-uppercase">{$cat.cat_name}</h4>
+                <p>{($cat.cat_desc)}</p>
+            </div>
+        </div>
+    
+    {else} 
+        <div class="row_img">
+            <div class="cat_img">
+                <img src="{$BASEURL}resource/assets-frontend/dist/product/imagenotfound.png">
+            </div>
+            <div class="cat_detail">
+                <h4>{$cat.cat_name}</h4>
+                <p>{($cat.cat_desc)}</p>
+            </div>
+        </div>
+    {/if}
+</div>
+</a>
+        {else}
+        <a style="text-decoration: none;" href="{site_url(['products/list_product', $cat.cat_id])}"> <div class="m-1 categories">
+            {if !empty($cat.cat_img)}
+                <div class="row_img">
+                    <div class="cat_img">
+                        {if file_exists('resource/assets-frontend/dist/product/'|cat:$cat.cat_img)}
+                        <img src="{$BASEURL}resource/assets-frontend/dist/product/{$cat.cat_img}">
+                        {else}
+                        <img src="{$BASEURL}resource/assets-frontend/dist/product/imagenotfound.png">
+                        {/if}
+
+                    </div>
+                    <div class="cat_detail">
+                        <h4 class="text-uppercase">{$cat.cat_name}</h4>
+                        <p>{($cat.cat_desc)}</p>
+                    </div>
+                </div>
+            {else} 
+                <div class="row_img">
+                    <div class="cat_img">
+                        <img src="{$BASEURL}resource/assets-frontend/dist/product/imagenotfound.png">
+                    </div>
+                    <div class="cat_detail">
+                        <h4>{$cat.cat_name}</h4>
+                        <p>{($cat.cat_desc)}</p>
+                    </div>
+                </div>
+            {/if}
+        </div>
+    </a>
+    {/if}
+    {/foreach}
+</div>
+{/if}
+</div>  
+
+

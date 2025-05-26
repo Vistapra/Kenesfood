@@ -1,0 +1,72 @@
+<div class="row">
+	<div class="col-md-12 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-header">
+				<h4 class="card-title">Update Harga Produk dalam Paket</h4>
+				<p class="card-description">
+					Paket: <strong>{$detail.product_name}</strong> |
+					Kategori: <strong>{$category.name}</strong>
+				</p>
+			</div>
+			<div class="card-body">
+				<div class="row mb-4">
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<img src="{$BASEURL}/resource/assets-frontend/dist/product/{$product.product_pict}"
+										class="me-3" style="width: 80px; height: 80px; object-fit: cover;">
+									<div>
+										<h5 class="mb-1">{$product.product_name}</h5>
+										<p class="mb-0 text-muted">Kode: {$product.product_code}</p>
+										<p class="mb-0 text-primary">Harga Produk: Rp
+											{number_format($product.product_price, 0, ',', '.')}</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="clearfix">
+					<form action="{site_url(['master/package', 'update_product_pricing', $custom_product.id])}"
+						method="post">
+						<div class="row">
+							<div class="col-md-6 mx-auto">
+								<div class="form-group text-start">
+									<label>Harga Kustom dalam Paket</label>
+									<input type="number" name="custom_price" class="form-control"
+										value="{$custom_product.custom_price|default:''}" min="0" step="0.01"
+										placeholder="Masukkan harga kustom (boleh 0)">
+									<small class="text-muted">
+										• Kosongkan untuk menggunakan harga produk default (Rp
+										{number_format($product.product_price, 0, ',', '.')})<br>
+										• Masukkan 0 untuk harga gratis<br>
+										• Masukkan angka lain untuk harga kustom
+									</small>
+								</div>
+
+								<div class="alert alert-info mt-3">
+									<i class="fas fa-info-circle me-2"></i>
+									<strong>Catatan Harga:</strong><br>
+									• <strong>Kosong:</strong> Menggunakan harga asli produk<br>
+									• <strong>0:</strong> Produk gratis dalam paket ini<br>
+									• <strong>Angka lain:</strong> Harga khusus untuk paket ini
+								</div>
+							</div>
+						</div>
+
+						<div class="text-center my-4">
+							<button type="submit" class="btn btn-primary me-2"><i class="fas fa-save"></i>
+								Simpan</button>
+							<a href="{site_url('master/package/detail/')}{$detail.id}" class="btn btn-secondary me-2">
+								<i class="fa fa-times"></i> Batal
+							</a>
+						</div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>

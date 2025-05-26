@@ -1,0 +1,512 @@
+<link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/Promo/bundling-form.css">
+
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h4 class="card-title mb-0">
+					<i class="fas fa-gift text-primary me-2"></i> Konfigurasi Bundling Promo
+				</h4>
+			</div>
+
+			<!-- Flash Messages -->
+			{if isset($smarty.session.success)}
+			<div class="alert alert-success alert-dismissible fade show" role="alert">
+				<i class="fas fa-check-circle me-2"></i> {$smarty.session.success}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			{if isset($smarty.session.error)}
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				<i class="fas fa-exclamation-circle me-2"></i> {$smarty.session.error}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			<!-- Promo Info Card -->
+			<div class="card mb-4">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-6">
+							<h5 class="card-title">Detail Promo</h5>
+							<div class="mb-3">
+								<label class="text-muted">Kode Promo:</label>
+								<div class="fw-bold">{$promo.promo_code}</div>
+							</div>
+							<div class="mb-3">
+								<label class="text-muted">Nama Promo:</label>
+								<div class="fw-bold">{$promo.promo_name}</div>
+							</div>
+							<div class="mb-0">
+								<label class="text-muted">Brand:</label>
+								<div>
+									<span
+										class="badge brand-badge brand-{$promo.promo_brand}">{strtoupper($promo.promo_brand)}</span>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<h5 class="card-title">Periode Promo</h5>
+							<div class="mb-3">
+								<label class="text-muted">Tanggal Mulai:</label>
+								<div class="fw-bold">{date('d M Y H:i', strtotime($promo.start_date))}</div>
+							</div>
+							<div class="mb-3">
+								<label class="text-muted">Tanggal Selesai:</label>
+								<div class="fw-bold">{date('d M Y H:i', strtotime($promo.end_date))}</div>
+							</div>
+							<div class="mb-0">
+								<label class="text-muted">Status:</label>
+								<div>
+									{if $promo.promo_status == 'active'}
+									<span class="badge bg-success">Aktif</span>
+									{else}
+									<span class="badge bg-danger">Non-aktif</span>
+									{/if}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Penjelasan Bundling -->
+			<div class="alert alert-info mb-4">
+				<div class="d-flex">
+					<div class="me-3">
+						<i class="fas fa-info-circle fa-2x"></i>
+					</div>
+					<div>
+						<h5 class="alert-heading">Tentang Promo Bundling</h5>
+						<p class="mb-0">Promo bundling adalah "beli produk A dan produk B, gratis produk C". Anda dapat
+							menambahkan beberapa rule bundling untuk satu promo. Setiap bundling harus menentukan:</p>
+						<ul class="mb-0 mt-2">
+							<li>Produk pertama yang harus dibeli (dan jumlah minimum)</li>
+							<li>Produk kedua yang harus dibeli (dan jumlah minimum)</li>
+							<li>Produk gratis yang didapatkan (dan jumlah yang diberikan)</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- Form Bundling -->
+			<form action="{$form_action}" method="post" id="bundlingForm">
+				<div class="card mb-4">
+					<div class="card-header bg-light">
+						<div class="d-flex justify-content-between align-items-center">
+							<h5 class="mb-0"><i class="fas fa-list me-2"></i>Bundle Rules</h5>
+							<button type="button" class="btn btn-sm btn-success" id="addBundleBtn">
+								<i class="fas fa-plus me-1"></i> Tambah Bundle
+							</button>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="bundle-container">
+							{if !empty($bundles)}
+							{foreach from=$bundles key=index item=bundle}
+							<div class="bundle-item card mb-3">
+								<div class="card-header bg-light d-flex justify-content-between align-items-center">
+									<h6 class="mb-0">Bundle #{$index+1}</h6>
+									<button type="button" class="btn btn-sm btn-danger remove-bundle-btn">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk Pertama <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="required_product_id1[]"
+													required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}" {if
+															$bundle.required_product_id1==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}" {if
+															$bundle.required_product_id1==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}" {if
+															$bundle.required_product_id1==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Min. Jumlah</label>
+												<input type="number" class="form-control" name="min_quantity1[]" min="1"
+													value="{$bundle.min_quantity1|default:1}">
+												<small class="text-muted">Minimal jumlah produk pertama yang harus
+													dibeli</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk Kedua <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="required_product_id2[]"
+													required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}" {if
+															$bundle.required_product_id2==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}" {if
+															$bundle.required_product_id2==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}" {if
+															$bundle.required_product_id2==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Min. Jumlah</label>
+												<input type="number" class="form-control" name="min_quantity2[]" min="1"
+													value="{$bundle.min_quantity2|default:1}">
+												<small class="text-muted">Minimal jumlah produk kedua yang harus
+													dibeli</small>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-0">
+												<label class="form-label">Produk Gratis <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="free_product_id[]"
+													required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}" {if
+															$bundle.free_product_id==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}" {if
+															$bundle.free_product_id==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}" {if
+															$bundle.free_product_id==$product.product_id}selected{/if}>
+															{$product.product_name}</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="mb-0">
+												<label class="form-label">Jumlah Gratis</label>
+												<input type="number" class="form-control" name="free_quantity[]" min="1"
+													value="{$bundle.free_quantity|default:1}">
+												<small class="text-muted">Jumlah produk gratis yang diberikan</small>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							{/foreach}
+							{else}
+							<!-- Template Bundle Default -->
+							<div class="bundle-item card mb-3">
+								<div class="card-header bg-light d-flex justify-content-between align-items-center">
+									<h6 class="mb-0">Bundle #1</h6>
+									<button type="button" class="btn btn-sm btn-danger remove-bundle-btn">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk Pertama <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="required_product_id1[]"
+													required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Min. Jumlah</label>
+												<input type="number" class="form-control" name="min_quantity1[]" min="1"
+													value="1">
+												<small class="text-muted">Minimal jumlah produk pertama yang harus
+													dibeli</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk Kedua <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="required_product_id2[]"
+													required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Min. Jumlah</label>
+												<input type="number" class="form-control" name="min_quantity2[]" min="1"
+													value="1">
+												<small class="text-muted">Minimal jumlah produk kedua yang harus
+													dibeli</small>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-0">
+												<label class="form-label">Produk Gratis <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="free_product_id[]"
+													required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="mb-0">
+												<label class="form-label">Jumlah Gratis</label>
+												<input type="number" class="form-control" name="free_quantity[]" min="1"
+													value="1">
+												<small class="text-muted">Jumlah produk gratis yang diberikan</small>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							{/if}
+						</div>
+
+						<!-- Template Bundle untuk Javascript -->
+						<template id="bundle-template">
+							<div class="bundle-item card mb-3">
+								<div class="card-header bg-light d-flex justify-content-between align-items-center">
+									<h6 class="mb-0">Bundle New</h6>
+									<button type="button" class="btn btn-sm btn-danger remove-bundle-btn">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk Pertama <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="required_product_id1[]"
+													required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Min. Jumlah</label>
+												<input type="number" class="form-control" name="min_quantity1[]" min="1"
+													value="1">
+												<small class="text-muted">Minimal jumlah produk pertama yang harus
+													dibeli</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="mb-3">
+												<label class="form-label">Produk Kedua <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="required_product_id2[]"
+													required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Min. Jumlah</label>
+												<input type="number" class="form-control" name="min_quantity2[]" min="1"
+													value="1">
+												<small class="text-muted">Minimal jumlah produk kedua yang harus
+													dibeli</small>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="mb-0">
+												<label class="form-label">Produk Gratis <span
+														class="text-danger">*</span></label>
+												<select class="form-select product-select" name="free_product_id[]"
+													required>
+													<option value="">Pilih Produk</option>
+													<optgroup label="Bakery">
+														{foreach from=$bakery_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Resto">
+														{foreach from=$resto_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+													<optgroup label="Kopitiam">
+														{foreach from=$kopitiam_products item=product}
+														<option value="{$product.product_id}">{$product.product_name}
+														</option>
+														{/foreach}
+													</optgroup>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="mb-0">
+												<label class="form-label">Jumlah Gratis</label>
+												<input type="number" class="form-control" name="free_quantity[]" min="1"
+													value="1">
+												<small class="text-muted">Jumlah produk gratis yang diberikan</small>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</template>
+
+						<div class="text-center empty-bundle-message mt-3"
+							style="{if !empty($bundles) || empty($bundles) && $smarty.server.REQUEST_METHOD != 'POST'}display:none;{/if}">
+							<div class="p-4 text-muted">
+								<i class="fas fa-gift fa-3x mb-3"></i>
+								<h5>Belum Ada Bundle</h5>
+								<p>Tambahkan bundle dengan klik tombol "Tambah Bundle" di atas</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Form Submit Buttons -->
+				<div class="d-flex justify-content-center mt-4 mb-2">
+					<button type="submit" class="btn btn-primary px-4 py-2 me-2">
+						<i class="fas fa-save me-2"></i> Simpan Bundle
+					</button>
+					<a href="{site_url('promo/MasterPromo')}" class="btn btn-outline-secondary px-4 py-2">
+						<i class="fas fa-times me-2"></i> Batal
+					</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script src="{$BASEURL}resource/assets-frontend/js/Promo/bundling-form.js"></script>

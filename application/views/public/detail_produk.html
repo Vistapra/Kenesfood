@@ -1,0 +1,125 @@
+<main>
+    <div class="container detail-container" style="margin-top: 90px;">
+        <div class="d-flex flex-column align-items-center">
+            <div class="heading-page p-2 mt-4">
+                <h2 class="text-uppercase fw-medium text-center"><b style="color:#662A0C">Detail Produk</b></h2>
+            </div>
+            <div class="breadcrumb p-2">
+                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <!-- <li class="breadcrumb-item"><a href="<?= site_url('home'); ?>">Home</a></li> -->
+                        <li class="breadcrumb-item"><a href="{site_url('/')}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Detail Produk</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 mb-4">
+            <div class="col-md-4">
+                <a target="_blank" href="{$BASEURL}/resource/assets-frontend/dist/product/{$products->product_pict}"
+                    target="_blank" rel="">
+                        {if file_exists('resource/assets-frontend/dist/product/'|cat:$products->product_pict)}
+                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$products->product_pict}"
+                        alt="product-kenes" class="img-fluid rounded-2 product-kenes">
+                        class="card-img-top mx-auto" alt="{$variant->product_name}">
+                        {else}
+                        <img src="{$BASEURL}resource/assets-frontend/dist/product/imagenotfound.png">
+                        {/if}
+                </a>
+            </div>
+            <div class="col-12 col-md-6 col-lg-6">
+                <h1>{$products->product_name}</h1>
+                <!-- <h1>{$products->product_id}</h1> -->
+                <div class="" id="">
+                    <p class="text-muted">{$products->product_desc}</p>
+                </div>
+                <div class="price">
+                    <span class="fw-medium"><strong>Rp {$products->product_price|number_format}</strong></span>
+                </div>
+                <div class="d-grid mt-3 gap-2 col-6 mx-auto">
+                    {if $button_cart}
+                    <a href=""></a>
+                    {else}
+                    {if $id_member}
+                    <a class="btn btn-primary btn-md add-to-cart-button" type="button"
+                        data-price="{$products->product_price}" data-product-id="{$products->product_id}"
+                        style="background-color: #662A0C;">add to cart</a>
+                    {else}
+                    <a href="{site_url('login')}" class="btn btn-primary btn-md" type="button"
+                        data-product-id="{$products->product_id}" style="background-color: #662A0C;">add to cart</a>
+                    {/if}
+                    {/if}
+                    <!-- <a  class="btn btn-primary btn-sm" type="button" style="background-color:#662a0c;">check out </a>  -->
+                </div>
+            </div>
+        </div>
+        <input type="hidden" value="{($id_member)}" id="id_member">
+
+        <!-- produk rekomendasi -->
+        {if $products->product_parent !=0}
+        <h2 class="text-uppercase fw-medium text-center mt-3"><b style="color:#662A0C">Produk Variant</b></h2>
+        {else}
+        
+        {/if}
+        <div class="container feedback mb-5" id="feedback-section">
+            <div class="row mt-5 mt-md-5 mb-2">
+                <div class="swiper swiper-feedback">
+                    <div class="swiper-wrapper">
+                        {if $varian}
+                        {foreach from=$varian item=variant}
+                        <div class="swiper-slide shadow">
+                            
+                                {if file_exists('resource/assets-frontend/dist/product/'|cat:$variant->product_pict)}
+                                <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$variant->product_pict}"
+                                class="card-img-top mx-auto" alt="{$variant->product_name}">
+                                {else}
+                                <img src="{$BASEURL}resource/assets-frontend/dist/product/imagenotfound.png">
+                                {/if}
+                            <div class="card-body">
+                                <div class="desc-product d-flex flex-column mt-4">
+                                    <div class="d-flex flex-row justify-content-center info-product gap-2">
+                                        <div class="price">
+                                            <span class="fw-bold">{$variant->product_name}</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-row justify-content-center info-product gap-2">
+                                        <div class="price">
+                                            <span class="fw-bold">Rp {$variant->product_price|number_format}</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-row justify-content-center info-product gap-2">
+                                        {if $id_member}
+                                        <a type="button" class="btn add-to-cart-button"
+                                            data-price="{$variant->product_price}"
+                                            data-product-id="{$variant->product_id}" data-bs-toggle="tooltip"
+                                            data-bs-placement="left" data-bs-title="Order Now"
+                                            style="background-color:#662A0C; color: #fff;"><i
+                                                class="fa-solid fa-shopping-cart"></i>
+                                        </a>
+                                        {else}
+                                        <a href="{site_url('login')}" data-product-id="{$variant->product_id}"
+                                            type="button" class="btn add-to-cart-button" data-bs-toggle="tooltip"
+                                            data-bs-placement="left" data-bs-title="Order Now"
+                                            style="background-color:#662A0C; color: #fff;"><i
+                                                class="fa-solid fa-shopping-cart"></i>
+                                        </a>
+                                        {/if}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {/foreach}
+                        {/if}
+                        
+                        
+                    </div>
+                    <input type="hidden" value="{($id_member)}" id="id_member">
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>

@@ -1,0 +1,148 @@
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<!-- Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" />
+
+<link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/member/login_otp.css">
+
+<main class="d-flex align-items-center justify-content-center min-vh-100">
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-12 col-md-8 col-lg-6" style="justify-content: center;">
+				<div class="card login-card">
+					<div class="card-header">
+						<h4 class="mb-0 text-center">Member Kenesfood</h4>
+						<div class="header-icon">
+							<i class="fas fa-key"></i>
+						</div>
+					</div>
+					<div class="card-body">
+						<!-- Step 1: Phone Number Entry -->
+						<div id="step1" class="login-step active">
+							<div class="mb-4">
+								<p>
+									Masukkan nomor telepon yang terdaftar sebagai member untuk
+									menerima kode OTP via WhatsApp.
+								</p>
+							</div>
+
+							<div class="form-group mb-4">
+								<label for="phone" class="form-label">Nomor Telepon</label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="fas fa-phone"></i></span>
+									<input type="text" class="form-control" id="phone" name="phone"
+										placeholder="Contoh: 08123456789" required />
+								</div>
+								<small class="text-muted mt-2">
+									<i class="fas fa-info-circle me-1"></i> Nomor telepon yang
+									terdaftar sebagai member
+								</small>
+							</div>
+
+							<div class="form-group mb-4">
+								<div class="otp-method active d-flex align-items-center">
+									<div class="icon"><i class="fab fa-whatsapp"></i></div>
+									<div>
+										<div class="fw-bold">WhatsApp</div>
+										<small class="text-muted">Anda akan menerima kode OTP via WhatsApp</small>
+									</div>
+									<input type="hidden" name="otp_type" id="otp_type" value="wa" />
+								</div>
+							</div>
+
+							<button type="button"
+								class="btn btn-primary w-100 d-flex align-items-center justify-content-center"
+								id="btn-send-otp">
+								<i class="fas fa-paper-plane me-2"></i> Kirim OTP
+							</button>
+
+							<div class="login-footer">
+								<p class="mb-0">
+									Belum menjadi member?
+									<a href="{site_url('register')}" class="text-decoration-none">Daftar di sini</a>
+								</p>
+							</div>
+						</div>
+
+						<!-- Step 2: OTP Verification -->
+						<div id="step2" class="login-step">
+							<h5 class="verification-title">
+								<i class="fas fa-shield-alt me-2"></i>Verifikasi OTP
+							</h5>
+
+							<div class="alert alert-info d-flex align-items-center" role="alert">
+								<i class="fas fa-info-circle me-2"></i>
+								<div>
+									Kode OTP telah dikirim ke WhatsApp nomor
+									<span id="display-phone" class="fw-bold"></span>
+								</div>
+							</div>
+
+							<div class="mb-4">
+								<label for="otp-input-1" class="form-label">Masukkan 6 digit kode OTP</label>
+
+								<div class="otp-group">
+									<input type="text" class="form-control otp-input" id="otp-input-1" maxlength="1"
+										data-next="otp-input-2" />
+									<input type="text" class="form-control otp-input" id="otp-input-2" maxlength="1"
+										data-next="otp-input-3" data-previous="otp-input-1" />
+									<input type="text" class="form-control otp-input" id="otp-input-3" maxlength="1"
+										data-next="otp-input-4" data-previous="otp-input-2" />
+									<input type="text" class="form-control otp-input" id="otp-input-4" maxlength="1"
+										data-next="otp-input-5" data-previous="otp-input-3" />
+									<input type="text" class="form-control otp-input" id="otp-input-5" maxlength="1"
+										data-next="otp-input-6" data-previous="otp-input-4" />
+									<input type="text" class="form-control otp-input" id="otp-input-6" maxlength="1"
+										data-previous="otp-input-5" />
+								</div>
+								<input type="hidden" id="otp" name="otp" />
+							</div>
+
+							<div class="d-flex gap-2 mb-3">
+								<button type="button" class="btn btn-secondary flex-grow-1" id="btn-back">
+									<i class="fas fa-arrow-left me-2"></i> Kembali
+								</button>
+								<button type="button" class="btn btn-primary flex-grow-1" id="btn-verify-otp">
+									<i class="fas fa-check-circle me-2"></i> Verifikasi
+								</button>
+							</div>
+
+							<div class="text-center mt-4">
+								<p class="mb-2">
+									Tidak menerima kode?
+									<a href="javascript:void(0)" id="btn-resend" class="fw-bold">Kirim ulang</a>
+								</p>
+								<div id="countdown" class="d-none">
+									<span class="resend-timer">
+										<i class="fas fa-clock me-1"></i> Kirim ulang dalam
+										<span id="countdown-timer" class="fw-bold">60</span> detik
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+
+<script src="{$BASEURL}resource/assets-frontend/js/Member/login-otp.js"></script>

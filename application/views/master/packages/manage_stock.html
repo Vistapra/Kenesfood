@@ -1,0 +1,663 @@
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h4 class="card-title">Manajemen Stok Produk Paket: {$detail.product_name}</h4>
+				<a href="{site_url('master/package/detail/')}{$detail.id}" class="btn btn-secondary">
+					<i class="fa fa-arrow-left"></i> Kembali
+				</a>
+			</div>
+
+			{if isset($smarty.session.flashdata.message)}
+			<div class="alert alert-{$smarty.session.flashdata.message.status}">
+				{$smarty.session.flashdata.message.msg}
+			</div>
+			{/if}
+
+			<form action="{site_url(['master/package', 'manage_stock', $detail.id])}" method="post">
+				{foreach from=$categories key=key item=category}
+				<div class="card mb-4">
+					<div class="card-header bg-light">
+						<h5 class="mb-0">{$category.name}</h5>
+					</div>
+					<div class="card-body">
+						{$products = $products_by_category[$category.id]|default:[]}
+						{if empty($products)}
+						<div class="alert alert-warning">
+							Belum ada produk dalam kategori ini.
+						</div>
+						{else}
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Produk</th>
+										<th>Kode</th>
+										<th>Stok Saat Ini</th>
+										<th>Perubahan Stok</th>
+										<th>Tipe</th>
+										<th>Aksi</th>
+									</tr>
+								</thead>
+								<tbody>
+									{foreach from=$products key=prod_key item=product}
+									<tr id="product-row-{$product.product_id}">
+										<td>
+											<div class="d-flex align-items-center">
+												<img src="{$BASEURL}/resource/assets-frontend/dist/product/{$product.product_pict}"
+													class="me-2" style="width: 40px; height: 40px; object-fit: cover;">
+												<div>
+													<div class="fw-bold">{$product.product_name}</div>
+													<small class="text-muted">{$product.cat_name|default:'-'}</small>
+												</div>
+											</div>
+										</td>
+										<td>{$product.product_code}</td>
+										<td>
+											<span id="current-stock-{$product.product_id}" class="stock-value fw-bold">
+												{if $product.stock > 10}
+												<span class="text-success">{$product.stock}</span>
+												{elseif $product.stock > 0}
+												<span class="text-warning">{$product.stock}</span>
+												{else}
+												<span class="text-danger">{$product.stock}</span>
+												{/if}
+											</span>
+										</td>
+										<td>
+											<input type="hidden" name="product_id[]" value="{$product.product_id}">
+											<input type="number" name="stock_change[]" class="form-control stock-change"
+												min="0" value="0" style="width: 100px;">
+										</td>
+										<td>
+											<select name="is_increment[]" class="form-select">
+												<option value="1">Tambah</option>
+												<option value="0">Set Nilai</option>
+											</select>
+										</td>
+										<td>
+											<button type="button" class="btn btn-sm btn-primary update-single-stock"
+												data-product-id="{$product.product_id}">
+												<i class="fas fa-sync-alt"></i> Update
+											</button>
+										</td>
+									</tr>
+									{/foreach}
+								</tbody>
+							</table>
+						</div>
+						{/if}
+					</div>
+				</div>
+				{/foreach}
+
+				<div class="d-flex justify-content-end mt-4">
+					<button type="submit" class="btn btn-primary">
+						<i class="fas fa-save"></i> Update Semua Stok
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script>
+	// Konfigurasi global
+	var STOCK_CONFIG = {
+		baseUrl: '{$smarty.const.SITE_URL}',
+		packageId: '{$detail.id}',
+		lowStockThreshold: 5,
+		maxStock: 99999,
+		endpoints: {
+			updateStock: '{site_url("master/package/update_product_stock/")}',
+			manageStock: '{site_url(["master/package", "manage_stock", $detail.id])}'
+		}
+	};
+
+	// Utility Functions
+	var StockUtils = {
+		// Format angka dengan pemisah ribuan
+		formatNumber: function (num) {
+			return parseInt(num).toLocaleString('id-ID');
+		},
+
+		// Validasi input stok
+		validateStockInput: function (value, productName) {
+			if (value === null || value === '' || value === undefined) {
+				return {
+					valid: false,
+					message: 'Jumlah perubahan stok harus diisi untuk ' + productName
+				};
+			}
+
+			var numValue = parseInt(value);
+			if (isNaN(numValue)) {
+				return {
+					valid: false,
+					message: 'Jumlah perubahan stok harus berupa angka untuk ' + productName
+				};
+			}
+
+			if (numValue < 0) {
+				return {
+					valid: false,
+					message: 'Jumlah perubahan stok tidak boleh negatif untuk ' + productName
+				};
+			}
+
+			if (numValue > STOCK_CONFIG.maxStock) {
+				return {
+					valid: false,
+					message: 'Jumlah perubahan stok terlalu besar untuk ' + productName + ' (maksimal ' + STOCK_CONFIG.maxStock + ')'
+				};
+			}
+
+			return {
+				valid: true,
+				value: numValue
+			};
+		},
+
+		// Update tampilan stok
+		updateStockDisplay: function (productId, newStock) {
+			var stockElement = document.getElementById('current-stock-' + productId);
+			if (!stockElement) return;
+
+			var stockClass = 'text-danger';
+			var badgeClass = 'bg-danger';
+
+			if (newStock > 10) {
+				stockClass = 'text-success';
+				badgeClass = 'bg-success';
+			} else if (newStock > 0) {
+				stockClass = 'text-warning';
+				badgeClass = 'bg-warning';
+			}
+
+			stockElement.innerHTML = '<span class="' + stockClass + '">' + newStock + '</span>';
+
+			// Update badge jika ada
+			var badge = stockElement.querySelector('.badge');
+			if (badge) {
+				badge.className = 'badge ' + badgeClass + ' stock-value';
+				badge.textContent = newStock;
+			}
+		},
+
+		// Get product name dari row
+		getProductName: function (productRow) {
+			var nameElement = productRow.querySelector('.fw-bold');
+			return nameElement ? nameElement.textContent.trim() : 'Produk Tidak Diketahui';
+		},
+
+		// Reset input form
+		resetStockInput: function (productRow) {
+			var stockInput = productRow.querySelector('.stock-change');
+			var selectType = productRow.querySelector('select[name="is_increment[]"]');
+
+			if (stockInput) stockInput.value = '0';
+			if (selectType) selectType.value = '1';
+		}
+	};
+
+	// AJAX Handler
+	var StockAjax = {
+		// Update stok individual
+		updateSingleStock: function (productId, stockChange, isIncrement, onSuccess, onError) {
+			var xhr = new XMLHttpRequest();
+			var url = STOCK_CONFIG.endpoints.updateStock + productId;
+
+			xhr.open('POST', url, true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+			xhr.onload = function () {
+				if (xhr.status === 200) {
+					try {
+						var contentType = xhr.getResponseHeader('content-type');
+						if (!contentType || contentType.indexOf('application/json') === -1) {
+							throw new Error('Response bukan JSON valid');
+						}
+
+						var response = JSON.parse(xhr.responseText);
+						if (response.success) {
+							onSuccess(response);
+						} else {
+							onError(response.message || 'Gagal memperbarui stok');
+						}
+					} catch (e) {
+						console.error('Error parsing JSON:', e);
+						onError('Terjadi kesalahan saat memproses response: ' + e.message);
+					}
+				} else {
+					onError('HTTP Error: ' + xhr.status + ' - ' + xhr.statusText);
+				}
+			};
+
+			xhr.onerror = function () {
+				onError('Gagal menghubungi server. Periksa koneksi internet Anda.');
+			};
+
+			xhr.ontimeout = function () {
+				onError('Request timeout. Silakan coba lagi.');
+			};
+
+			xhr.timeout = 30000; // 30 seconds timeout
+
+			var params = 'stock_change=' + encodeURIComponent(stockChange) +
+				'&is_increment=' + encodeURIComponent(isIncrement ? '1' : '0');
+
+			xhr.send(params);
+		}
+	};
+
+	// Stock Management Class
+	var StockManager = {
+		// Initialize event listeners
+		init: function () {
+			this.bindSingleUpdateButtons();
+			this.bindBulkUpdateForm();
+			this.bindInputValidation();
+			this.checkStockAlerts();
+
+			console.log('Stock Manager initialized');
+		},
+
+		// Bind single update buttons
+		bindSingleUpdateButtons: function () {
+			var updateButtons = document.querySelectorAll('.update-single-stock');
+
+			updateButtons.forEach(function (button) {
+				button.addEventListener('click', function (e) {
+					e.preventDefault();
+					StockManager.handleSingleUpdate(this);
+				});
+			});
+		},
+
+		// Handle single stock update
+		handleSingleUpdate: function (button) {
+			var productId = button.getAttribute('data-product-id');
+			var productRow = document.getElementById('product-row-' + productId);
+
+			if (!productRow) {
+				this.showError('Row produk tidak ditemukan');
+				return;
+			}
+
+			var stockInput = productRow.querySelector('.stock-change');
+			var selectType = productRow.querySelector('select[name="is_increment[]"]');
+			var productName = StockUtils.getProductName(productRow);
+
+			if (!stockInput || !selectType) {
+				this.showError('Element input tidak ditemukan untuk ' + productName);
+				return;
+			}
+
+			var stockChange = stockInput.value;
+			var isIncrement = selectType.value === '1';
+
+			// Validasi input
+			var validation = StockUtils.validateStockInput(stockChange, productName);
+			if (!validation.valid) {
+				this.showError(validation.message);
+				stockInput.focus();
+				return;
+			}
+
+			if (validation.value === 0) {
+				this.showWarning('Tidak ada perubahan stok untuk ' + productName);
+				return;
+			}
+
+			// Disable button sementara
+			button.disabled = true;
+			button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Update...';
+
+			var self = this;
+
+			// AJAX request
+			StockAjax.updateSingleStock(
+				productId,
+				validation.value,
+				isIncrement,
+				function (response) {
+					// Success callback
+					StockUtils.updateStockDisplay(productId, response.new_stock);
+					StockUtils.resetStockInput(productRow);
+
+					self.showSuccess('Stok ' + productName + ' berhasil diperbarui menjadi ' +
+						StockUtils.formatNumber(response.new_stock) + ' unit');
+
+					// Re-enable button
+					button.disabled = false;
+					button.innerHTML = '<i class="fas fa-sync-alt"></i> Update';
+				},
+				function (errorMessage) {
+					// Error callback
+					self.showError('Gagal memperbarui stok ' + productName + ': ' + errorMessage);
+
+					// Re-enable button
+					button.disabled = false;
+					button.innerHTML = '<i class="fas fa-sync-alt"></i> Update';
+
+					stockInput.focus();
+				}
+			);
+		},
+
+		// Bind bulk update form
+		bindBulkUpdateForm: function () {
+			var form = document.querySelector('form[action*="manage_stock"]');
+			if (!form) return;
+
+			form.addEventListener('submit', function (e) {
+				if (!StockManager.validateBulkUpdate()) {
+					e.preventDefault();
+				}
+			});
+		},
+
+		// Validate bulk update
+		validateBulkUpdate: function () {
+			var stockInputs = document.querySelectorAll('.stock-change');
+			var hasChanges = false;
+			var errors = [];
+
+			stockInputs.forEach(function (input) {
+				var value = parseInt(input.value);
+				if (!isNaN(value) && value > 0) {
+					hasChanges = true;
+
+					var productRow = input.closest('tr');
+					var productName = StockUtils.getProductName(productRow);
+					var validation = StockUtils.validateStockInput(value, productName);
+
+					if (!validation.valid) {
+						errors.push(validation.message);
+					}
+				}
+			});
+
+			if (errors.length > 0) {
+				this.showError('Validasi gagal:<br>' + errors.slice(0, 5).join('<br>') +
+					(errors.length > 5 ? '<br>...dan ' + (errors.length - 5) + ' error lainnya' : ''));
+				return false;
+			}
+
+			if (!hasChanges) {
+				this.showWarning('Tidak ada perubahan stok yang dilakukan. Silakan masukkan nilai perubahan stok terlebih dahulu.');
+				return false;
+			}
+
+			return true;
+		},
+
+		// Bind input validation
+		bindInputValidation: function () {
+			var stockInputs = document.querySelectorAll('.stock-change');
+
+			stockInputs.forEach(function (input) {
+				// Real-time validation
+				input.addEventListener('input', function () {
+					var value = parseInt(this.value);
+					var row = this.closest('tr');
+
+					// Remove existing validation classes
+					this.classList.remove('is-valid', 'is-invalid');
+
+					if (this.value !== '' && this.value !== '0') {
+						if (isNaN(value) || value < 0) {
+							this.classList.add('is-invalid');
+						} else if (value <= STOCK_CONFIG.maxStock) {
+							this.classList.add('is-valid');
+						} else {
+							this.classList.add('is-invalid');
+						}
+					}
+				});
+
+				// Allow only numbers
+				input.addEventListener('keypress', function (e) {
+					if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+						e.preventDefault();
+					}
+				});
+			});
+		},
+
+		// Check stock alerts
+		checkStockAlerts: function () {
+			setTimeout(function () {
+				StockManager.checkLowStock();
+				StockManager.checkOutOfStock();
+			}, 1000);
+		},
+
+		// Check low stock products
+		checkLowStock: function () {
+			var lowStockItems = [];
+			var stockElements = document.querySelectorAll('.stock-value');
+
+			stockElements.forEach(function (element) {
+				var stock = parseInt(element.textContent.trim());
+				var productRow = element.closest('tr');
+
+				if (productRow && stock <= STOCK_CONFIG.lowStockThreshold && stock > 0) {
+					var productName = StockUtils.getProductName(productRow);
+					lowStockItems.push({
+						name: productName,
+						stock: stock,
+						element: element
+					});
+				}
+			});
+
+			if (lowStockItems.length > 0) {
+				var message = '<div class="text-start">';
+				message += '<p><strong>Produk berikut memiliki stok rendah (≤ ' + STOCK_CONFIG.lowStockThreshold + '):</strong></p>';
+				message += '<ul class="mb-2">';
+
+				lowStockItems.slice(0, 5).forEach(function (item) {
+					message += '<li>' + item.name + ': <strong>' + item.stock + '</strong> tersisa</li>';
+				});
+
+				if (lowStockItems.length > 5) {
+					message += '<li><em>...dan ' + (lowStockItems.length - 5) + ' produk lainnya</em></li>';
+				}
+
+				message += '</ul>';
+				message += '<p class="mb-0"><small class="text-muted">Silakan perbarui stok produk segera untuk menghindari kehabisan stok.</small></p>';
+				message += '</div>';
+
+				this.showAlert('Peringatan Stok Rendah!', message, 'warning', true);
+			}
+		},
+
+		// Check out of stock products
+		checkOutOfStock: function () {
+			var outOfStockItems = [];
+			var stockElements = document.querySelectorAll('.stock-value');
+
+			stockElements.forEach(function (element) {
+				var stock = parseInt(element.textContent.trim());
+				var productRow = element.closest('tr');
+
+				if (productRow && stock === 0) {
+					var productName = StockUtils.getProductName(productRow);
+					outOfStockItems.push({
+						name: productName,
+						element: element
+					});
+				}
+			});
+
+			if (outOfStockItems.length > 0) {
+				var message = '<div class="text-start">';
+				message += '<p><strong>Produk berikut tidak memiliki stok:</strong></p>';
+				message += '<ul class="mb-2">';
+
+				outOfStockItems.slice(0, 5).forEach(function (item) {
+					message += '<li>' + item.name + '</li>';
+				});
+
+				if (outOfStockItems.length > 5) {
+					message += '<li><em>...dan ' + (outOfStockItems.length - 5) + ' produk lainnya</em></li>';
+				}
+
+				message += '</ul>';
+				message += '<p class="mb-0"><small class="text-muted">Produk-produk ini tidak akan tersedia untuk dipilih dalam paket. Silakan perbarui stok segera.</small></p>';
+				message += '</div>';
+
+				setTimeout(function () {
+					StockManager.showAlert('Produk Habis Stok!', message, 'error', true);
+				}, 2000);
+			}
+		},
+
+		// Show success message
+		showSuccess: function (message) {
+			if (typeof Swal !== 'undefined') {
+				Swal.fire({
+					title: 'Berhasil!',
+					html: message,
+					icon: 'success',
+					timer: 3000,
+					showConfirmButton: false,
+					toast: true,
+					position: 'top-end'
+				});
+			} else {
+				alert('Berhasil: ' + message.replace(/<[^>]*>/g, ''));
+			}
+		},
+
+		// Show error message
+		showError: function (message) {
+			if (typeof Swal !== 'undefined') {
+				Swal.fire({
+					title: 'Error!',
+					html: message,
+					icon: 'error',
+					confirmButtonText: 'Tutup'
+				});
+			} else {
+				alert('Error: ' + message.replace(/<[^>]*>/g, ''));
+			}
+		},
+
+		// Show warning message
+		showWarning: function (message) {
+			if (typeof Swal !== 'undefined') {
+				Swal.fire({
+					title: 'Peringatan!',
+					html: message,
+					icon: 'warning',
+					confirmButtonText: 'OK'
+				});
+			} else {
+				alert('Peringatan: ' + message.replace(/<[^>]*>/g, ''));
+			}
+		},
+
+		// Show alert with options
+		showAlert: function (title, message, type, showManageButton) {
+			if (typeof Swal !== 'undefined') {
+				var config = {
+					title: title,
+					html: message,
+					icon: type,
+					confirmButtonText: 'Tutup',
+					showCancelButton: false
+				};
+
+				if (showManageButton) {
+					config.showCancelButton = true;
+					config.cancelButtonText = 'Tutup';
+					config.confirmButtonColor = '#007bff';
+				}
+
+				Swal.fire(config).then(function (result) {
+					if (result.isConfirmed && showManageButton) {
+						// Focus on first input that needs attention
+						var firstInput = document.querySelector('.stock-change');
+						if (firstInput) {
+							firstInput.focus();
+							firstInput.select();
+						}
+					}
+				});
+			} else {
+				alert(title + '\n\n' + message.replace(/<[^>]*>/g, ''));
+			}
+		}
+	};
+
+	// Initialize when DOM is ready
+	document.addEventListener('DOMContentLoaded', function () {
+		StockManager.init();
+	});
+
+	// Tambahan untuk debugging
+	if (typeof console !== 'undefined' && console.log) {
+		console.log('Stock Management Script Loaded');
+		console.log('Config:', STOCK_CONFIG);
+	}
+</script>
+
+<!-- CSS Tambahan untuk styling -->
+<style>
+	.stock-change.is-valid {
+		border-color: #28a745;
+	}
+
+	.stock-change.is-invalid {
+		border-color: #dc3545;
+	}
+
+	.product-row-highlight {
+		background-color: #fff3cd;
+	}
+
+	.btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.stock-alert {
+		animation: pulse 2s infinite;
+	}
+
+	@keyframes pulse {
+		0% {
+			opacity: 1;
+		}
+
+		50% {
+			opacity: 0.7;
+		}
+
+		100% {
+			opacity: 1;
+		}
+	}
+
+	.input-group .form-control:focus {
+		z-index: 3;
+		border-color: #007bff;
+		box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+	}
+
+	.table-hover tbody tr:hover {
+		background-color: rgba(0, 0, 0, 0.05);
+	}
+
+	.badge {
+		font-size: 0.75rem;
+	}
+
+	.text-center .btn-group {
+		display: inline-flex;
+		gap: 0.25rem;
+	}
+</style>

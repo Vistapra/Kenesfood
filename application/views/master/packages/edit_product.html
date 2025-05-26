@@ -1,0 +1,79 @@
+<div class="row">
+	<div class="col-md-12 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-header">
+				<h4 class="card-title">Edit Produk dalam Kategori</h4>
+				<p class="card-description">
+					Paket: <strong>{$detail.product_name}</strong> |
+					Kategori: <strong>{$category.name}</strong>
+				</p>
+			</div>
+			<div class="card-body">
+				<div class="row mb-4">
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="d-flex align-items-center">
+									<img src="{$BASEURL}/resource/assets-frontend/dist/product/{$product.product_pict}"
+										class="me-3" style="width: 80px; height: 80px; object-fit: cover;">
+									<div>
+										<h5 class="mb-1">{$product.product_name}</h5>
+										<p class="mb-0 text-muted">Kode: {$product.product_code}</p>
+										<p class="mb-0 text-primary">Harga Produk: Rp
+											{number_format($product.product_price, 0, ',', '.')}</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="clearfix">
+					<form action="{site_url(['master/package', 'edit_product', $custom_product.id])}" method="post">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group text-start">
+									<label>Produk <span class="text-danger">*</span></label>
+									<select name="product_id" class="form-control select2" required>
+										<option value="">-- Pilih Produk --</option>
+										{foreach from=$products item=product}
+										<option value="{$product.product_id}" {if
+											$product.product_id==$custom_product.product_id}selected{/if}>
+											{$product.product_name} ({$product.product_code}) -
+											Rp {number_format($product.product_price, 0, ',', '.')}
+										</option>
+										{/foreach}
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group text-start">
+									<label>Harga Kustom</label>
+									<input type="number" name="custom_price" class="form-control"
+										value="{$custom_product.custom_price|default:''}">
+									<small class="text-muted">Kosongkan untuk menggunakan harga default produk</small>
+								</div>
+								<div class="form-check form-switch mt-3">
+									<input class="form-check-input" type="checkbox" id="is_default" name="is_default"
+										value="1" {if $custom_product.is_default==1}checked{/if}>
+									<label class="form-check-label" for="is_default">Set sebagai produk default</label>
+									<small class="d-block text-muted">Produk default akan dipilih secara otomatis saat
+										pelanggan memilih paket</small>
+								</div>
+							</div>
+						</div>
+
+						<div class="text-center my-4">
+							<button type="submit" class="btn btn-primary me-2">
+								<i class="fas fa-save"></i> Perbarui
+							</button>
+							<a href="{site_url('master/package/detail/')}{$detail.id}" class="btn btn-secondary me-2">
+								<i class="fa fa-times"></i> Batal
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,106 @@
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr class="text-center">
+							<th>No</th>
+							<th>Kode</th>
+							<th>Nama Paket</th>
+							<th>Harga Dasar</th>
+							<th>Kategori</th>
+							<th>Brand</th>
+							<th>Jumlah Kategori</th>
+							<th>Status</th>
+							<th>Status Stok</th>
+							<th width="20%">
+								{if $allowed.create}
+								<div class="row">
+									<div class="col-12">
+										<a href="{site_url(['master/package', 'add'])}" data-bs-toggle="tooltip"
+											data-bs-placement="bottom" title="Tambah" data-container="body"
+											data-animation="true">
+											<button type="button" class="btn btn-primary">
+												<i class="fas fa-plus"></i> Tambah Paket
+											</button>
+										</a>
+									</div>
+								</div>
+								{/if}
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{foreach from=$packages key=key item=package}
+						<tr class="text-center">
+							<td>{$no++}</td>
+							<td>{$package.product_code}</td>
+							<td>{$package.product_name}</td>
+							<td>{number_format($package.base_price)}</td>
+							<td>{$package.cat_name|default:'-'}</td>
+							<td>{strtoupper($package.product_brand)}</td>
+							<td>{$package.category_count}</td>
+							<td>
+								{if $package.product_st == 0}
+								<span class="badge badge-pill badge-lg badge-success">Aktif</span>
+								{else}
+								<span class="badge badge-pill badge-lg badge-danger">Non-aktif</span>
+								{/if}
+							</td>
+							<td>
+								{if isset($package.stock_status) && $package.stock_status == 'sufficient'}
+								<span class="badge badge-pill badge-success">Stok Cukup</span>
+								{elseif isset($package.stock_status) && $package.stock_status == 'low'}
+								<span class="badge badge-pill badge-warning">Stok Rendah</span>
+								{elseif isset($package.stock_status) && $package.stock_status == 'empty'}
+								<span class="badge badge-pill badge-danger">Stok Habis</span>
+								{else}
+								<span class="badge badge-pill badge-secondary">Belum Diatur</span>
+								{/if}
+							</td>
+							<td class="text-center">
+								<a class="btn btn-sm btn-outline-info btn-rounded" data-toggle="tooltip"
+									data-placement="top" title="Detail"
+									href="{site_url(['master/package', 'detail', {$package.id}])}"><i
+										class="fa-regular fa-file"></i></a>
+								{if $allowed.edit}
+								<a class="btn btn-sm btn-outline-secondary btn-rounded" data-toggle="tooltip"
+									data-placement="top" title="Edit"
+									href="{site_url(['master/package', 'edit', {$package.id}])}"><i
+										class="fa-regular fa-pen-to-square"></i></a>
+								{/if}
+								{if $allowed.delete}
+								{$url = site_url(['master/package', 'delete', $package.id])}
+								<a class="btn btn-sm btn-outline-danger btn-rounded" data-toggle="tooltip"
+									data-placement="top" title="Hapus" href="{$url}"
+									onclick="confirm_delete('{$url}', event)"><i class="fa-solid fa-trash"></i></a>
+								{/if}
+								{if $allowed.edit}
+								<a class="btn btn-sm btn-outline-primary btn-rounded" data-toggle="tooltip"
+									data-placement="top" title="Duplikat"
+									href="{site_url(['master/package', 'clone_package', {$package.id}])}"><i
+										class="fa-regular fa-copy"></i></a>
+								{/if}
+							</td>
+						</tr>
+						{/foreach}
+					</tbody>
+				</table>
+			</div>
+			<div class="form-group row mt-3 mb-2 pe-0">
+				<div class="col-md-3 pt-3">
+					<div class="pagination-info">Menampilkan {$pagination.start|default:0} - {$pagination.end|default:0}
+						dari {$pagination.total|default:0} data</div>
+				</div>
+				<div class="col-md-9 pe-0 mt-2 pe-2">
+					<nav>
+						<ul class="pagination justify-content-end">
+							<li class="page-item">{$pagination.data|default:''}</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

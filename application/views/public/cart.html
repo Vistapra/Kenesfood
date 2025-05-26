@@ -1,0 +1,305 @@
+<main>
+    <div class="container cart-container mb-5">
+        <div class="d-flex flex-column align-items-center">
+            <div class="heading-page p-2 mt-4">
+                <h2 class="text-uppercase fw-medium text-center"><b style="color:#662A0C">Cart</b></h2>
+            </div>
+            <div class="breadcrumb p-2">
+                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{site_url('/')}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Cart</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+       
+        <div class="row ">
+            
+            <div class="col-lg-8 col-md-6">
+                <form method="post" action="{site_url('/purchase')}" enctype="multipart/form-data">
+                    <input type="hidden" id="user_id" name="purchase_member" value="{$purchase_member}">
+                 <div class="py-3">
+                    <ul class="list-group list-group-flush overflow-auto ">
+                        <li class="list-group-item py-3 py-lg-0 px-0 border-top">         
+                         {foreach from=$cart key=key item=$item} 
+                         <div class="image-product" style="margin: 20px;"> 
+                            <div class="row align-items-center cart-quantity">
+                                <div class="col-3 col-md-4 col-lg-2">
+                                    <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$item.product_pict}" alt="product-kenes" class="img-fluid rounded-2 product-kenes" style="max-width: 100%; height: auto;">
+                                </div>
+                                <div class="col-3 col-md-3 col-lg-5">
+                                    <h6 class="mb-0 text-break" >{$item.product_name}</h6>
+                                    <input type="hidden" name="product_id[{$item.product_id}]" value="{$item.product_id}">
+                                    <span>
+                                        <!-- category product -->
+                                        <small class="text-muted text-break">Rp {$item.product_price|number_format:0:".":"."}</small>
+                                        <input type="hidden" name="product_price[{$item.product_id}]" value="{$item.product_price}">
+                                    </span>
+                                    <div class="mt-2 small lh-1">
+                                        <a href="#!" class="text-decoration-none text-inherit remove-product" data-product-id="{$item.product_id}" data-purchase-id= "{$item.purchase_id}">
+                                            <span class="me-1 align-text-bottom">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                    class="feather feather-trash-2 text-success">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path
+                                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                                    </path>
+                                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                </svg>
+                                            </span>
+                                            <span class="text-muted">
+                                                Remove
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-3 col-md-3 col-lg-2 ">
+                                    <div class="input-group flex-lg-nowrap flex-lg-row flex-column">
+                                       
+                                        <input type="button" value="-" data-product-id="{$item.product_id}" class="button-minus btn btn-sm border rounded"
+                                            data-field="quantity">
+                                        <input type="text" value="{$item.qty}" name="quantity[{$item.product_id}]"
+                                            class="quantity-field form-control-sm form-input border rounded">
+                                            
+                                        <input type="button" value="+" data-product-id="{$item.product_id}" class="button-plus btn btn-sm border rounded"
+                                            data-field="quantity">
+                                    </div>
+                                </div>
+                                <div class="col-3 text-lg-end text-start text-md-end col-md-2">
+                                    <!-- penggunaan syntax sepertii ini karena tipe data yang berbeda -->
+                                    <input type="hidden" class="price-cart" value="{$item.product_price}">
+                                    <!-- <input type="" class="sub-price" value="{$item.product_price}"> -->
+                                    <span class="fw-bold" id="sub-price" >Rp {(floatval($item.product_price) * intval($item.qty))|number_format:0:".":"."}</span>
+                                </div>
+                            </div>
+                        </div> 
+                       <hr> 
+                            {/foreach}
+                        </li>
+                    </ul>
+                    <div class="d-flex flex-column mt-4">
+                        <a href="{site_url('/products')}" class="btn icon-link icon-link-hover mx-auto order-last"
+                            style="background-color: #662A0C; color: #fff;">Continue Shopping
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                            </svg>
+                        </a>      
+                        <nav class="ms-auto" aria-label="Page navigation example">
+                            <div class="pagination">          
+                                {{$pagination}}    
+                            </div> 
+                        </nav>                       
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4 col-md-5 offset-0 offset-lg-0 offset-md-1">
+                <div class="card mb-5 mt-6 ">
+                    <div class="card-body p-6">
+                        <h3 class="h5 mb-4">Summary</h3>
+                        <div class="card mb-2">
+                            <ul class="list-group list-group-flush overflow-auto">
+                                <!-- list group item -->
+                                
+                                <!-- list group item -->
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="me-auto">
+                                        <div class="fw-bold">Subtotal</div>
+                                    </div>
+                                    <span class="fw-bold" id="subtotal1">Rp {$total_subtotal|number_format:0:".":"."}</span>
+                                    <input type="hidden"  id="subtotal-price" value="{$total_subtotal}">
+                                </li>
+                                
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="me-auto">
+                                        <div class="fw-bold">Promo</div>
+                                    </div>
+                                
+                                    <span class="fw-bold" id="promo-price">0</span>
+                                    <input type="hidden" name="promoID" id="promo-id" >
+                                   
+                                    
+                                </li>
+                               
+                            </ul>
+                        </div>
+                        <div class="d-grid mb-1 mt-4">
+                            <!-- btn -->
+                            <button  class="btn btn-md d-flex align-items-center" type="submit" 
+                                style="background-color: #662A0C; color: #fff;">
+                                <svg height="25"
+                                    style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2; margin:5px;"
+                                    version="1.1" viewBox="0 0 512 512" width="25" xml:space="preserve"
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:serif="http://www.serif.com/"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <g id="WhatsApp-Logo-Icon">
+                                        <path
+                                            d="M116.225,-0.001c-11.264,0.512 -26.112,1.536 -32.768,3.072c-10.24,2.048 -19.968,5.12 -27.648,9.216c-9.728,4.608 -17.92,10.752 -25.088,17.92c-7.68,7.68 -13.824,15.872 -18.432,25.6c-4.096,7.68 -7.168,17.408 -9.216,27.648c-1.536,6.656 -2.56,21.504 -2.56,32.768c-0.512,4.608 -0.512,10.752 -0.512,13.824l0,251.905l0,13.824c0.512,11.264 1.536,26.112 3.072,32.768c2.048,10.24 5.12,19.968 9.216,27.648c4.608,9.728 10.752,17.92 17.92,25.088c7.68,7.68 15.872,13.824 25.6,18.432c7.68,4.096 17.408,7.168 27.648,9.216c6.656,1.536 21.504,2.56 32.768,2.56c4.608,0.512 10.752,0.512 13.824,0.512l251.904,0l13.824,0c11.264,-0.512 26.112,-1.536 32.768,-3.072c10.24,-2.048 19.968,-5.12 27.648,-9.216c9.728,-4.608 17.92,-10.752 25.088,-17.92c7.68,-7.68 13.824,-15.872 18.432,-25.6c4.096,-7.68 7.168,-17.408 9.216,-27.648c1.536,-6.656 2.56,-21.504 2.56,-32.768c0.512,-4.608 0.512,-10.752 0.512,-13.824l0,-265.729c-0.512,-11.264 -1.536,-26.112 -3.072,-32.768c-2.048,-10.24 -5.12,-19.968 -9.216,-27.648c-4.608,-9.728 -10.752,-17.92 -17.92,-25.088c-7.68,-7.68 -15.872,-13.824 -25.6,-18.432c-7.68,-4.096 -17.408,-7.168 -27.648,-9.216c-6.656,-1.536 -21.504,-2.56 -32.768,-2.56c-4.608,-0.512 -10.752,-0.512 -13.824,-0.512l-265.728,0Z"
+                                            style="fill:url(#_Linear1);fill-rule:nonzero;" />
+                                        <path
+                                            d="M344.754,289.698c-4.56,-2.282 -26.98,-13.311 -31.161,-14.832c-4.18,-1.521 -7.219,-2.282 -10.259,2.282c-3.041,4.564 -11.78,14.832 -14.44,17.875c-2.66,3.042 -5.32,3.423 -9.88,1.14c-4.561,-2.281 -19.254,-7.095 -36.672,-22.627c-13.556,-12.087 -22.709,-27.017 -25.369,-31.581c-2.66,-4.564 -0.283,-7.031 2,-9.304c2.051,-2.041 4.56,-5.324 6.84,-7.986c2.28,-2.662 3.04,-4.564 4.56,-7.606c1.52,-3.042 0.76,-5.705 -0.38,-7.987c-1.14,-2.282 -10.26,-24.72 -14.06,-33.848c-3.701,-8.889 -7.461,-7.686 -10.26,-7.826c-2.657,-0.132 -5.7,-0.16 -8.74,-0.16c-3.041,0 -7.98,1.141 -12.161,5.704c-4.18,4.564 -15.96,15.594 -15.96,38.032c0,22.438 16.34,44.116 18.62,47.159c2.281,3.043 32.157,49.089 77.902,68.836c10.88,4.697 19.374,7.501 25.997,9.603c10.924,3.469 20.866,2.98 28.723,1.806c8.761,-1.309 26.98,-11.029 30.781,-21.677c3.799,-10.649 3.799,-19.777 2.659,-21.678c-1.139,-1.902 -4.179,-3.043 -8.74,-5.325m-83.207,113.573l-0.061,0c-27.22,-0.011 -53.917,-7.32 -77.207,-21.137l-5.539,-3.287l-57.413,15.056l15.325,-55.959l-3.608,-5.736c-15.184,-24.145 -23.203,-52.051 -23.192,-80.704c0.033,-83.611 68.083,-151.635 151.756,-151.635c40.517,0.016 78.603,15.811 107.243,44.474c28.64,28.663 44.404,66.764 44.389,107.283c-0.035,83.617 -68.083,151.645 -151.693,151.645m129.102,-280.709c-34.457,-34.486 -80.281,-53.487 -129.103,-53.507c-100.595,0 -182.468,81.841 -182.508,182.437c-0.013,32.156 8.39,63.546 24.361,91.212l-25.892,94.545l96.75,-25.37c26.657,14.535 56.67,22.194 87.216,22.207l0.075,0c100.586,0 182.465,-81.852 182.506,-182.448c0.019,-48.751 -18.946,-94.59 -53.405,-129.076"
+                                            style="fill:#fff;" />
+                                    </g>
+                                    <defs>
+                                        <linearGradient gradientTransform="matrix(0,-512,-512,0,256.001,512)"
+                                            gradientUnits="userSpaceOnUse" id="_Linear1" x1="0" x2="1" y1="0" y2="0">
+                                            <stop offset="0" style="stop-color:#25cf43;stop-opacity:1" />
+                                            <stop offset="1" style="stop-color:#61fd7d;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                Go to Checkout
+                                <span class="fw-bold ms-auto" name="purchase_total_amount" value="{$total_subtotal}" id="grandTotal">Rp {$total_subtotal|number_format:0:".":"."}</span>
+                                <input id = "subtotal" type="hidden" name="purchase_total_amount" value="{$total_subtotal}">
+                            </button>
+                        </div>
+                        <p><small>By placing your order, you agree to be bound by the Kenes Resto & Bakery <a
+                                    href="#!">Terms of Service</a>
+                                and <a href="#!">Privacy Policy.</a> </small>
+                        </p>
+                        <div class="mt-8">
+                            <h3 class="h5 mb-3">Add Promo or Gift Card</h3>
+                            <form>
+                                <div class="mb-2">
+                                    <!-- input -->
+                                    <input type="text" class="form-control" id="giftcard"
+                                        placeholder="Enter Promo or Gift Card">
+                                </div>
+                                <!-- btn -->
+                                <div class="d-grid">
+                                    <input type="button"
+                                        class="btn btn-outline-secondary mb-1" id="redeemBtn" value="Redeem">
+                                </div>
+                                <p class="text-muted mb-0"> <small>Terms &amp; Conditions apply</small></p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script>
+       // JavaScript untuk menangani permintaan AJAX
+        document.addEventListener("DOMContentLoaded", function () {
+        const giftcardInput = document.getElementById("giftcard");
+        const redeemBtn = document.getElementById("redeemBtn");
+        const subtotalElement = document.getElementById("subtotal"); // Mengambil elemen subtotal
+        const totalSubtotal = parseFloat(subtotalElement.getAttribute('value')); // Mengambil nilai total dari elemen
+
+        redeemBtn.addEventListener("click", function () {
+            const promoCode = giftcardInput.value.trim();
+            var data = {
+                promoCode: promoCode,
+            };
+
+            var xhr = new XMLHttpRequest();
+
+            // Konfigurasi permintaan
+            xhr.open("POST", "redeem", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Definisikan fungsi panggilan kembali
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.valid === true) {
+                        var price = document.getElementById('promo-price');
+                        price.innerHTML = 'Rp ' + parseFloat(response.promoAmount).toLocaleString('id-ID', { minimumFractionDigits: 0 });
+
+                        var promotionId = document.getElementById('promo-id');
+                        promotionId.innerHTML = response.promoId;
+
+                            // Jumlahkan promoAmount dengan total subtotal
+                            var subtotal = document.getElementById('subtotal-price');
+                            var total = parseInt(subtotal.value); 
+
+                        var grandTotal = parseInt(subtotal.value) - response.promoAmount;
+                        var hasil = document.getElementById('grandTotal');
+                        hasil.innerHTML = 'Rp ' + grandTotal.toLocaleString('id-ID', { minimumFractionDigits: 0 });
+
+                        // var subtotal1 = parseInt(subtotal.value) - response.promoAmount;
+                        // var hasil1 = document.getElementById('subtotal1');
+                        // hasil1.innerHTML = 'Rp ' + grandTotal.toLocaleString('id-ID', { minimumFractionDigits: 0 });
+
+                        var purchaseTotalInput = document.getElementById('subtotal');
+                        purchaseTotalInput.value = grandTotal;
+
+                        var promotionId = document.getElementById('promo-id');
+                        promotionId.value = response.promoId;
+                       
+                        
+                        // alert("Promo applied: " + response.promoAmount);
+                    } else {
+                        var price = document.getElementById('promo-price');
+                        price.innerHTML = 'Promo Tidak Tersedia';
+                    }
+                } else {
+                    // Terjadi kesalahan
+                }
+            }
+        };
+
+            // Kirim permintaan
+            xhr.send(JSON.stringify(data));
+        });
+    });
+        </script>
+   
+       
+    </div>
+    <div class="d-flex justify-content-end section-cs">
+        <span class="customer-service p-3">
+            <a href="https://wa.me/6287839295999?text=Silahkan Tanyakan Ke Admin Seputar Produk Kenes & Bakery ya."
+                class="" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Whatsapp"><i
+                    class="fa-brands fa-whatsapp fa-lg"></i></a>
+        </span>
+    </div>
+    <div class="container feedback mb-5" id="feedback-section">
+        <h2 class="text-uppercase fw-medium text-center mt-3"><b style="color:#662A0C">Produk Recommend</b></h2>
+        <div class="row mt-5 mt-md-5 mb-2">
+            <div class="swiper swiper-feedback">
+                <div class="swiper-wrapper">
+                    {if $product}
+                    {foreach from=$product item=products}
+                    <div class="swiper-slide shadow rounded-bottom">
+                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$products->product_pict}"
+                        class="card-img-top rounded-top" alt="{$products->product_name}">
+                        <div class="card-body">
+                            <div class="desc-product d-flex flex-column mt-4">
+                                <div class="d-flex flex-row justify-content-center info-product gap-2">
+                                    <div class="name">
+                                        <span class="fw-bold">{$products->product_name}</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row justify-content-center info-product gap-2">
+                                    <div class="price">
+                                        <span class="fw-bold">Rp {$products->product_price|number_format:0:".":"."}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-row justify-content-center info-product gap-2">
+                                
+                                <a href="{site_url(['products/detail_produk'])}?id={$products->product_id}" type="button" class="btn btn-secondary"data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Detail"><i
+                                        class="fa-regular fa-note-sticky"></i>
+                                        <!-- {site_url(['products/detail_produk'])}?id={($key1)} -->
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {/foreach}
+                    {/if}
+                </div>
+                <input type="hidden" value="{($id_member)}" id="id_member">
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,150 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="clearfix">
+                    <form action="{site_url($current_page.nav_url)|cat:'/'|cat:$action|cat:'/'|cat:$detail.cat_id}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="cat_id" value="{$detail.cat_id}" />
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-4 align-self-center center">
+                                        <div class="form-group">
+                                            <img id="preview" src="{$BASEURL}resource/assets-frontend/dist/product/{$detail.cat_img|default:''}" alt="foto-kategori" class="img-preview"/><br/>
+                                            <label class="mt-2 pt-2 text-small">Preview</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Foto Kategori</label>
+                                            <input type="file" name="cat_img" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                            <div class="input-group col-xs-12">
+                                                <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Foto">
+                                                <span class="input-group-append">
+                                                    <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Kode Kategori</label>
+                                    <input type="text" name="cat_code" class="form-control" value="{$detail.cat_code|default:''}">
+                                </div>
+                            </div>
+                            <div class="col-md-8 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Nama Kategori</label>
+                                    <input type="text" name="cat_name" class="form-control" value="{$detail.cat_name|default:''}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Kategori Kategori</label>
+                                    <select name="cat_id" class="form-control select2">
+                                        {foreach from=$categories item=cat}
+                                            <option value="{$cat.cat_id}" {if $detail.cat_id|default:'' == {$cat.cat_id}}selected{/if}>{$cat.cat_name|default:''}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Brand Kategori</label>
+                                    <select name="cat_brand" class="form-control select2">
+                                        {foreach from=$brands item=brand}
+                                            <option value="{$brand.brand_type}" {if $detail.cat_brand|default:'' == {$brand.brand_type}}selected{/if}>{$brand.brand_name|default:''}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group text-start">
+                                    <label>Deskripsi Kategori</label>
+                                    <textarea rows="2" name="cat_desc" class="form-control">{$detail.cat_desc|default:''}</textarea>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Harga Produk</label>
+                                    <input type="text" name="cat_harga" class="form-control" value="{$detail.cat_harga|default:''}">
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Tampil</label>
+                                    <select name="cat_highlight" class="form-control select2 highlight">
+                                        <option value="0" {if $detail.cat_highlight|default:'' == '0'}selected{/if}>Tidak</option>
+                                        <option value="1" {if $detail.cat_highlight|default:'' == '1'}selected{/if}>Ya</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Urutan Tampil</label>
+                                    <input type="text" name="cat_no" class="form-control" value="{$detail.cat_no|default:''}">
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Seasonal</label>
+                                    <select name="seasonal_id" class="form-control select2">
+                                        <option value="0">Tidak Ada</option>
+                                        {foreach from=$seasonal item=brand}
+                                            <option value="{$brand.season_id}" {if $detail.seasonal_id|default:'' == {$brand.season_id}}selected{/if}>{$brand.season_name|default:''}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Status Kategori</label>
+                                    <select name="cat_st" class="form-control select2">
+                                        <option value="0" {if $detail.cat_st|default:'' == '0'}selected{/if}>Aktif</option>
+                                        <option value="1" {if $detail.cat_st|default:'' == '1'}selected{/if}>Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center my-4"> 
+                            <button type="submit" class="btn btn-primary me-2"><i class="fas fa-pencil-alt"></i> Ubah</button>
+                            <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                                <i class="fa fa-times"></i> Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    $('body').on('change', '.highlight', function(e) {
+        var highlight = $(this).val();
+        if(highlight == 1) {
+            $('#number').removeAttr('hidden');
+            $('#cat_no').attr('required', 'true');
+        } else {
+            $('#number').attr('hidden', 'true');
+            $('#cat_no').removeAttr('required');
+        }
+    });
+</script>

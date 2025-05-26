@@ -1,0 +1,185 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2">
+                <div class="col-md-6">  
+                    <div class="form-group">
+                        <label>Nama Role</label>
+                        <p class="form-label"><b>{$role.role_nm}</b></p>
+                    </div>
+                </div>         
+                <div class="col-md-6">  
+                    <div class="form-group">
+                        <label>Status</label>
+                        <p class="form-label">
+                            {if $role.role_st == 0}
+                                <span class="badge badge-pill badge-lg badge-success">Aktif</span>
+                            {else}
+                                <span class="badge badge-pill badge-lg badge-danger">Non-aktif</span>
+                            {/if}
+                        </p>
+                    </div>
+                </div>      
+            </div>    
+            {if $allowed.edit}
+                <form action="{site_url($current_page.nav_url)|cat:'/'|cat:$action|cat:'/'|cat:$role.role_id}" method="post">
+                    <div class="table-responsive">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr class="text-center">
+                                    <th width="5%">No</th>
+                                    <th>Menu</th>
+                                    <th>Read</th>
+                                    <th>Create</th>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                    <th width="5%">
+                                        <input class="form-check-input" type="checkbox" value="1" id="checkAll">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {foreach from=$list key=key item=menu}
+                                    <input type="hidden" name="nav_id[]" value="{$menu.nav_id}">
+                                    <tr>
+                                        <td class="text-center">{$menu.nav_no}</td>
+                                        <td>{$menu.nav_title}</td>
+                                        <td class="text-center">
+                                            <input class="form-check-input all-{$menu.nav_id}" type="checkbox" value="1" id="read-{$menu.nav_id}" name="read[{$menu.nav_id}]" {if $menu.read =='1'}checked{/if}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input class="form-check-input all-{$menu.nav_id}" type="checkbox" value="1" id="create-{$menu.nav_id}" name="create[{$menu.nav_id}]" {if $menu.create =='1'}checked{/if}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input class="form-check-input all-{$menu.nav_id}" type="checkbox" value="1" id="edit-{$menu.nav_id}" name="edit[{$menu.nav_id}]" {if $menu.edit =='1'}checked{/if}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input class="form-check-input all-{$menu.nav_id}" type="checkbox" value="1" id="delete-{$menu.nav_id}" name="delete[{$menu.nav_id}]" {if $menu.delete =='1'}checked{/if}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input class="form-check-input" type="checkbox" value="1" id="all-{$menu.nav_id}" {if $menu.read =='1' && $menu.create =='1' && $menu.edit =='1' && $menu.delete =='1'}checked{/if}>
+                                        </td>
+                                    </tr>
+                                    {if !empty($menu.child)}
+                                        {foreach from=$menu.child key=key2 item=menu2}
+                                        <input type="hidden" name="nav_id[]" value="{$menu2.nav_id}">
+                                        <tr>
+                                            <td class="text-center">{$menu2.nav_no}</td>
+                                            <td>{str_repeat("--", $menu2.level)} {$menu2.nav_title}</td>
+                                            <td class="text-center">
+                                                <input class="form-check-input read-{$menu.nav_id} {$menu2.nav_id}" type="checkbox" value="1" name="read[{$menu2.nav_id}]" {if $menu2.read =='1'}checked{/if}>
+                                            </td>
+                                            <td class="text-center">
+                                                <input class="form-check-input create-{$menu.nav_id} {$menu2.nav_id}" type="checkbox" value="1" name="create[{$menu2.nav_id}]" {if $menu2.create =='1'}checked{/if}>
+                                            </td>
+                                            <td class="text-center">
+                                                <input class="form-check-input edit-{$menu.nav_id} {$menu2.nav_id}" type="checkbox" value="1" name="edit[{$menu2.nav_id}]" {if $menu2.edit =='1'}checked{/if}>
+                                            </td>
+                                            <td class="text-center">
+                                                <input class="form-check-input delete-{$menu.nav_id} {$menu2.nav_id}" type="checkbox" value="1" name="delete[{$menu2.nav_id}]" {if $menu2.delete =='1'}checked{/if}>
+                                            </td>
+                                            <td class="text-center">
+                                                <input class="form-check-input" type="checkbox" value="1" id="{$menu2.nav_id}" {if $menu2.read =='1' && $menu2.create =='1' && $menu2.edit =='1' && $menu2.delete =='1'}checked{/if}>
+                                            </td>
+                                        </tr>
+                                        <script type="text/javascript">
+                                            // check all submenu per row
+                                            $("#{$menu2.nav_id}").change(function() {
+                                                if (this.checked) {
+                                                    $(".{$menu2.nav_id}").each(function() {
+                                                        this.checked=true;
+                                                    });
+                                                    $(".all-{$menu.nav_id}").each(function() {
+                                                        this.checked=true;
+                                                    });
+                                                    $("#all-{$menu.nav_id}").each(function() {
+                                                        this.checked=true;
+                                                    });
+                                                } else {
+                                                    $(".{$menu2.nav_id}").each(function() {
+                                                        this.checked=false;
+                                                    });
+                                                    $(".all-{$menu.nav_id}").each(function() {
+                                                        this.checked=false;
+                                                    });
+                                                    $("#all-{$menu.nav_id}").each(function() {
+                                                        this.checked=false;
+                                                    });
+                                                }
+                                            });
+                                        </script>
+                                        {/foreach}
+                                    {/if}
+                                    <script type="text/javascript">
+                                        // check all submenu per parent
+                                        $("#all-{$menu.nav_id}").change(function() {
+                                            if (this.checked) {
+                                                $(".all-{$menu.nav_id}").each(function() {
+                                                    this.checked=true;
+                                                });
+                                            } else {
+                                                $(".all-{$menu.nav_id}").each(function() {
+                                                    this.checked=false;
+                                                });
+                                            }
+                                        });
+                                        $(".read-{$menu.nav_id}").change(function() {
+                                            if (this.checked) {
+                                                $("#read-{$menu.nav_id}").each(function() {
+                                                    this.checked=true;
+                                                });
+                                            } else {
+                                                $("#read-{$menu.nav_id}").each(function() {
+                                                    this.checked=false;
+                                                });
+                                            }
+                                        });
+                                        $(".create-{$menu.nav_id}").change(function() {
+                                            if (this.checked) {
+                                                $("#create-{$menu.nav_id}").each(function() {
+                                                    this.checked=true;
+                                                });
+                                            } else {
+                                                $("#create-{$menu.nav_id}").each(function() {
+                                                    this.checked=false;
+                                                });
+                                            }
+                                        });
+                                        $(".edit-{$menu.nav_id}").change(function() {
+                                            if (this.checked) {
+                                                $("#edit-{$menu.nav_id}").each(function() {
+                                                    this.checked=true;
+                                                });
+                                            } else {
+                                                $("#edit-{$menu.nav_id}").each(function() {
+                                                    this.checked=false;
+                                                });
+                                            }
+                                        });
+                                        $(".delete-{$menu.nav_id}").change(function() {
+                                            if (this.checked) {
+                                                $("#delete-{$menu.nav_id}").each(function() {
+                                                    this.checked=true;
+                                                });
+                                            } else {
+                                                $("#delete-{$menu.nav_id}").each(function() {
+                                                    this.checked=false;
+                                                });
+                                            }
+                                        });
+                                    </script>
+                                {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center my-4"> 
+                        <button type="submit" class="btn btn-primary me-2"><i class="far fa-save"></i> Simpan</button>
+                        <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                            <i class="fa fa-times"></i> Batal
+                        </a>
+                    </div>
+                </form>
+            {/if}
+        </div>
+    </div>
+</div>

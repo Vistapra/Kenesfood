@@ -1,0 +1,257 @@
+<main>
+    <div class="container-fluid block-resto" style="margin-top: 50px;">
+        <div class="row">
+            <div class="col-12 col-md-6 col-lg-6 order-2 order-md-1">
+                <div class="card caption-bakery border-0" style="background-color: #e8e7e7;">
+                    <div class="card-body">
+                        <p class="card-text text-center lh-sm text-nowrap" >
+                            Selamat datang di
+                        </p>
+                        <h4 class="card-title text-center"><strong class="sub-caption-bakery">Kenes Resto</strong></h4>
+                        <p class="card-text text-center lh-sm">
+                            Menghidupkan kembali warisan rasa. Kami dedikasikan untuk melestarikan dan membagikan cita
+                            rasa autentik. Memanjakan anda dengan hidangan tradisional jawa di zaman modern
+                        </p>
+                        <div class="d-flex justify-content-end">
+                            <a href="" class="btn btn-sm rounded-start-pill fw-bold text-start text-nowrap"
+                                style="background-color: #ea6723; color: white; width:25vh;">Lihat Menu</a>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- prelaunch & arrival -->
+
+                <div class="row g-2 p-2">
+                    <div class="col-6 col-md-6 p-2 p-md-0">
+                        <div class="card swiper swiper-prelaunch border-0" style="background-color: #e8e7e7;">
+                            <div class="swiper-wrapper">
+                                {foreach from=$prelaunch item=prelaunch_item}
+                                <div class="swiper-slide text-center shadow-sm rounded-3">
+                                    <a target="_blank"
+                                        href="{$BASEURL}/resource/assets-frontend/dist/product/{$prelaunch_item->product_pict}"
+                                        target="blank" rel="">
+                                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$prelaunch_item->product_pict}"
+                                            alt="" class="img-fluid rounded pre-launch">
+                                        <!-- <h4><span class="badge rounded position-absolute top-0 end-0 text-uppercase" style="background-color:#f4d406; color: black;">Pre-launch</span></h4> -->
+                                        <span class="span-promo badge position-absolute top-0 end-0"
+                                            style="background-color: #ea6723;" alt="">PreLaunch</span>
+
+                                    </a>
+                                    <!-- <div class="position-absolute top-50 start-50 translate-middle" style="transform: translate(-50%, -50%);">
+                                        <a class="btn btn-sm icon-link icon-link-hover text-uppercase fw-bold text-nowrap" role="button" href="{site_url(['products/detail_produk?id=67'])}" style=" color: #ffffff; letter-spacing: 0px; border: solid 2px; background-color: rgba(0, 0, 0, 0.3);">
+                                            Order Now
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                            </svg>
+                                        </a>
+                                    </div> -->
+                                </div>
+                                {/foreach}
+                            </div>
+                        </div>
+
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <div class="col-6 col-md-6 p-2 p-md-0">
+                        <div class="card swiper swiper-prelaunch border-0" style="background-color: #e8e7e7;">
+                            <div class="swiper-wrapper">
+                                {foreach from=$arrival item=arrival_item}
+                                <div class="swiper-slide text-center shadow-sm rounded-3">
+                                    <a href="{$BASEURL}/resource/assets-frontend/dist/product/{$arrival_item->product_pict}"
+                                        target="blank" rel="">
+                                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/{$arrival_item->product_pict}"
+                                            alt="" class="img-fluid rounded pre-launch">
+                                        <span class="span-promo badge position-absolute top-0 end-0"
+                                            style="background-color: #ea6723;" alt="">New Arrival</span>
+                                        <!-- <h4><span class="badge rounded-50 position-absolute top-0 start-100 translate-middle text-uppercase" style="background-color:#f4d406; border-radius: 50%; color: black;">New Product</span></h4> -->
+                                    </a>
+                                    <!-- <div class="position-absolute top-50 start-50 translate-middle" style="transform: translate(-50%, -50%);">
+                                        <a class="btn btn-sm icon-link icon-link-hover text-uppercase fw-bold text-nowrap" role="button" href="{site_url(['products/detail_produk?id=67'])}" style=" color: #ffffff; letter-spacing: 0px; border: solid 2px; background-color: rgba(0, 0, 0, 0.3);">
+                                            Order Now
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                            </svg>
+                                        </a>
+                                    </div>									 -->
+                                </div>
+
+                                {/foreach}
+                            </div>
+                        </div>
+
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+
+                <!-- end prelaunch & arrival -->
+
+            </div>
+            <div class="col-12 col-md-6 col-lg-6 offset-lg-0 order-1 order-md-2 align-self-center">
+                <div class="swiper swiper-bakery">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="card-product-bakery">
+                                <a href="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategoryresto/logokenesresto.png"
+                                    target="_blank" rel="">
+                                    <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategoryresto/logokenesresto.png"
+                                        alt="" class="img-fluid">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="card-product-bakery">
+                                <a href="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategoryresto/logokenesresto.png"
+                                    target="_blank" rel="">
+                                    <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategoryresto/logokenesresto.png"
+                                        alt="" class="img-fluid">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+    <!-- <div class="container category-resto">
+        <div class="row g-3 g-lg-4 text-center">
+            <div class="col-6 col-md-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorybakery/kategorybakerybakpiapremium.png"
+                            alt="" class="card-img-top">
+                        <div class="card-body d-flex flex-column">
+
+                            <h4 class="text-uppercase card-title mt-auto fw-bold">Bakpia premium</h4>
+                            <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                            </h6>
+                            <h4>
+                                <span
+                                    class="badge border border-dark bg-light text-nowrap shadow rounded-pill text-capitalize fw-bold position-absolute top-100 start-50 translate-middle text-nowrap"
+                                    style="color: #ea6723;">Lihat Produk
+                                </span>
+
+                            </h4>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorybakery/kategorybakerycakehantaran.png"
+                            alt="" class="card-img-top">
+                        <div class="card-body d-flex flex-column">
+
+                            <h4 class="text-uppercase card-title mt-auto fw-bold">Cake hantaran</h4>
+                            <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                            </h6>
+                            <h4>
+                                <span
+                                    class="badge border border-dark bg-light text-nowrap rounded-pill text-capitalize fw-bold position-absolute top-100 start-50 translate-middle text-nowrap"
+                                    style="color: #ea6723;">Lihat Produk
+                                </span>
+
+                            </h4>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorybakery/kategorybakerypremiumbreads.png"
+                            alt="" class="card-img-top">
+                        <div class="card-body d-flex flex-column">
+
+                            <h4 class="text-uppercase card-title mt-auto fw-bold">premium breads</h4>
+                            <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                            </h6>
+                            <h4>
+                                <span
+                                    class="badge border border-dark bg-light text-nowrap rounded-pill text-capitalize fw-bold position-absolute top-100 start-50 translate-middle text-nowrap"
+                                    style="color: #ea6723;">Lihat Produk
+                                </span>
+
+                            </h4>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorybakery/kategorybakerypastry.png"
+                            alt="" class="card-img-top">
+                        <div class="card-body d-flex flex-column">
+
+                            <h4 class="text-uppercase card-title mt-auto fw-bold">pastry</h4>
+                            <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                            </h6>
+                            <h4>
+                                <span
+                                    class="badge border border-dark bg-light text-nowrap rounded-pill text-capitalize fw-bold position-absolute top-100 start-50 translate-middle text-nowrap"
+                                    style="color: #ea6723;">Lihat Produk
+                                </span>
+
+                            </h4>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorybakery/kategorybakerycaketart.png"
+                            alt="" class="card-img-top">
+                        <div class="card-body d-flex flex-column">
+
+                            <h4 class="text-uppercase card-title mt-auto fw-bold">cake tart</h4>
+                            <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                            </h6>
+                            <h4>
+                                <span
+                                    class="badge border border-dark bg-light text-nowrap rounded-pill text-capitalize fw-bold position-absolute top-100 start-50 translate-middle text-nowrap"
+                                    style="color: #ea6723;">Lihat Produk
+                                </span>
+
+                            </h4>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="" class="link-underline link-underline-opacity-0" style="color: white;">
+                    <div class="card rounded" style="background-color: white; color: black;">
+                        <img src="{$BASEURL}/resource/assets-frontend/dist/product/category-product/logokategorybakery/kategorybakerypudingfruits.png"
+                            alt="" class="card-img-top">
+                        <div class="card-body d-flex flex-column">
+
+                            <h4 class="text-uppercase card-title mt-auto fw-bold">pudding fruits</h4>
+                            <h6 class="card-subtitle mb-2 text-capitalize">Tersedia berbagai macam rasa
+                            </h6>
+                            <h4>
+                                <span
+                                    class="badge border border-dark bg-light text-nowrap rounded-pill text-capitalize fw-bold position-absolute top-100 start-50 translate-middle text-nowrap"
+                                    style="color: #ea6723;">Lihat Produk
+                                </span>
+
+                            </h4>
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div> -->
+</main>

@@ -1,0 +1,107 @@
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<h4 class="card-title">Sinkronisasi Produk dari API</h4>
+			<p class="card-description">Pilih brand untuk menyinkronkan produk menggunakan kategori lokal yang sudah
+				ada.</p>
+
+			{if $this->session->flashdata('message')}
+			<div class="alert alert-{$this->session->flashdata('message').status} alert-dismissible fade show"
+				role="alert">
+				{$this->session->flashdata('message').msg}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			{/if}
+
+			<form method="post" action="{site_url('master/products/sync')}">
+				<div class="form-group">
+					<label for="brand">Brand</label>
+					<select class="form-control" id="brand" name="brand" required>
+						<option value="">-- Pilih Brand --</option>
+						{foreach from=$brands item=brand}
+						<option value="{$brand.brand_type}" {if $selected_brand eq $brand.brand_type}selected{/if}>
+							{$brand.brand_name}</option>
+						{/foreach}
+					</select>
+				</div>
+
+				{if isset($selected_brand)}
+				<div class="mt-3">
+					<div class="alert alert-info">
+						<h6 class="mb-2">Kategori Lokal Tersedia: {$local_categories_count|default:0}</h6>
+						<p class="mb-0">Produk API akan disinkronkan menggunakan kategori lokal yang sudah ada untuk
+							brand {$selected_brand}.</p>
+
+						{if $local_categories_count == 0}
+						<div class="mt-2 text-danger">
+							<strong>Perhatian:</strong> Tidak ada kategori lokal yang tersedia untuk brand ini.
+							Silakan tambahkan kategori terlebih dahulu sebelum melakukan sinkronisasi.
+						</div>
+						{else}
+						<div class="mt-2">
+							<strong>Kategori yang akan digunakan:</strong>
+							<ul class="mb-0 mt-1">
+								{foreach from=$local_categories item=category name=cat_loop}
+								{if $smarty.foreach.cat_loop.index < 5} <li>{$category.cat_name}</li>
+									{elseif $smarty.foreach.cat_loop.index == 5}
+									<li>...dan {$local_categories_count - 5} kategori lainnya</li>
+									{/if}
+									{/foreach}
+							</ul>
+						</div>
+						{/if}
+					</div>
+				</div>
+				{/if}
+
+				<button type="submit" name="sync" value="1" class="btn btn-primary mt-3" {if
+					isset($local_categories_count) && $local_categories_count==0}disabled{/if}>
+					<i class="fas fa-sync"></i> Sinkronkan Produk
+				</button>
+			</form>
+
+			{if $selected_brand && $products}
+			<div class="mt-4">
+				<h5>Produk dari API ({$products|@count})</h5>
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Kode</th>
+								<th>Nama</th>
+								<th>Kategori API</th>
+								<th>Kategori Lokal</th>
+								<th>Harga</th>
+							</tr>
+						</thead>
+						<tbody>
+							{foreach from=$products item=product}
+							<tr>
+								<td>{$product.product_id}</td>
+								<td>{$product.product_code}</td>
+								<td>{$product.product_name}</td>
+								<td>{$product.category_name|default:'N/A'}</td>
+								<td>
+									{assign var=mapped_category value=false}
+									{foreach from=$local_categories item=category}
+									{if $category.cat_name|lower == $product.category_name|lower}
+									<span class="badge bg-success">{$category.cat_name}</span>
+									{assign var=mapped_category value=true}
+									{/if}
+									{/foreach}
+									{if !$mapped_category}
+									<span class="badge bg-warning">Akan menggunakan kategori default</span>
+									{/if}
+								</td>
+								<td>{number_format($product.product_price, 0, ',', '.')}</td>
+							</tr>
+							{/foreach}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{/if}
+		</div>
+	</div>
+</div>

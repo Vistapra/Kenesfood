@@ -1,0 +1,40 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2">
+                <div class="col-md-3">  
+                    <div class="form-group">
+                        <label>Portal</label>
+                        <p class="form-label"><b>{$preference.site_type}</b></p>
+                    </div>
+                </div>
+                <div class="col-md-3">  
+                    <div class="form-group">
+                        <label>Group</label>
+                        <p class="form-label"><b>{$preference.pref_group}</b></p>
+                    </div>
+                </div>
+                <div class="col-md-3">  
+                    <div class="form-group">
+                        <label>Label</label>
+                        <p class="form-label"><b>{$preference.pref_label}</b></p>
+                    </div>
+                </div>
+                <div class="col-md-3">  
+                    <div class="form-group">
+                        <label>Name</label>
+                        <p class="form-label"><b>{$preference.pref_name}</b></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row my-2">
+                <div class="col-md-12">  
+                    <div class="form-group">
+                        <label>Value</label>
+                        <p class="form-label">{nl2br($preference.pref_value|default:'-')}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

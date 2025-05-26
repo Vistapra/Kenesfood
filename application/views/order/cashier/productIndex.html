@@ -1,0 +1,129 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr class="text-center">
+                            <th>No</th>
+                            <th>Kode</th>
+                            <th>Nama</th>
+							<th>Stok</th>
+							<th>Status</th>
+                            <th width="15%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach from=$data key=key item=v}
+                        <tr class="text-center">
+                            <td>{$no++}</td>
+                            <td>{$v.code}</td>
+                            <td>{$v.name}</td>
+							<td id="stock-{$v.id}">{$v.stock}</td>
+							<td>
+                                {if $v.status == 0}
+                                    <span class="badge badge-pill badge-lg badge-success">Aktif</span>
+                                {else}
+                                    <span class="badge badge-pill badge-lg badge-danger">Non-aktif</span>
+                                {/if}
+                            </td>
+                            <td class="text-center">
+								{if $allowed.edit}
+                                    <button class="btn btn-outline-secondary btn-rounded actionEdit" data-toggle="tooltip" data-placement="top" title="Edit Stok" data-original-title="Edit" data-product-id="{$v.id}"><i class="fa-regular fa-pen-to-square"></i></button>
+                                {/if}
+                            </td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group row mt-3 mb-2 pe-0">
+                <div class="col-md-3 pt-3">
+                    <div class="pagination-info">Menampilkan {$pagination.start|default:0} - {$pagination.end|default:0} dari {$pagination.total|default:0} data</div>
+                </div>
+                <div class="col-md-9 pe-0 mt-2 pe-2">
+                    <nav>
+                        <ul class="pagination justify-content-end">
+                            <li class="page-item">{$pagination.data|default:''}</li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update -->
+<div class="modal fade" id="editProduct" tabindex="-1" aria-labelledby="editProduct-label" aria-hidden="true">
+	<div class="modal-dialog modal-md modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="editProduct-label"></h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-4 align-self-center center file-input">
+							<div class="form-group text-start">
+								<label>Stok Produk</label>
+								<input type="number" name="stock" class="form-control" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-info" id="updateButton">Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End of Modal Update -->
+
+<script>
+	$(document).ready(function () {
+		const url = new URL(window.location.href);
+		const baseUrl = url.protocol +
+			"//" +
+			url.host +
+			url.pathname.split('/').slice(0, 4).join('/');
+
+		let productId = null;
+
+		$(".actionEdit").each(function() {
+			$(this).on("click", function() {
+				productId = $(this).data('product-id');
+
+				$("input[name='stock']").val(parseInt($("#stock-"+productId).text(), 10));
+
+				const editModal = new bootstrap.Modal("#editProduct", {
+					keyboard: false
+				});
+
+				editModal.show()
+			});
+		});
+
+		$("#updateButton").on("click", function() {
+			if(productId === null)
+				return;
+
+			$.ajax({
+				type: "PATCH",
+				url: baseUrl + "/update/" + productId,
+				data: JSON.stringify({
+					"stock": $("input[name='stock']").val()
+				}),
+				dataType: "json",
+				success: function (response) {
+					$("#stock-"+productId).text(response.data.stock);
+
+					const editModal = bootstrap.Modal.getInstance("#editProduct");
+					editModal.hide();
+				}
+			});
+		});
+	});
+</script>

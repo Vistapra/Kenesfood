@@ -1,0 +1,84 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form action="{site_url($current_page.nav_url)}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="user_id" value="{$detail.user_id}" >
+                <div class="row">
+                    <div class="col-md-12 align-self-center center">
+                        <div class="row">
+                            <div class="col-md-4 align-self-center center">
+                                <div class="form-group file-preview">
+                                    <img id="output" src="{$BASEURL}resource/assets/default/images/uploads/users/{$detail.user_photo|default:'default.jpg'}" alt="user_photo" class="img-preview"/><br/>
+                                    <label class="mt-2">Foto Preview</label>
+                                </div>
+                            </div>
+                            <div class="col-md-8 align-self-center center file-input">
+                                <div class="form-group text-start">
+                                    <label>Foto Profil</label>
+                                    <input type="file" name="user_photo" class="file-upload-default" onchange="loadFile(event)">
+                                    <div class="input-group col-xs-12">
+                                        <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Foto">
+                                        <span class="input-group-append">
+                                            <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">    
+                        <div class="form-group">
+                            <label class="form-label">Nama Lengkap *</label>
+                            <input type="text" name="user_alias" class="form-control" id="user_alias" required value="{$detail.user_alias}">
+                        </div>
+                    </div>  
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Username *</label>
+                            <input type="text" class="form-control" placeholder="Username" required name="user_name" value="{$detail.user_name}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="text" class="form-control" placeholder="Email" required name="user_email" value="{$detail.user_email}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2"> 
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Password Baru</label>
+                            <input type="password" class="form-control" placeholder="Password" name="user_pass" value="">
+                            <small><i>Kosongkan bila tidak ingin mengganti password</i></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Verifikasi Password Baru</label>
+                            <input type="password" class="form-control" placeholder="Verifikasi Password" name="user_pass_verif" value="">
+                            <small><i>Kosongkan bila tidak ingin mengganti password</i></small>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    var loadFile = function(event) {
+                        var output = document.getElementById('output');
+                        output.src = URL.createObjectURL(event.target.files[0]);
+                        output.onload = function() {
+                        URL.revokeObjectURL(output.src) // free memory
+                        }
+                    };
+                </script>
+                <div class="text-center my-4"> 
+                    <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

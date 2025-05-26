@@ -1,0 +1,111 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th width="10%">No</th>
+                            <th>Menu</th>
+                            <th width="15%">Display</th>
+                            <th width="15%">Status</th>
+                            <th width="15%" class="text-center">
+                                {if $allowed.create}
+                                    <div class="row">
+                                        <a href="{site_url([$current_page.nav_url, 'add'])}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tambah" data-container="body" data-animation="true">
+                                            <button type="button" class="btn btn-primary">
+                                                <i class="fas fa-plus"></i> Tambah
+                                            </button>
+                                        </a>
+                                    </div>
+                                {/if}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach from=$data key=key item=menu}
+                        <tr class="text-black">
+                            <td class="text-center">{$menu.nav_no}</td>
+                            <td>
+                                <div class="d-flex flex-row align-items-center">
+                                    <i class="{$menu.nav_icon} icon-sm me-2"></i>
+                                    <p class="mb-0 ms-1"> {$menu.nav_title}  </p>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {if $menu.nav_display == 0}<span class="badge badge-pill badge-lg badge-success">Tampil</span>
+                                {else}<span class="badge badge-pill badge-lg badge-danger">Sembunyi</span>
+                                {/if}
+                            </td>
+                            <td class="text-center">
+                                {if $menu.nav_st == 0}<span class="badge badge-pill badge-lg badge-success">Aktif</span>
+                                {else}<span class="badge badge-pill badge-lg badge-danger">Non-aktif</span>
+                                {/if}
+                            </td>
+                            <td class="text-center">
+                                <a href="{site_url([$current_page.nav_url, 'detail', $menu.nav_id])}" class="btn btn-outline-info btn-rounded btn-icon" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Detail">
+                                    <i class="far fa-file-alt"></i>
+                                </a>
+                                {if empty($menu.child)}
+                                    {if $allowed.edit}
+                                        <a href="{site_url([$current_page.nav_url, 'edit', $menu.nav_id])}" class="btn btn-outline-warning btn-rounded btn-icon me-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ubah">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                    {/if}
+                                    {if $allowed.delete}
+                                        {$url = site_url([$current_page.nav_url, 'delete', $menu.nav_id])}
+                                        <a href="{$url}" class="btn btn-outline-danger btn-rounded btn-icon me-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hapus" onclick="confirm_delete('{$url}', event)">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    {/if}
+                                {/if}
+                            </td>
+                        </tr>
+                        {if !empty($menu.child)}
+                            {foreach from=$menu.child key=key2 item=menu2}
+                            <tr>
+                                <td class="text-center">{$menu2.nav_no}</td>
+                                <!-- <td class="text-center">{$menu2.level}</td> -->
+                                <td>
+                                    <div class="d-flex flex-row align-items-center">
+                                        {str_repeat("--", $menu2.level)}&nbsp;
+                                        <i class="{$menu2.nav_icon} icon-sm ms-3 me-2"></i>
+                                        <p class="mb-0 ms-1"> {$menu2.nav_title}  </p>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    {if $menu2.nav_display == 0}<span class="badge badge-pill badge-lg badge-success">Tampil</span>
+                                    {else}<span class="badge badge-pill badge-lg badge-danger">Sembunyi</span>
+                                    {/if}
+                                </td>
+                                <td class="text-center">
+                                    {if $menu2.nav_st == 0}<span class="badge badge-pill badge-lg badge-success">Aktif</span>
+                                    {else}<span class="badge badge-pill badge-lg badge-danger">Non-aktif</span>
+                                    {/if}
+                                </td>
+                                <td>
+                                    <a href="{site_url([$current_page.nav_url, 'detail', $menu2.nav_id])}" class="btn btn-outline-info btn-rounded btn-icon me-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Detail">
+                                        <i class="far fa-file-alt"></i>
+                                    </a>
+                                    {if $allowed.edit}
+                                        <a href="{site_url([$current_page.nav_url, 'edit', $menu2.nav_id])}" class="btn btn-outline-warning btn-rounded btn-icon me-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ubah">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                    {/if}
+                                    {if $allowed.delete}
+                                        {$url = site_url([$current_page.nav_url, 'delete', $menu2.nav_id])}
+                                        <a href="{$url}" class="btn btn-outline-danger btn-rounded btn-icon me-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hapus" onclick="confirm_delete('{$url}', event)">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    {/if}
+                                </td>
+                            </tr>
+                            {/foreach}
+                        {/if}
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

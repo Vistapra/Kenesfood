@@ -1,0 +1,92 @@
+<main>
+    <div class="container faq-container mb-5">
+            <div class="d-flex flex-column align-items-center">
+                <div class="heading-page p-2 mt-4">
+                    <h3 class="text-uppercase fw-medium text-center"><b style="color:#662A0C">Frequently Asked Questions</b></h3>
+                </div>
+                <div class="breadcrumb p-2">
+                    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                          <!-- <li class="breadcrumb-item"><a href="<?= site_url('home'); ?>">Home</a></li> -->
+                          <li class="breadcrumb-item"><a href="{site_url('/')}">Home</a></li>
+                          <li class="breadcrumb-item active" aria-current="page">FAQ</li>
+                        </ol>
+                    </nav>
+                </div>
+                
+            </div>
+            <div class="main">
+              <div class="image">
+                <img src="{$BASEURL}/resource/assets-frontend/dist/logo/faq_icon.png">
+              </div>
+              <div class="faqs">
+                <h1>FAQ</h1>
+                <div class="faq-items">
+
+                  <div class="faq-item active">
+                    <button
+                    id="faq-item-question-1"
+                            class="question"
+                            onclick="showAnswer(event)"
+                    >
+                    How Do I Apply For KENES Membership?
+                      <img
+                              src="{$BASEURL}resource/assets-frontend/dist/images/icon-arrow-down.svg"
+                              alt="down arrow"
+                              class="arrow"
+                      />
+                    </button>
+                    <p class="answer">
+                      KENES Membership is available for you to join for free. Simply register yourself on https://kenesfood.com/. Please make sure you register your active email and phone number
+                    </p>
+                  </div>
+                  <div class="faq-item">
+                    <button
+                            id="faq-item-question-2"
+                            class="question"
+                            onclick="showAnswer(event)"
+                    >
+                    How Do I Receive My Special Reward?
+                      <img
+                              src="{$BASEURL}resource/assets-frontend/dist/images/icon-arrow-down.svg"
+                              alt="down arrow"
+                              class="arrow"
+                      />
+                    </button>
+                    <p class="answer">
+                      Special Rewards such as surprise discount coupon, special offer, event invitations are given to members on special occasions at Kenes discretion depending on our ongoing promotional campaigns
+                  </div>
+                  <div class="faq-item">
+                    <button
+                            id="faq-item-question-3"
+                            class="question"
+                            onclick="showAnswer(event)"
+                    >
+                    We want to work together with Kenes
+                    Where can I submit the proposal?
+                      <img
+                              src="{$BASEURL}resource/assets-frontend/dist/images/icon-arrow-down.svg"
+                              alt="down arrow"
+                              class="arrow"
+                      />
+                    </button>
+                    <p class="answer">
+                      Proposals please send to our email
+                    </p>
+                  </div>
+                
+                </div>
+              </div>
+            </div>
+              
+  
+  </main>
+  <script>
+    const showAnswer = (e) => {
+  // console.log(e);
+  const i = event.target.id.split("-").pop();
+  document.getElementsByClassName("faq-item")[i - 1].classList.toggle("active");
+};
+
+  </script>
+  

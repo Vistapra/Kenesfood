@@ -1,0 +1,48 @@
+<div class="banner-container">
+    <!-- <div class="title"> {$seasonals.season_name} </div> -->
+    <div class="banner">
+        <img src="{$BASEURL}resource/assets-frontend/dist/season/{$seasonals.season_banner}">
+            <!-- <video loop autoplay>
+                <source src="{$BASEURL}resource/assets-frontend/dist/season/{$seasonals.season_logo}"> type="video/mp4">
+                Your browser does not support the video tag.
+            </video> -->
+    </div>
+</div>
+
+<div class="container-sm-2">
+{if !empty($cat_season)}
+<div class="box-container">
+    {foreach from=$cat_season key=key item=product}
+    <a style="text-decoration: none;" href="{site_url(['products/detail_kategori_product_seasonal', $product.cat_id])}"><div class="m-5 categories">
+            {if !empty($product.cat_img)}
+                <div class="row">
+                    <div class="cat_img">
+                        <img src="{$BASEURL}resource/assets-frontend/dist/product/{$product.cat_img}">
+                    </div>
+                    <div class="cat_detail">
+                        <h4 class="text-uppercase">{$product.cat_name}</h4>
+                        <p>{$product.cat_desc}</p>
+                    </div>
+                    <div class="cat_harga">
+                        <h4 class="" align ="right">Mulai dari : <b>{number_format($product.cat_harga,0,",",".")}</b></h4>
+                    </div>
+                </div>
+            {else} 
+                <div class="row">
+                    <div class="cat_img">
+                    </div>
+                    <div class="cat_detail">
+                        <h4>{$product.cat_name}</h4>
+                        <p>{$product.cat_desc}</p>
+                    </div>
+                </div>
+            {/if}
+        </div>
+    </a>
+    {/foreach}
+</div>
+{/if}  
+</div>
+</div>
+</body>
+</html>

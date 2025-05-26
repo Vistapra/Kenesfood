@@ -1,0 +1,205 @@
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<h4 class="card-title">Riwayat Order</h4>
+
+			<!-- Filter Form -->
+			<form method="post" action="{$site_url}order/history" class="mb-4 pt-3">
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Pencarian</label>
+							<input type="text" name="keyword" class="form-control" value="{$keyword}"
+								placeholder="ID Order / Nama Pelanggan">
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>Tanggal Mulai</label>
+							<input type="date" name="start_date" class="form-control" value="{$startDate}">
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>Tanggal Akhir</label>
+							<input type="date" name="end_date" class="form-control" value="{$endDate}">
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>Status</label>
+							<select name="status" class="form-control">
+								<option value="" {if $status=="" }selected{/if}>Semua</option>
+								<option value="0" {if $status=="0" }selected{/if}>Dipesan</option>
+								<option value="1" {if $status=="1" }selected{/if}>Order Diproses</option>
+								<option value="2" {if $status=="2" }selected{/if}>Sedang Diproses</option>
+								<option value="3" {if $status=="3" }selected{/if}>Sudah Diantar</option>
+								<option value="4" {if $status=="4" }selected{/if}>Selesai</option>
+								<option value="5" {if $status=="5" }selected{/if}>Dibatalkan</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-md-3 d-flex align-items-end">
+						<div class="form-group me-2">
+							<button type="submit" class="btn btn-primary btn-block">
+								<i class="fa-solid fa-search me-2"></i>Cari
+							</button>
+						</div>
+						<div class="form-group me-2">
+							<button type="submit" name="save" value="Reset" class="btn btn-outline-secondary">
+								<i class="fa-solid fa-undo me-2"></i>Reset
+							</button>
+						</div>
+						<div class="form-group">
+							<a href="{$site_url}order/history/report" class="btn btn-success">
+								<i class="fa-solid fa-chart-line me-2"></i>Laporan
+							</a>
+						</div>
+					</div>
+				</div>
+			</form>
+
+			<div class="table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr class="text-center">
+							<th>No</th>
+							<th>ID Order</th>
+							<th>Waktu Order</th>
+							<th>Pelanggan</th>
+							<th>Outlet</th>
+							<th>Meja</th>
+							<th>Status</th>
+							<th>Total</th>
+							<th width="15%">Aksi</th>
+						</tr>
+					</thead>
+					<tbody>
+						{if isset($orders) && $orders|@count > 0}
+						{foreach from=$orders item=order name=orderLoop}
+						<tr>
+							<td class="text-center">{$no++}</td>
+							<td class="text-center">{$order.order_id}</td>
+							<td class="text-center">{$order.created_at|date_format:"%d/%m/%Y %H:%M"}</td>
+							<td>{$order.customer_name}</td>
+							<td class="text-center">
+								{assign var="outletName" value="Unknown Outlet"}
+								{foreach from=$outlets item=outlet}
+								{if $outlet.outlet_id == $order.outlet_id}
+								{assign var="outletName" value=$outlet.outlet_name}
+								{/if}
+								{/foreach}
+								{$outletName}
+							</td>
+							<td class="text-center">{$order.table_id}</td>
+							<td class="text-center">
+								{if $order.status == 0}
+								<span class="badge badge-pill badge-primary">Dipesan</span>
+								{elseif $order.status == 1}
+								<span class="badge badge-pill badge-success">Order Diproses</span>
+								{elseif $order.status == 2}
+								<span class="badge badge-pill badge-info">Sedang Diproses</span>
+								{elseif $order.status == 3}
+								<span class="badge badge-pill badge-success">Sudah Diantar</span>
+								{elseif $order.status == 4}
+								<span class="badge badge-pill badge-secondary">Selesai</span>
+								{elseif $order.status == 5}
+								<span class="badge badge-pill badge-danger">Dibatalkan</span>
+								{else}
+								<span class="badge badge-pill badge-light">Unknown</span>
+								{/if}
+							</td>
+							<td class="text-end">
+								{if isset($order.total_amount)}
+								{assign var="total" value=$order.total_amount * 1.1}
+								Rp {$total|number_format:0:',':'.'}
+								{else}
+								-
+								{/if}
+							</td>
+							<td class="text-center">
+								<a class="btn btn-sm btn-outline-info btn-rounded"
+									href="{$site_url}order/history/view/{$order.id}">
+									<i class="fa-regular fa-eye"></i>
+								</a>
+								<a class="btn btn-sm btn-outline-primary btn-rounded print-receipt-history"
+									data-order-id="{$order.order_id}" data-outlet-id="{$order.outlet_id}"
+									data-table-id="{$order.table_id}" data-brand="{$order.brand}">
+									<i class="fa-solid fa-print"></i>
+								</a>
+							</td>
+						</tr>
+						{/foreach}
+						{else}
+						<tr>
+							<td colspan="9" class="text-center py-4">
+								<div class="alert alert-info mb-0">
+									<i class="fa-solid fa-info-circle me-2"></i>
+									Tidak ada data riwayat order yang sesuai dengan filter
+								</div>
+							</td>
+						</tr>
+						{/if}
+					</tbody>
+				</table>
+			</div>
+			<div class="form-group row mt-3 mb-2 pe-0">
+				<div class="col-md-3 pt-3">
+					<div class="pagination-info">Menampilkan {$pagination.start|default:0} - {$pagination.end|default:0}
+						dari {$pagination.total|default:0} data</div>
+				</div>
+				<div class="col-md-9 pe-0 mt-2 pe-2">
+					<nav>
+						<ul class="pagination justify-content-end">
+							<li class="page-item">{$pagination.data|default:''}</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(document).ready(function () {
+		$('.print-receipt-history').on('click', function () {
+			var orderId = $(this).data('orderId');
+			var outletId = $(this).data('outletId');
+			var tableId = $(this).data('tableId');
+			var brand = $(this).data('brand');
+
+			if (!orderId || !outletId || !tableId || !brand) {
+				Swal.fire({
+					title: 'Error',
+					text: 'Data tidak lengkap untuk mencetak struk',
+					icon: 'error',
+					confirmButtonText: 'OK'
+				});
+				return;
+			}
+
+			// Construct receipt URL
+			var baseUrl = window.location.origin + window.location.pathname.split('/').slice(0, 4).join('/');
+			var receiptUrl = baseUrl + '/download?action=printReceipt&tableId=' + tableId +
+				'&outletId=' + outletId + '&brand=' + brand + '&sessionId=' + orderId;
+
+			// Open receipt in new window
+			var receiptWindow = window.open(receiptUrl, '_blank', 'width=800,height=600');
+
+			if (!receiptWindow) {
+				// If popup blocked, show direct link
+				Swal.fire({
+					title: 'Pop-up diblokir',
+					html: '<p>Browser Anda memblokir pop-up untuk struk.</p>' +
+						'<p>Anda dapat mencetak struk dengan mengklik tautan di bawah:</p>' +
+						'<a href="' + receiptUrl + '" target="_blank" class="btn btn-primary mt-3">' +
+						'<i class="fa-solid fa-print me-2"></i>Buka Struk' +
+						'</a>',
+					icon: 'info',
+					showConfirmButton: true,
+					confirmButtonText: 'OK'
+				});
+			}
+		});
+	});
+</script>

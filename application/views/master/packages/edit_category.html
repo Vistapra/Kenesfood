@@ -1,0 +1,55 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Edit Kategori Paket</h4>
+                <p class="card-description">Untuk Paket: <strong>{$detail.product_name}</strong></p>
+            </div>
+            <div class="card-body">
+                <div class="clearfix">
+                    <form action="{site_url(['master/package', 'edit_category', $category.id])}" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group text-start">
+                                    <label>Nama Kategori <span class="text-danger">*</span></label>
+                                    <input type="text" name="category_name" class="form-control" value="{$category.name|default:''}" required>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Tipe Seleksi <span class="text-danger">*</span></label>
+                                    <select name="selection_type" class="form-control select2" required>
+                                        <option value="single" {if $category.selection_type|default:'' == 'single'}selected{/if}>Single (Pilih 1)</option>
+                                        <option value="multiple" {if $category.selection_type|default:'' == 'multiple'}selected{/if}>Multiple (Pilih Banyak)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group text-start">
+                                    <label>Minimum Item <span class="text-danger">*</span></label>
+                                    <input type="number" name="min_items" class="form-control" value="{$category.min_items|default:'1'}" min="1" required>
+                                    <small class="text-muted">Jumlah minimal item yang harus dipilih dalam kategori ini</small>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Maksimum Item <span class="text-danger">*</span></label>
+                                    <input type="number" name="max_items" class="form-control" value="{$category.max_items|default:'1'}" min="1" required>
+                                    <small class="text-muted">Jumlah maksimal item yang dapat dipilih dalam kategori ini</small>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Urutan Tampil <span class="text-danger">*</span></label>
+                                    <input type="number" name="display_order" class="form-control" value="{$category.display_order|default:'1'}" min="1" required>
+                                    <small class="text-muted">Urutan tampilan kategori (nomor lebih kecil akan ditampilkan lebih dulu)</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-4"> 
+                            <button type="submit" class="btn btn-primary me-2"><i class="fas fa-save"></i> Simpan</button>
+                            <a href="{site_url('master/package/detail/')}{$detail.id}" class="btn btn-secondary me-2">
+                                <i class="fa fa-times"></i> Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

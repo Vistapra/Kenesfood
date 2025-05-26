@@ -1,0 +1,136 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="clearfix">
+                <form action="{site_url($current_page.nav_url)|cat:'/'|cat:$action|cat:'/'|cat:$detail.promotion_id}" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-12 align-self-center center">
+                            <div class="row">
+                                <div class="col-md-4 align-self-center center">
+                                    <div class="form-group file-preview">
+                                        <img id="preview-potrait" src="{$BASEURL}resource/assets-frontend/dist/promotion/{$detail.promotion_photo_portrait|default:''}" alt="pamflet-portrait" class="img-preview"/><br/>
+                                        <label class="mt-2">Preview</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 align-self-center center file-input">
+                                    <div class="form-group text-start">
+                                        <label>Foto Pamflet Portrait</label>
+                                        <input type="file" name="promotion_photo_portrait" class="file-upload-default" onchange="loadPotrait(event)" accept="image/png, image/jpeg, image/gif, image/svg+xml">
+                                        <div class="input-group col-xs-12">
+                                            <input type="text" class="form-control file-upload-info" disabled placeholder="Foto Pamflet Portrait">
+                                            <span class="input-group-append">
+                                                <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 align-self-center center">
+                            <div class="row">
+                                <div class="col-md-4 align-self-center center">
+                                    <div class="form-group file-preview">
+                                        <img id="preview-landscape" src="{$BASEURL}resource/assets-frontend/dist/promotion/{$detail.promotion_photo_landscape|default:''}" alt="pamflet-landscape" class="img-preview"/><br/>
+                                        <label class="mt-2">Preview</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 align-self-center center file-input">
+                                    <div class="form-group text-start">
+                                        <label>Foto Pamflet Landscape</label>
+                                        <input type="file" name="promotion_photo_landscape" class="file-upload-default" onchange="loadLandscape(event)" accept="image/png, image/jpeg, image/gif, image/svg+xml">
+                                        <div class="input-group col-xs-12">
+                                            <input type="text" class="form-control file-upload-info" disabled placeholder="Foto Pamflet Landscape">
+                                            <span class="input-group-append">
+                                                <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group text-start">
+                                <label>Kode Promo</label>
+                                <input type="text" name="promotion_code" class="form-control" value="{$detail.promotion_code|default:''}">
+                            </div>  
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group text-start">
+                                <label>Nama Promo</label>
+                                <input type="text" name="promotion_name" class="form-control" value="{$detail.promotion_name|default:''}">
+                            </div>  
+                        </div>
+                        <div class="col-md-4 align-self-center center file-input">
+                            <div class="form-group text-start">
+                                <label>Brand Produk</label>
+                                <select name="brands" class="form-control select2">
+                                    {foreach from=$brands item=brand}
+                                        <option value="{$brand.brand_type}" {if $detail.brands|default:'' == {$brand.brand_type}}selected{/if}>{$brand.brand_name|default:''}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group text-start">
+                                <label>Tanggal Mulai</label>
+                                <input type="text" name="promotion_date_start" class="form-control datepicker" value="{$detail.promotion_date_start|default:''}">
+                            </div>  
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group text-start">
+                                <label>Tanggal Selesai</label>
+                                <input type="text" name="promotion_date_end" class="form-control datepicker" value="{$detail.promotion_date_end|default:''}">
+                            </div>  
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select class="form-control select2" name="promotion_st">
+                                    <option value="">Pilih Salah Satu</option>
+                                    <option value="0" selected>Aktif</option>
+                                    <option value="1">Non-Aktif</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2"> 
+                        <div class="col-md-12">
+                            <div class="form-group">
+                              <label for="nav_id">Deskripsi</label>
+                              <textarea id="editor" name="promotion_desc" class="form-control">{$detail.promotion_desc|default:''}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center my-4"> 
+                        <button type="submit" class="btn btn-primary me-2"><i class="fas fa-pencil-alt"></i> Ubah</button>
+                        <a href="{site_url($current_page.nav_url)}" class="btn btn-secondary me-2">
+                            <i class="fa fa-times"></i> Batal
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var loadPotrait = function(event) {
+        var output = document.getElementById('preview-potrait');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+    var loadLandscape = function(event) {
+        var output = document.getElementById('preview-landscape');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+        URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>

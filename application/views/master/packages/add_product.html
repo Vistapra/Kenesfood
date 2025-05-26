@@ -1,0 +1,62 @@
+<div class="row">
+	<div class="col-md-12 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-header">
+				<h4 class="card-title">Tambah Produk ke Kategori</h4>
+				<p class="card-description">
+					Paket: <strong>{$detail.product_name}</strong> |
+					Kategori: <strong>{$category.name}</strong>
+				</p>
+			</div>
+			<div class="card-body">
+				<div class="clearfix">
+					<form action="{site_url(['master/package', 'add_product', $category.id])}" method="post">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group text-start">
+									<label>Produk <span class="text-danger">*</span></label>
+									<select name="product_id" class="form-control select2" required>
+										<option value="">-- Pilih Produk --</option>
+										{foreach from=$products item=product}
+										<option value="{$product.product_id}">
+											{$product.product_name} ({$product.product_code}) - Rp
+											{number_format($product.product_price, 0, ',', '.')}
+										</option>
+										{/foreach}
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group text-start">
+									<label>Harga Kustom</label>
+									<input type="number" name="custom_price" class="form-control"
+										value="{$custom_product.custom_price|default:''}" min="0" step="0.01"
+										placeholder="Masukkan harga kustom (boleh 0)">
+									<small class="text-muted">
+										Kosongkan untuk harga default, masukkan 0 untuk gratis, atau masukkan harga
+										kustom lainnya
+									</small>
+								</div>
+								<div class="form-check form-switch mt-3">
+									<input class="form-check-input" type="checkbox" id="is_default" name="is_default"
+										value="1">
+									<label class="form-check-label" for="is_default">Set sebagai produk default</label>
+									<small class="d-block text-muted">Produk default akan dipilih secara otomatis saat
+										pelanggan memilih paket</small>
+								</div>
+							</div>
+						</div>
+
+						<div class="text-center my-4">
+							<button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i>
+								Tambah</button>
+							<a href="{site_url('master/package/detail/')}{$detail.id}" class="btn btn-secondary me-2">
+								<i class="fa fa-times"></i> Batal
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

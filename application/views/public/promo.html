@@ -1,0 +1,98 @@
+<main>
+    <div class="container promo-container mb-5">
+        <div class="d-flex flex-column align-items-center">
+            <div class="heading-page p-2 mt-4">
+                <h3 class="text-uppercase fw-medium text-center"><b style="color:#662A0C">Promo</b></h3>
+            </div>
+      
+                <!-- <ul class="horizontal-list">
+                <li class="horizontal-list-item"><a href="{site_url('promo/bakery')}"  {if $brands.brand_name=='bakery'}{/if} class="active" style="text-decoration: none;">BAKERY</a></li>
+                <li class="horizontal-list-item"><a href="{site_url('promo/resto')}" style="text-decoration: none;">RESTO</a></li>
+                <li class="horizontal-list-item"><a href="{site_url('promo/kopitiam')}" style="text-decoration: none;">KOPITIAM</a></li>
+                </ul> -->
+             </div>
+        {foreach $promotions as $promotion}
+             {if $promotion.promotion_st == 0}
+        <div class="row g-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="row g-0">
+                        <div class="col-md-7 p-2">
+                            <a data-fancybox="gallery"
+                                data-src="{$BASEURL}/resource/assets-frontend/dist/promotion/{$promotion.promotion_photo_portrait}"
+                                data-caption="Promo Kenes">
+                                <img src="{$BASEURL}/resource/assets-frontend/dist/promotion/{$promotion.promotion_photo_landscape}"
+                                    alt="" class="img-fluid rounded">
+                            </a>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="card-body">
+                                <div class="accordion" id="accordionPanelsStayOpenExample">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                                                aria-controls="panelsStayOpen-collapseOne">
+                                                <small class="fw-bold">Syarat & Ketentuan</small>
+                                            </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse">
+                                            <div class="accordion-body">
+                                                <ul class="list-unstyled">
+                                                    <li>
+                                                        <!-- <div class="row">
+                                                            <div class="p-2 col-6 card">
+                                                                <input readonly type="text" class="align-middle fw-bold border-0 kode-promo" value="{$promotion.promotion_code}">
+                                                            </div>
+                                                            <div class="p-2 col-3 ">
+                                                                <span class="align-middle fw-bold text-primary copy-button"
+                                                                    data-promo-id="{$promotion.promotion_id}" style="cursor: pointer;">copy</span>
+                                                            </div>
+                                                            <div class="col-3 mt-3 fw-bold" >
+                                                               Rp {$promotion.promotion_price|number_format:0:".":"."}
+                                                            </div>
+                                                        </div> -->
+                                                        <div class="mt-3 ms-3 promo-description">{$promotion.promotion_desc}</div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {/if}
+        {/foreach}
+
+
+       
+
+
+        <script>
+            const copyButtons = document.querySelectorAll(".copy-button");
+            const promoCodeElements = document.querySelectorAll(".kode-promo");
+
+            copyButtons.forEach((copyButton, index) => {
+                copyButton.addEventListener("click", () => {
+                    const promoCodeElement = promoCodeElements[index];
+
+                    if (copyButton.innerHTML === "copy") {
+                        copyButton.innerHTML = "Copied!";
+                        promoCodeElement.select();
+                        document.execCommand("copy");
+                    } else {
+                        copyButton.innerHTML = "copy";
+                    }
+                });
+            });
+
+           
+        </script>
+
+    </div>
+
+</main>

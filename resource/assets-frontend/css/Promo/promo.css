@@ -1,0 +1,565 @@
+/**
+ * Master Promo CSS Styles
+ * Modern and elegant styling for the Promo Management System
+ */
+
+/* Card styling */
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 20px;
+  border: none;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  padding: 15px 20px;
+}
+
+/* Table styling */
+.promo-table,
+.promo-usage-table {
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  margin-top: -12px;
+}
+
+.promo-table thead th,
+.promo-usage-table thead th {
+  border: none;
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  padding: 12px 15px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.promo-table tbody tr,
+.promo-usage-table tbody tr {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  margin-bottom: 10px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.promo-table tbody tr:hover,
+.promo-usage-table tbody tr:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.promo-table tbody td,
+.promo-usage-table tbody td {
+  border-top: 1px solid #f1f1f1;
+  border-bottom: 1px solid #f1f1f1;
+  padding: 15px;
+  vertical-align: middle;
+}
+
+.promo-table tbody td:first-child,
+.promo-usage-table tbody td:first-child {
+  border-left: 1px solid #f1f1f1;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.promo-table tbody td:last-child,
+.promo-usage-table tbody td:last-child {
+  border-right: 1px solid #f1f1f1;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Brand badges */
+.brand-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.brand-bakery {
+  background-color: #fcead8;
+  color: #d9730d;
+}
+
+.brand-resto {
+  background-color: #d8e8fc;
+  color: #0d5ad9;
+}
+
+.brand-kopitiam {
+  background-color: #e8d8fc;
+  color: #730dd9;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-active {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.status-inactive {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Discount badge */
+.discount-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.discount-percentage {
+  background-color: #fde68a;
+  color: #92400e;
+}
+
+.discount-nominal {
+  background-color: #bfdbfe;
+  color: #1e40af;
+}
+
+.discount-badge small {
+  display: block;
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+/* Period badge */
+.period-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  margin-top: 5px;
+}
+
+.period-active {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.period-upcoming {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.period-expired {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Empty state */
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.empty-state i {
+  display: block;
+  margin: 0 auto 20px;
+}
+
+/* Stats icon */
+.stats-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  margin: 0 auto;
+  transition: transform 0.3s;
+}
+
+.stats-card:hover .stats-icon {
+  transform: scale(1.1);
+}
+
+/* Filter summary */
+.filter-summary {
+  padding: 12px 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.filter-summary .badge {
+  padding: 8px 12px;
+  font-weight: 500;
+}
+
+/* Inactive row */
+.inactive-promo,
+.inactive-product {
+  opacity: 0.7;
+}
+
+/* Promo code */
+.promo-code {
+  display: inline-block;
+  padding: 3px 8px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #495057;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+/* Promo info */
+.promo-info h6 {
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.promo-info .promo-description {
+  font-size: 0.8rem;
+  color: #6c757d;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Quota display */
+.quota-info {
+  min-width: 100px;
+}
+
+.quota-progress {
+  width: 100%;
+  max-width: 120px;
+  margin: 0 auto;
+}
+
+.quota-numbers {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-align: center;
+}
+
+.quota-exhausted {
+  display: inline-block;
+  margin-top: 5px;
+  padding: 2px 6px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-radius: 4px;
+  font-size: 0.7rem;
+}
+
+.unlimited-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  background-color: #e9ecef;
+  color: #495057;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+/* Period info */
+.period-info {
+  position: relative;
+}
+
+.period-separator {
+  font-size: 0.7rem;
+  color: #6c757d;
+  margin: 2px 0;
+}
+
+/* Form styling */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+}
+
+/* Preview Card */
+.promo-preview-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.promo-preview-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.promo-preview-header {
+  background-color: #f8f9fa;
+  padding: 12px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.promo-brand {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.promo-status {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.promo-preview-body {
+  padding: 15px;
+}
+
+.promo-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.promo-code-display {
+  background-color: #f3f4f6;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px dashed #d1d5db;
+  font-family: monospace;
+  font-size: 1.1rem;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+.promo-value,
+.promo-minimum {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.value-label,
+.min-label {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.value-display,
+.min-display {
+  font-weight: 600;
+}
+
+.promo-period {
+  font-size: 0.85rem;
+  color: #6b7280;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 10px;
+}
+
+/* Calculation Example */
+.calculation-example {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  height: 100%;
+}
+
+.calculation-breakdown {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* Promo list for test page */
+.promo-item {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.promo-item:hover {
+  background-color: #f8f9fa;
+}
+
+.promo-code-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+/* Promo detail in usage page */
+.promo-label {
+  width: 120px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.promo-value {
+  flex: 1;
+  font-weight: 500;
+}
+
+/* Stats cards in usage page */
+.stats-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  background-color: #f8f9fa;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card.animated {
+  animation: cardFadeIn 0.5s ease forwards;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stats-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.stats-title {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+/* Tab navigation in test page */
+.nav-tabs {
+  border-bottom: none;
+}
+
+.nav-tabs .nav-link {
+  border: none;
+  padding: 12px 15px;
+  font-weight: 600;
+  color: #495057;
+  border-radius: 0;
+}
+
+.nav-tabs .nav-link.active {
+  color: #0d6efd;
+  background-color: #fff;
+  border-bottom: 2px solid #0d6efd;
+}
+
+/* Tooltip styling */
+.tooltip {
+  font-size: 0.8rem;
+}
+
+.tooltip .tooltip-inner {
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .action-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .period-info,
+  .quota-info {
+    min-width: auto;
+  }
+
+  .promo-table tbody td,
+  .promo-usage-table tbody td {
+    padding: 10px;
+  }
+
+  .brand-badge,
+  .status-badge,
+  .discount-badge {
+    font-size: 0.7rem;
+    padding: 4px 6px;
+  }
+}

@@ -1,0 +1,37 @@
+<div class="card">
+    <li class="list-group-item active" aria-current="true">Detail {$categories.cat_name}</li>
+    <ul class="list-group">
+        <div class="modal-body">
+            <label class="col-md-4">Nama Kategori</label>
+            <span class="col-md-8">: {$categories.cat_name}</span>
+        </div>
+        <div class="modal-body">
+            <label class="col-md-4">ID Kategori</label>
+            <span class="col-md-8">: {$categories.cat_id}</span>
+        </div>
+        <div class="modal-body">
+            <label class="col-md-4">Kode Kategori</label>
+            <span class="col-md-8">: {$categories.cat_code}</span>
+        </div>
+        <div class="modal-body">
+            <label class="col-md-4">Status Kategori</label>
+            <span class="col-md-8">: {if $categories.cat_st == 0}Active{else}Tidak Aktif{/if}</span>
+        </div>
+        <div class="modal-body">
+            <label class="col-md-4">Created</label>
+            <span class="col-md-8">: {$categories.created}</span>
+        </div>
+        <div class="modal-body">
+            <label class="col-md-4">Created By</label>
+            <span class="col-md-8">: {$categories.created_by}</span>
+        </div>
+        <div class="modal-body">
+            <label class="col-md-4">Modified</label>
+            <span class="col-md-8">: {$categories.modified}</span>
+        </div>
+        <div class="modal-body">
+            <label class="col-md-4">Modified By</label>
+            <span class="col-md-8">: {$categories.modified_by}</span>
+        </div>
+    </ul>
+</div>

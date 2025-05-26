@@ -1,0 +1,288 @@
+/* Card styling */
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  font-weight: 600;
+  padding: 12px 20px;
+}
+
+/* Promo detail styling */
+.promo-info,
+.promo-status-info {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.promo-label {
+  width: 120px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.promo-value {
+  flex: 1;
+  font-weight: 500;
+}
+
+/* Type badges */
+.promo-type-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.type-percentage {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.type-nominal {
+  background-color: #bfdbfe;
+  color: #1e40af;
+}
+
+.type-bundling {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+.type-bogo {
+  background-color: #fce7f3;
+  color: #db2777;
+}
+
+/* Brand badges */
+.brand-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.brand-bakery {
+  background-color: #fcead8;
+  color: #d9730d;
+}
+
+.brand-resto {
+  background-color: #d8e8fc;
+  color: #0d5ad9;
+}
+
+.brand-kopitiam {
+  background-color: #e8d8fc;
+  color: #730dd9;
+}
+
+/* Discount badge */
+.discount-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: 600;
+}
+
+.discount-percentage {
+  background-color: #fde68a;
+  color: #92400e;
+}
+
+.discount-nominal {
+  background-color: #bfdbfe;
+  color: #1e40af;
+}
+
+.discount-badge small {
+  display: block;
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+/* Period display */
+.period-dates {
+  display: flex;
+  align-items: center;
+}
+
+.period-separator {
+  margin: 0 10px;
+  color: #6c757d;
+}
+
+/* Quota display */
+.quota-display {
+  display: flex;
+  flex-direction: column;
+}
+
+.quota-text {
+  font-weight: 600;
+}
+
+.usage-count {
+  color: #dc3545;
+}
+
+.quota-total {
+  color: #0d6efd;
+}
+
+.unlimited-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  background-color: #e9ecef;
+  color: #495057;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+/* Stats cards */
+.stats-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  background-color: #f8f9fa;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stats-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  margin: 0 auto;
+}
+
+.stats-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.stats-title {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+/* Usage table */
+.promo-usage-table {
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.promo-usage-table thead th {
+  border: none;
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.promo-usage-table tbody tr {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  margin-bottom: 10px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.promo-usage-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.promo-usage-table tbody td {
+  border-top: 1px solid #f1f1f1;
+  border-bottom: 1px solid #f1f1f1;
+  padding: 15px 10px;
+  vertical-align: middle;
+}
+
+.promo-usage-table tbody td:first-child {
+  border-left: 1px solid #f1f1f1;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.promo-usage-table tbody td:last-child {
+  border-right: 1px solid #f1f1f1;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.order-id {
+  font-weight: 600;
+}
+
+.discount-amount {
+  font-weight: 600;
+  color: #dc3545;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 30px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.detail-section {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.product-item,
+.category-item {
+  background-color: white;
+  border-radius: 4px;
+  padding: 8px 12px;
+  border: 1px solid #e9ecef;
+}
+
+/* BOGO and Bundling styles */
+.bg-indigo {
+  background-color: #4f46e5 !important;
+}
+
+.bg-pink {
+  background-color: #db2777 !important;
+}
+
+.bundle-product,
+.bogo-product,
+.free-product {
+  padding: 8px;
+}
+
+.free-product {
+  border-radius: 6px;
+  background-color: #f0fdf4;
+}
+
+/* Custom badge colors */
+.custom-bg-light {
+  background-color: #f8f9fa;
+  color: #212529;
+}

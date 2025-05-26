@@ -1,0 +1,307 @@
+<link rel="stylesheet" href="{$BASEURL}resource/assets-frontend/css/MasterProduct/index.css">
+
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+				<h4 class="card-title mb-md-0">
+					<i class="fas fa-box-open text-primary me-2"></i> 
+				</h4>
+				{if $allowed.create}
+				<div class="d-flex">
+					<a href="{site_url([$current_page.nav_url, 'add'])}" class="btn btn-primary me-2">
+						<i class="fas fa-plus me-1"></i> Tambah Produk
+					</a>
+					<a href="{site_url([$current_page.nav_url, 'sync'])}" class="btn btn-info">
+						<i class="fas fa-sync me-1"></i> Sinkronisasi
+					</a>
+					<button type="button" class="btn btn-outline-secondary ms-2" data-bs-toggle="modal"
+						data-bs-target="#infoModal">
+						<i class="fas fa-info-circle"></i>
+					</button>
+				</div>
+				{/if}
+			</div>
+
+			<!-- Quick Status Summary Badges -->
+			<!-- <div class="mb-4 d-flex flex-wrap gap-2">
+				<span class="badge rounded-pill bg-primary px-3 py-2">
+					<i class="fas fa-boxes me-1"></i> Total: {$pagination.total|default:0} Produk
+				</span>
+				<span class="badge rounded-pill bg-success px-3 py-2" data-bs-toggle="tooltip"
+					title="Produk dengan status 'Aktif'">
+					<i class="fas fa-check-circle me-1"></i> Aktif
+				</span>
+				<span class="badge rounded-pill bg-danger px-3 py-2" data-bs-toggle="tooltip"
+					title="Produk dengan status 'Non-aktif'">
+					<i class="fas fa-times-circle me-1"></i> Non-aktif
+				</span>
+				<span class="badge rounded-pill bg-info px-3 py-2" data-bs-toggle="tooltip"
+					title="Produk yang sudah terhubung ke API MRP">
+					<i class="fas fa-link me-1"></i> Terhubung API
+				</span>
+				<span class="badge rounded-pill bg-warning px-3 py-2" data-bs-toggle="tooltip"
+					title="Produk yang belum terhubung ke API MRP">
+					<i class="fas fa-unlink me-1"></i> Belum Terhubung
+				</span>
+			</div> -->
+
+			<!-- Product Table with Modern Design -->
+			<div class="table-responsive">
+				<table class="table align-middle product-table">
+					<thead>
+						<tr>
+							<th class="text-center" width="60">No</th>
+							<th>Informasi Produk</th> <!-- Combined column for product details -->
+							<th class="text-center">Kategori</th>
+							<th class="text-center">Brand</th>
+							<th class="text-center">Status</th>
+							<th class="text-center">API</th>
+							<th class="text-center">Urutan</th>
+							<th class="text-center" width="120">Aksi</th>
+						</tr>
+					</thead>
+					<tbody>
+						{if $datas|@count > 0}
+						{foreach from=$datas key=key item=product}
+						<tr class="{if $product.product_st == 1}inactive-product{/if}">
+							<td class="text-center fw-bold">{$no++}</td>
+							<td>
+								<!-- <div class="d-flex align-items-center">
+									<div class="product-img-wrapper me-3">
+										{if isset($product.product_pict) && $product.product_pict !=
+										'default-product.jpg'}
+										<img src="{$BASEURL}resource/assets-frontend/dist/product/{$product.product_pict}"
+											class="product-img" alt="{$product.product_name}">
+										{else}
+										<div class="product-placeholder">
+											<i class="fas fa-box"></i>
+										</div>
+										{/if}
+									</div> -->
+									<div class="product-info">
+										<h6 class="mb-0">{$product.product_name}</h6>
+										<div class="d-flex align-items-center mt-1">
+											<span class="product-code me-2">{$product.product_code}</span>
+											<span class="product-price">Rp
+												{number_format($product.product_price)}</span>
+										</div>
+										{if $product.product_promote != 'none'}
+										<div class="mt-1">
+											<span
+												class="badge bg-{if $product.product_promote == 'arrival'}success{elseif $product.product_promote == 'prelaunch'}warning{else}primary{/if} text-white small">
+												{strtoupper($product.product_promote)}
+											</span>
+										</div>
+										{/if}
+									</div>
+								</div>
+							</td>
+							<td class="text-center">
+								{if empty($product.parent_name_cat)}
+								<span>{$product.cat_name}</span>
+								{else}
+								<div class="category-container">
+									<span class="parent-category">{$product.parent_name_cat}</span>
+									<span class="sub-category">{$product.cat_name}</span>
+								</div>
+								{/if}
+							</td>
+							<td class="text-center">
+								<span class="brand-badge brand-{$product.product_brand}">
+									{strtoupper($product.product_brand)}
+								</span>
+							</td>
+							<td class="text-center">
+								{if $product.product_st == 0}
+								<span class="status-badge status-active">
+									<i class="fas fa-check-circle me-1"></i> Aktif
+								</span>
+								{else}
+								<span class="status-badge status-inactive">
+									<i class="fas fa-times-circle me-1"></i> Non-aktif
+								</span>
+								{/if}
+							</td>
+							<td class="text-center">
+								{if isset($product.api_id) && !empty($product.api_id)}
+								<span class="status-badge status-connected" data-bs-toggle="tooltip"
+									title="API ID: {$product.api_id}">
+									<i class="fas fa-link me-1"></i> Terhubung
+								</span>
+								{else}
+								<span class="status-badge status-not-connected" data-bs-toggle="tooltip"
+									title="Produk belum terhubung dengan API MRP">
+									<i class="fas fa-unlink me-1"></i> Belum
+								</span>
+								{/if}
+							</td>
+							<td class="text-center">
+								<span class="order-number">{$product.product_no}</span>
+							</td>
+							<td class="text-center">
+								<div class="action-buttons">
+									<a href="{site_url([$current_page.nav_url, 'detail', {$product.product_id}])}"
+										class="btn btn-sm btn-primary action-btn" data-bs-toggle="tooltip"
+										title="Detail">
+										<i class="fas fa-eye"></i>
+									</a>
+									{if $allowed.edit}
+									<a href="{site_url([$current_page.nav_url, 'edit', {$product.product_id}])}"
+										class="btn btn-sm btn-secondary action-btn" data-bs-toggle="tooltip"
+										title="Edit">
+										<i class="fas fa-edit"></i>
+									</a>
+									{/if}
+									{if $allowed.delete}
+									{$url = site_url([$current_page.nav_url, 'delete', $product.product_id])}
+									<a href="javascript:void(0)" onclick="confirmDelete('{$url}')"
+										class="btn btn-sm btn-danger action-btn" data-bs-toggle="tooltip" title="Hapus">
+										<i class="fas fa-trash"></i>
+									</a>
+									{/if}
+								</div>
+							</td>
+						</tr>
+						{/foreach}
+						{else}
+						<tr>
+							<td colspan="8" class="text-center py-5">
+								<div class="empty-state">
+									<i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+									<h5>Tidak ada produk ditemukan</h5>
+									<p class="text-muted">Belum ada produk atau tidak ada produk yang sesuai dengan
+										kriteria pencarian Anda</p>
+									{if $allowed.create}
+									<a href="{site_url([$current_page.nav_url, 'add'])}" class="btn btn-primary mt-2">
+										<i class="fas fa-plus me-2"></i> Tambah Produk Baru
+									</a>
+									{/if}
+								</div>
+							</td>
+						</tr>
+						{/if}
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Pagination -->
+			<div class="d-flex justify-content-between align-items-center mt-4">
+				<div class="text-muted">
+					Menampilkan {$pagination.start|default:0} - {$pagination.end|default:0} dari
+					{$pagination.total|default:0} data
+				</div>
+				<nav aria-label="Product pagination">
+					<ul class="pagination pagination-sm mb-0">
+						{$pagination.data|default:''}
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header bg-danger text-white">
+				<h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body text-center">
+				<i class="fas fa-exclamation-triangle text-danger fa-4x mb-3"></i>
+				<h4>Apakah Anda yakin?</h4>
+				<p class="mb-0">Produk yang dihapus tidak dapat dikembalikan.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+					<i class="fas fa-times me-1"></i> Batal
+				</button>
+				<a href="#" id="confirmDeleteButton" class="btn btn-danger">
+					<i class="fas fa-trash me-1"></i> Hapus
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Info Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header bg-primary text-white">
+				<h5 class="modal-title" id="infoModalLabel">Informasi Status Produk</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item d-flex align-items-center">
+						<span class="status-badge status-active me-3"><i class="fas fa-check-circle me-1"></i>
+							Aktif</span>
+						<span>Produk yang ditampilkan di aplikasi dan website</span>
+					</li>
+					<li class="list-group-item d-flex align-items-center">
+						<span class="status-badge status-inactive me-3"><i class="fas fa-times-circle me-1"></i>
+							Non-aktif</span>
+						<span>Produk yang tidak ditampilkan di aplikasi dan website</span>
+					</li>
+					<li class="list-group-item d-flex align-items-center">
+						<span class="status-badge status-connected me-3"><i class="fas fa-link me-1"></i>
+							Terhubung</span>
+						<span>Produk yang terhubung dengan API MRP untuk sinkronisasi data</span>
+					</li>
+					<li class="list-group-item d-flex align-items-center">
+						<span class="status-badge status-not-connected me-3"><i class="fas fa-unlink me-1"></i>
+							Belum</span>
+						<span>Produk yang belum terhubung dengan API MRP</span>
+					</li>
+					<li class="list-group-item d-flex align-items-center pt-3">
+						<div>
+							<p class="mb-1"><strong>Cara Menghubungkan Produk dengan API:</strong></p>
+							<ol class="mb-0">
+								<li>Klik tombol Edit pada produk yang ingin dihubungkan</li>
+								<li>Pada form edit, pilih produk dari daftar API yang tersedia</li>
+								<li>Simpan perubahan untuk menghubungkan produk</li>
+							</ol>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Initialize Script -->
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		// Initialize tooltips
+		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+			return new bootstrap.Tooltip(tooltipTriggerEl);
+		});
+
+		// Function to handle delete confirmation
+		window.confirmDelete = function (deleteUrl) {
+			var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+			document.getElementById('confirmDeleteButton').href = deleteUrl;
+			modal.show();
+		};
+
+		// Add hover effects to rows
+		var tableRows = document.querySelectorAll('.product-table tbody tr');
+		tableRows.forEach(function (row) {
+			row.addEventListener('mouseenter', function () {
+				this.classList.add('row-hover');
+			});
+			row.addEventListener('mouseleave', function () {
+				this.classList.remove('row-hover');
+			});
+		});
+	});
+</script>

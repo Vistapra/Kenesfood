@@ -1,0 +1,65 @@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row my-2"> 
+                {if !empty($menu.parent_menu)}
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Parent</label>
+                        <p class="form-label">
+                            <div class="d-flex flex-row align-items-center">
+                                <i class="{$menu.parent_icon} icon-sm me-2"></i>
+                                <p class="mb-0 ms-1"> {$menu.parent_menu}  </p>
+                            </div>
+                        </p>
+                    </div>
+                </div>
+                {/if}
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Nama Menu</label>
+                        <p class="form-label">
+                            <div class="d-flex flex-row align-items-center">
+                                <i class="{$menu.nav_icon} icon-sm me-2"></i>
+                                <p class="mb-0 ms-1"> {$menu.nav_title}  </p>
+                            </div>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">  
+                    <div class="form-group">
+                        <label>URL</label>
+                        <p class="form-label"><b>{$BASEURL|cat:$menu.nav_url}</b></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row my-2">
+                <div class="col-md-4">  
+                    <div class="form-group">
+                        <label>Status</label>
+                        <p class="form-label">
+                            Display : <b>{if $menu.nav_display == 0}Tampil{else}Sembunyi{/if}</b><br/>
+                            Status : <b>{if $menu.nav_st == 0}Aktif{else}Non-aktif{/if}</b>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">  
+                    <div class="form-group">
+                        <label>Created</label>
+                        <p class="form-label">
+                            <b>{$menu.created_by|default:'-'}<br/><small><i>{if $menu.created}{date('d/m/Y', strtotime($menu.created))}{else}-{/if}</i></small></b>
+                        </p>
+                    </div>              
+                </div>   
+                <div class="col-md-4">  
+                    <div class="form-group">
+                        <label>Modified</label>
+                        <p class="form-label">
+                            <b>{$menu.modified_by|default:'-'}<br/><small><i>{if $menu.modified}{date('d/m/Y', strtotime($menu.modified))}{else}-{/if}</i></small></b>
+                        </p>
+                    </div>              
+                </div>             
+            </div>  
+        </div>
+    </div>
+</div>

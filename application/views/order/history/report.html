@@ -1,0 +1,239 @@
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h4 class="card-title">Laporan Riwayat Order</h4>
+				<div>
+					<a href="{$site_url}order/history" class="btn btn-outline-secondary">
+						<i class="fa-solid fa-arrow-left me-2"></i>Kembali
+					</a>
+					<a href="{$site_url}order/history/export?start_date={$startDate}&end_date={$endDate}&outlet_id={$outletId}&brand={$brand}"
+						class="btn btn-success">
+						<i class="fa-solid fa-file-excel me-2"></i>Export Excel
+					</a>
+				</div>
+			</div>
+
+			<!-- Filter Form -->
+			<form method="get" action="{$site_url}order/history/report" class="mb-4 pt-3">
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Tanggal Mulai</label>
+							<input type="date" name="start_date" class="form-control" value="{$startDate}">
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Tanggal Akhir</label>
+							<input type="date" name="end_date" class="form-control" value="{$endDate}">
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Outlet</label>
+							<select name="outlet_id" class="form-control">
+								<option value="">Semua Outlet</option>
+								{foreach from=$outlets item=outlet}
+								<option value="{$outlet.outlet_id}" {if $outletId==$outlet.outlet_id}selected{/if}>
+									{$outlet.outlet_name}</option>
+								{/foreach}
+							</select>
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>Brand</label>
+							<select name="brand" class="form-control">
+								<option value="" {if $brand=="" }selected{/if}>Semua</option>
+								<option value="kopitiam" {if $brand=="kopitiam" }selected{/if}>Kopitiam</option>
+								<option value="bakery" {if $brand=="bakery" }selected{/if}>Bakery</option>
+								<option value="resto" {if $brand=="resto" }selected{/if}>Resto</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-md-1 d-flex align-items-end">
+						<div class="form-group">
+							<button type="submit" class="btn btn-primary btn-block">
+								<i class="fa-solid fa-filter me-2"></i>Filter
+							</button>
+						</div>
+					</div>
+				</div>
+			</form>
+
+			<!-- Summary Cards -->
+			<div class="row mb-4">
+				<div class="col-md-3">
+					<div class="card bg-primary text-white">
+						<div class="card-body p-3">
+							<h6>Total Order</h6>
+							<h3>{$summary.total_orders}</h3>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card bg-success text-white">
+						<div class="card-body p-3">
+							<h6>Total Pendapatan</h6>
+							<h3>Rp {$summary.total_revenue|number_format:0:',':'.'}</h3>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card bg-info text-white">
+						<div class="card-body p-3">
+							<h6>Order Selesai</h6>
+							<h3>{$summary.status_counts[4]} ({if $summary.total_orders > 0}{($summary.status_counts[4] /
+								$summary.total_orders * 100)|string_format:"%.1f"}{else}0{/if}%)</h3>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card bg-danger text-white">
+						<div class="card-body p-3">
+							<h6>Order Dibatalkan</h6>
+							<h3>{$summary.status_counts[5]} ({if $summary.total_orders > 0}{($summary.status_counts[5] /
+								$summary.total_orders * 100)|string_format:"%.1f"}{else}0{/if}%)</h3>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- <div class="row mb-4">
+				<div class="col-md-6">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Distribusi Status Order</h5>
+							<canvas id="statusChart" height="250"></canvas>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Distribusi Order per Jam</h5>
+							<canvas id="hourlyChart" height="250"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row mb-4">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Pendapatan Harian</h5>
+							<canvas id="dailyRevenueChart" height="300"></canvas>
+						</div>
+					</div>
+				</div>
+			</div> -->
+
+			<!-- Outlet Performance Table -->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Performa Outlet</h5>
+							<div class="table-responsive">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th>Outlet</th>
+											<th class="text-center">Jumlah Order</th>
+											<th class="text-end">Total Pendapatan</th>
+											<th class="text-end">Rata-rata per Order</th>
+										</tr>
+									</thead>
+									<tbody>
+										{if isset($summary.outlet_performance) && $summary.outlet_performance|@count >
+										0}
+										{foreach from=$summary.outlet_performance key=outletId item=performance}
+										<tr>
+											<td>{$performance.name}</td>
+											<td class="text-center">{$performance.count}</td>
+											<td class="text-end">Rp {$performance.revenue|number_format:0:',':'.'}</td>
+											<td class="text-end">
+												{if $performance.count > 0}
+												Rp {($performance.revenue / $performance.count)|number_format:0:',':'.'}
+												{else}
+												Rp 0
+												{/if}
+											</td>
+										</tr>
+										{/foreach}
+										{else}
+										<tr>
+											<td colspan="4" class="text-center py-3">
+												<div class="alert alert-info mb-0">
+													<i class="fa-solid fa-info-circle me-2"></i>
+													Tidak ada data performa outlet
+												</div>
+											</td>
+										</tr>
+										{/if}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+{literal}
+<script>
+	$(document).ready(function () {
+		// Data dari Smarty diubah ke JSON yang valid
+		const hourlyRawData = JSON.parse('{$hourlyJson|default:"{}"}');
+		const dailyRawData = JSON.parse('{$dailyJson|default:"{}"}');
+
+		// Menyiapkan Data Distribusi Order per Jam
+		const hourlyData = {};
+		Object.keys(hourlyRawData).forEach(key => {
+			hourlyData[parseInt(key)] = hourlyRawData[key];
+		});
+
+		const hourLabels = [];
+		const hourValues = [];
+
+		for (let i = 0; i < 24; i++) {
+			hourLabels.push(i.toString().padStart(2, '0') + ":00");
+			hourValues.push(hourlyData[i] || 0);
+		}
+
+		// Membuat Grafik Distribusi Order per Jam
+		const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+		new Chart(hourlyCtx, {
+			type: 'bar',
+			data: {
+				labels: hourLabels,
+				datasets: [{
+					label: 'Jumlah Order',
+					data: hourValues,
+					backgroundColor: 'rgba(54, 162, 235, 0.5)',
+					borderColor: 'rgba(54, 162, 235, 1)',
+					borderWidth: 1
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: {
+					y: {
+						beginAtZero: true,
+						ticks: {
+							precision: 0
+						}
+					}
+				}
+			}
+		});
+	});
+</script>
+{/literal}

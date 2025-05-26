@@ -1,0 +1,294 @@
+<!-- Text-to-Speech Configuration -->
+<div id="tts-config" data-enabled="true" data-volume="1.0" data-rate="1.0" data-pitch="1.0" data-lang="id-ID" hidden>
+</div>
+
+<!-- TTS Audio Queue Container - Invisible but needed for sequential TTS playback -->
+<div id="tts-queue-container" hidden></div>
+
+<!-- Order Bell Settings - Now using Text-to-Speech instead of audio files -->
+<link rel="stylesheet" href="{$BASEURL}/resource/assets-frontend/css/order-cashier.css">
+
+<!-- Detail Order Modal with Improved UI -->
+<div class="modal fade" id="detailOrder" tabindex="-1" aria-labelledby="detailOrder-label" aria-hidden="true">
+	<!-- Modal content remains the same -->
+</div>
+<!-- End of Detail Order Modal -->
+
+<!-- TTS Settings Modal -->
+<div class="modal fade" id="ttsSettingsModal" tabindex="-1" aria-labelledby="ttsSettingsModal-label" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="ttsSettingsModal-label">
+					<i class="fa-solid fa-volume-high me-2"></i>
+					Pengaturan Notifikasi Suara
+				</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container">
+					<!-- TTS On/Off Toggle -->
+					<div class="form-check form-switch mb-3">
+						<input class="form-check-input" type="checkbox" id="tts-enabled" checked>
+						<label class="form-check-label" for="tts-enabled">Aktifkan Notifikasi Suara</label>
+					</div>
+
+					<!-- Volume Control -->
+					<div class="mb-3">
+						<label for="tts-volume" class="form-label">Volume: <span id="volume-value">100%</span></label>
+						<input type="range" class="form-range" id="tts-volume" min="0" max="1" step="0.1" value="1">
+					</div>
+
+					<!-- Speed Control -->
+					<div class="mb-3">
+						<label for="tts-rate" class="form-label">Kecepatan Bicara: <span
+								id="rate-value">100%</span></label>
+						<input type="range" class="form-range" id="tts-rate" min="0.5" max="2" step="0.1" value="1">
+					</div>
+
+					<!-- Pitch Control -->
+					<div class="mb-3">
+						<label for="tts-pitch" class="form-label">Nada Suara: <span id="pitch-value">100%</span></label>
+						<input type="range" class="form-range" id="tts-pitch" min="0.5" max="2" step="0.1" value="1">
+					</div>
+
+					<!-- Language Selection -->
+					<div class="mb-3">
+						<label for="tts-language" class="form-label">Bahasa</label>
+						<select class="form-select" id="tts-language">
+							<option value="id-ID" selected>Bahasa Indonesia</option>
+							<option value="en-US">English (US)</option>
+							<option value="en-GB">English (UK)</option>
+						</select>
+					</div>
+
+					<!-- Test Button -->
+					<button class="btn btn-primary w-100" id="test-tts">
+						<i class="fa-solid fa-play me-2"></i>Tes Notifikasi Suara
+					</button>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+				<button type="button" class="btn btn-success" id="save-tts-settings">
+					<i class="fa-solid fa-save me-2"></i>Simpan Pengaturan
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End of TTS Settings Modal -->
+
+<!-- Activity Indicator -->
+<div class="activity-indicator" id="activityIndicator">
+	<div class="pulse-dot"></div>
+	<span>Memantau aktivitas meja...</span>
+	<!-- TTS Settings Button -->
+	<button class="btn btn-sm btn-outline-light ms-2" id="open-tts-settings" title="Pengaturan Suara">
+		<i class="fa-solid fa-volume-high"></i>
+	</button>
+</div>
+
+
+
+<!-- Login Modal (if needed) -->
+<div class="modal fade" id="popupLogin" tabindex="-1" aria-labelledby="popupLogin-label" aria-hidden="true">
+	<div class="modal-dialog modal-md modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="popupLogin-label">Login</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container" id="login">
+					<!-- Login form content -->
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+				<button type="button" class="btn btn-primary" id="loginAction">Login</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End of Login Modal -->
+
+<!-- Status Badge Display Container -->
+<div id="order-status-display" class="mb-3"></div>
+
+<!-- List Table Section -->
+<div class="col-md-12 grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="row my-2">
+				<div class="col-md-12">
+					<!-- Filter Controls -->
+					<div class="row mb-4">
+						<div class="col-6 col-md-3 col-lg-2">
+							<select id="brand" class="form-select" aria-label="Select Brand">
+								<option value="kopitiam">Kopitiam</option>
+								<option value="bakery">Bakery</option>
+								<option value="resto">Resto</option>
+							</select>
+						</div>
+
+						<div class="col-6 col-md-3 col-lg-2">
+							<select id="statusFilter" class="form-select" aria-label="Filter Status">
+								<option value="all" selected>Semua Status</option>
+								<option value="0">Kosong</option>
+								<option value="1">Terisi</option>
+							</select>
+						</div>
+
+						<div class="col-md-6 col-lg-4 mt-2 mt-md-0">
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="Cari meja..." id="tableSearch">
+								<button class="btn btn-outline-secondary" type="button" id="clearSearch">
+									<i class="fa-solid fa-times"></i>
+								</button>
+							</div>
+						</div>
+
+						<div class="col-md-12 mt-3">
+							<div class="badge bg-info me-2 p-2">
+								<i class="fa-solid fa-circle-info me-1"></i>
+								Klik pada baris untuk melihat detail order
+							</div>
+							<div class="badge bg-success me-2 p-2">
+								<i class="fa-solid fa-check-circle me-1"></i>
+								<span id="activeOrdersCount">0</span> Order Aktif
+							</div>
+						</div>
+					</div>
+
+					<!-- Tables List -->
+					<div class="row">
+						<div class="col-md-12">
+							<div class="table-responsive">
+								<table class="table table-hover" id="tablesListTable">
+									<thead>
+										<tr class="text-center">
+											<th width="10%">No. Meja</th>
+											<th width="20%">Pelanggan</th>
+											<th width="15%">Waktu</th>
+											<th width="15%">Status</th>
+											<th width="20%">Total</th>
+											<th width="20%">Aksi</th>
+										</tr>
+									</thead>
+									<tbody>
+										{for $table=1 to $datas.count_table}
+										<tr id="tableId-{$table}" class="table-record text-center">
+											<td>{$table}</td>
+											<td id="tableName-{$table}">-</td>
+											<td id="tableTime-{$table}">-</td>
+											<td>
+												<span id="tableStatus-{$table}"
+													class="badge badge-pill badge-sm badge-info">Kosong</span>
+											</td>
+											<td id="tableTotal-{$table}">-</td>
+											<td>
+												<button class="btn btn-sm btn-outline-info btn-rounded view-order"
+													data-table-id="{$table}">
+													<i class="fa-regular fa-eye"></i>
+												</button>
+												<button class="btn btn-sm btn-outline-primary btn-rounded print-receipt"
+													data-table-id="{$table}" disabled>
+													<i class="fa-solid fa-print"></i>
+												</button>
+												<!-- Tombol update status baru -->
+												<div class="dropdown d-inline-block">
+													<button
+														class="btn btn-sm btn-outline-success btn-rounded update-status"
+														data-table-id="{$table}" disabled>
+														<i class="fa-solid fa-tasks"></i>
+													</button>
+													<ul class="dropdown-menu status-dropdown">
+														<li><a class="dropdown-item status-item" href="#"
+																data-status="2" data-table-id="{$table}">Sedang
+																Diproses</a></li>
+														<li><a class="dropdown-item status-item" href="#"
+																data-status="3" data-table-id="{$table}">Sudah
+																Diantar</a></li>
+														<li><a class="dropdown-item status-item" href="#"
+																data-status="4" data-table-id="{$table}">Selesai</a>
+														</li>
+														<li>
+															<hr class="dropdown-divider">
+														</li>
+														<li><a class="dropdown-item status-item text-danger" href="#"
+																data-status="5" data-table-id="{$table}">Batalkan</a>
+														</li>
+													</ul>
+												</div>
+											</td>
+										</tr>
+										{/for}
+									</tbody>
+								</table>
+							</div>
+
+							<!-- Waiter Calls Section -->
+							<div class="col-md-12 grid-margin stretch-card mt-4">
+								<div class="card">
+									<div class="card-body">
+										<div class="d-flex justify-content-between align-items-center mb-3">
+											<h4 class="card-title">Panggilan Pelayan</h4>
+											<div>
+												<button id="refresh-waiter-calls"
+													class="btn btn-sm btn-outline-secondary">
+													<i class="fa-solid fa-sync-alt"></i> Refresh
+												</button>
+											</div>
+										</div>
+
+										<div class="table-responsive">
+											<table class="table table-hover" id="waiterCallsTable">
+												<thead>
+													<tr class="text-center">
+														<th width="10%">No. Meja</th>
+														<th width="25%">Waktu Panggilan</th>
+														<th width="20%">Status</th>
+														<th width="20%">Durasi</th>
+														<th width="25%">Aksi</th>
+													</tr>
+												</thead>
+												<tbody id="waiterCallsBody">
+													<!-- Waiter calls akan diisi via JavaScript -->
+												</tbody>
+											</table>
+										</div>
+
+										<!-- Empty State -->
+										<div id="emptyWaiterCallsMessage" class="text-center py-5"
+											style="display: none;">
+											<div class="text-muted">
+												<i class="fa-solid fa-bell-slash fa-3x mb-3"></i>
+												<h5>Tidak ada panggilan pelayan aktif</h5>
+												<p>Belum ada meja yang membutuhkan bantuan pelayan</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- End of Waiter Calls Section -->
+
+							<!-- Empty State -->
+							<div id="emptyTablesMessage" class="text-center py-5" style="display: none;">
+								<div class="text-muted">
+									<i class="fa-solid fa-search fa-3x mb-3"></i>
+									<h5>Tidak ada meja yang sesuai dengan filter</h5>
+									<p>Coba ubah filter atau kriteria pencarian</p>
+									<button class="btn btn-outline-primary" id="resetFilters">Reset Filter</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End of List Table Section -->
+
+<script src="{$BASEURL}resource/assets-frontend/js/Cashier/order-cashier.js"></script>

@@ -1,0 +1,215 @@
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Tambah Paket Produk Baru</h4>
+            </div>
+            <div class="card-body">
+                <div class="clearfix">
+                    <form action="{site_url(['master/package', 'add'])}" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-12 align-self-center center">
+                                <div class="row">
+                                    <div class="col-md-4 align-self-center center">
+                                        <div class="form-group">
+                                            <img id="preview" src="{$BASEURL}resource/assets-frontend/dist/product/default.png" alt="foto-produk" class="img-preview"/><br/>
+                                            <label class="mt-2 pt-2 text-small">Preview</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 align-self-center center file-input">
+                                        <div class="form-group text-start">
+                                            <label>Foto Produk</label>
+                                            <input type="file" name="product_pict" class="file-upload-default" onchange="loadPreview(event)" accept="image/png, image/jpg, image/gif, image/svg+xml">
+                                            <div class="input-group col-xs-12">
+                                                <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Foto">
+                                                <span class="input-group-append">
+                                                    <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Informasi Dasar</h5>
+                                <div class="form-group text-start">
+                                    <label>Kode Produk <span class="text-danger">*</span></label>
+                                    <input type="text" name="product_code" class="form-control" required>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Nama Produk <span class="text-danger">*</span></label>
+                                    <input type="text" name="product_name" class="form-control" required>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Kategori Produk <span class="text-danger">*</span></label>
+                                    <select name="cat_id" class="form-control select2" required>
+                                        <option value="">-- Pilih Kategori --</option>
+                                        {foreach from=$categories item=cat}
+                                            <option value="{$cat.cat_id}">{$cat.cat_name|default:''}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Brand Produk <span class="text-danger">*</span></label>
+                                    <select name="product_brand" class="form-control select2" required>
+                                        <option value="">-- Pilih Brand --</option>
+                                        {foreach from=$brands item=brand}
+                                            <option value="{$brand.brand_type}">{$brand.brand_name|default:''}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Detail Paket</h5>
+                                <div class="form-group text-start">
+                                    <label>Tipe Paket <span class="text-danger">*</span></label>
+                                    <select name="package_type" class="form-control select2" required>
+                                        <option value="standard">Standard (Tetap)</option>
+                                        <option value="custom">Custom (Kustomisasi)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Harga Produk <span class="text-danger">*</span></label>
+                                    <input type="number" name="product_price" class="form-control" required>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Jenis Promosi <span class="text-danger">*</span></label>
+                                    <select name="product_promote" class="form-control select2" required>
+                                        <option value="none">Tidak Ada</option>
+                                        <option value="arrival">Arrival</option>
+                                        <option value="prelaunch">Prelaunch</option>
+                                        <option value="seasonal">Seasonal Collection</option>
+                                    </select>
+                                </div>
+                                <div class="form-group text-start">
+                                    <label>Status Produk <span class="text-danger">*</span></label>
+                                    <select name="product_st" class="form-control select2" required>
+                                        <option value="0">Aktif</option>
+                                        <option value="1">Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="form-group text-start">
+                                    <label>Deskripsi Produk</label>
+                                    <textarea rows="4" name="product_desc" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="form-group text-start">
+                                    <label>Komposisi Product <span class="text-danger">*</span></label>
+                                    <textarea rows="2" name="product_komposisi" class="form-control" required></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group text-start">
+                                    <label>Urutan Tampil</label>
+                                    <input type="number" name="product_no" class="form-control" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="form-group text-start">
+                                    <label>Durability <span class="text-danger">*</span></label>
+                                    <div class="input-group col-xs-12">
+                                        <input type="number" name="expired_date" class="form-control" required>
+                                        <span class="input-group-append">
+                                            <button class="file-upload-browse btn btn-secondary" type="button">Hari</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group text-start">
+                                    <label>Netto Product <span class="text-danger">*</span></label>
+                                    <div class="input-group col-xs-12">
+                                        <input type="number" name="product_netto" class="form-control" required>
+                                        <span class="input-group-append">
+                                            <button class="file-upload-browse btn btn-secondary" type="button">gram</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+						<div class="row mt-3">
+							<div class="col-md-4">
+								<div class="form-group text-start">
+									<label>Stok Awal Paket <span class="text-danger">*</span></label>
+									<div class="input-group">
+										<input type="number" name="initial_stock" class="form-control" 
+											   value="100" 
+											   min="0" 
+											   required 
+											   placeholder="Masukkan stok awal paket">
+										<span class="input-group-text">unit</span>
+									</div>
+									<small class="text-muted">Stok awal untuk paket produk</small>
+								</div>
+							</div>
+						</div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="form-group text-start">
+                                    <label>Status Marketing <span class="text-danger">*</span></label>
+                                    <select name="ek_marketing" class="form-control select2" required>
+                                        <option value="0">Aktif</option>
+                                        <option value="1">Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group text-start">
+                                    <label>Status Customer <span class="text-danger">*</span></label>
+                                    <select name="ek_customer" class="form-control select2" required>
+                                        <option value="0">Aktif</option>
+                                        <option value="1">Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group text-start">
+                                    <label>Status Outlet <span class="text-danger">*</span></label>
+                                    <select name="ek_outlet" class="form-control select2" required>
+                                        <option value="0">Aktif</option>
+                                        <option value="1">Non-aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center my-4"> 
+                            <button type="submit" class="btn btn-primary me-2"><i class="fa fa-plus"></i> Tambah</button>
+                            <a href="{site_url('master/package')}" class="btn btn-secondary me-2">
+                                <i class="fa fa-times"></i> Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var loadPreview = function(event) {
+        var output = document.getElementById('preview');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+            URL.revokeObjectURL(output.src) // free memory
+        }
+    };
+</script>
